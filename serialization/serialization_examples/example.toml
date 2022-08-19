@@ -1,0 +1,9 @@
+firstName = "John"
+lastName = "Smith"
+isAlive = true
+age = 27
+children = [ "Leah", "Mikey" ]
+
+[address]
+city = "New York"
+postalCode = "10021-3100"

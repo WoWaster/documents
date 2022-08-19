@@ -1,0 +1,204 @@
+\documentclass[aspectratio=169]{beamer}
+
+% Setup fonts.
+\usepackage{fontspec}
+\setmainfont{Yanone Kaffeesatz}
+\setsansfont{Noto Sans}
+\setmonofont{Fira Code}
+
+%%% Fonts and language setup.
+\usepackage[russian]{babel}
+
+%% Math
+\usepackage{amsmath, amsfonts, amssymb, amsthm, mathtools} % Advanced math tools.
+\usepackage{unicode-math} % Allow TTF and OTF fonts in math and allow direct typing unicode math characters.
+\unimathsetup{
+    warnings-off={
+            mathtools-colon,
+            mathtools-overbracket
+        }
+}
+\setmathfont{Fira Math}
+% \setmathfont{Asana Math}
+
+\usetheme{Rochester}
+\usecolortheme{Nord}
+\usefonttheme{Nord}
+\setbeamertemplate{navigation symbols}{}%remove navigation symbols
+
+
+\usepackage{minted}
+\usemintedstyle{nord}
+
+\title{Алгоритм Рабина-Карпа}
+\author{Николай Пономарев}
+\date{}
+
+\usepackage{hyperref}
+
+\begin{document}
+\begin{frame}[plain,noframenumbering]
+    \maketitle
+\end{frame}
+
+\setbeamertemplate{navigation symbols}{%
+    \usebeamerfont{footline}%
+    \usebeamercolor[fg]{footline}%
+    \hspace{1em}%
+    \insertframenumber/\inserttotalframenumber
+}
+\begin{frame}
+    \frametitle{Проблема}
+    \begin{itemize}
+        \item Поиск шаблона в строке достаточно частая проблема в информатике
+        \item Самым простым решением является последовательное <<прикладывание>> шаблона к строке
+        \item Сложность такого решения $O(nm)$
+        \item Можно оптимизировать выходом из цикла при первом несовпадении, но гарантий на значительное ускорение нет
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Чутоку теории}
+    В информатике существуют так называемые хеш-функции, которые позволяют
+    преобразовать произвольные данные в конечное множество значений
+    \begin{itemize}
+        \item У одинаковых входных данных одинаковый хеш
+        \item Однако обратное неверно, т.к. происходят коллизии
+    \end{itemize}
+    Коллизия -- совпадение результата хеш-функции для разных входных данных
+    \begin{itemize}
+        \item У <<хороших>> хеш-функций вероятность коллизий достаточно мала
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Задумка}
+    Алгоритм Рабина-Карпа был придуман Ричардом Карпом и Майклом Рабином в 1987 году.
+
+    Идея алгоритма заключается в подсчете хеша для подстроки и сравнении его
+    с хешем образца, и только в случае равенства посимвольно сравнивать подстроку и образец
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Реализация}
+    \begin{minted}[linenos]{python}
+def rabin_karp(s: str, pattern: str) -> int:
+    n = len(s)
+    m = len(pattern)
+    pattern_hash = hash(pattern)
+    for i in range(n - m):
+        substring = s[i : i + m]
+        substring_hash = hash(substring)
+        if pattern_hash == substring_hash:
+            if pattern == substring:
+                return i
+    return -1
+    \end{minted}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Сложность}
+    \begin{itemize}
+        \item Хеширование и посимвольное сравнение имеют сложность $O(m)$
+        \item Хеширование производится на каждом шаге цикла, итоговая сложность $O(nm)$
+    \end{itemize}
+    Но такая же сложность и у <<наивного>> алгоритма!
+
+    Для решения этой проблемы необходимо использовать скользящий (rolling) хеш.
+\end{frame}
+
+\begin{frame}
+    \frametitle{Скользящий хеш}
+    Скользящий хеш --- это такая хеш-функция, для пересчета которой достаточно знать
+    ее предыдущее значение и что изменилось в данных.
+
+    \begin{exampleblock}{Пример}
+        Самый простой хеш, который складывает все коды символов в строке
+        $s = a_1 a_2 ... a_n$: \[h(s) = \sum_{i=0}^n a_i,\] является скользящим.
+        После сдвига на 1 вправо его можно пересчитать за константное время:
+        \[h(s[2..n+1]) = h(s[1..n]) - a_1 + a_{n+1}\]
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Полиномиальный хеш}
+    Полиномиальный хеш является достаточно простым скользящим хешем,
+    однако он обеспечивает достаточно низкую вероятность коллизий.
+    \[h(s) = \left(\sum_{i=1}^n s[i]x^{n-i} \right) \bmod{q}\]
+
+    На практике взятие остатка обычно выполняется после каждой операции:
+    \begin{minted}[linenos]{python}
+def polynomial_hash(s: str, x: int, q: int) -> int:
+    hash = 0
+    for a in s:
+        hash = (hash * x) % q
+        hash = (hash + a) % q
+    return hash
+    \end{minted}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Полиномиальный хеш. Сдвиг}
+    За основу возьмем строку $s=a_1a_2a_3a_4...a_n$
+
+    Посчитаем хеш для подстроки $s_1 = a_1a_2a_3$:
+    \[h(s_1) = \left[\left(\left[\left(\left[\left(a_1 x\right) \bmod{q} + a_2\right] \bmod{q}\right) x \right] \bmod{q}\right) + a_3\right] \bmod{q}\]
+    Теперь сдвинемся на 1 символ вправо и подсчитаем хеш для подстроки $s_2 = a_2a_3a_4$:
+    \[h(s_2) = \left[\left(h(s_1) + q - \left[\left(a_1 x^2\right)\bmod{q} \right] \right)x + a_4\right] \bmod{q}\]
+\end{frame}
+
+\begin{frame}
+    \frametitle{Полиномиальный хеш. Выбор $q$ и $x$}
+    Вариант Рабина и Карпа:
+    \begin{itemize}
+        \item фиксированный $x=2$
+        \item случайное простое число $q \in \left[2, n^3\right]$, где $n$ -- длина строки
+    \end{itemize}
+
+    Вариант Дитзфелбингера и др.:
+    \begin{itemize}
+        \item случайное $x \in \left(0, q-1\right]$
+        \item фиксированное простое $q$ (например простое число Мерсенна: $2^{31}-1$ или $2^{61} -1$)
+    \end{itemize}
+\end{frame}
+
+%\begin{frame}
+%    \frametitle{Хеш Рабина}
+%    Кроме полиномиального хеша достаточно часто упоминают хеш Рабина. Для применения
+%    этого хеша необходимо представить исходную строку в виде 0 и 1. Идея хеша заключается
+%    в том, чтобы рассматривать входную строку $a_1 a_2 ... a_n$ как многочлен
+%    \[A(x) = a_1 x^{n-1} \oplus a_2x^{n-2} \oplus ... \oplus a_{n-1} x \oplus a_n x^0\]
+%    над конечным полем $\mathbb{F}_2$, где $\oplus$ обозначает побитовое исключающие <<или>>,
+%    а сам хеш является остатком от деления $A(x)$
+%    на случайно выбранный неприводимый многочлен $P(x)$ степени $L$ над $\mathbb{F}_2$.
+%\end{frame}
+
+\begin{frame}
+    \frametitle{Сложность с <<хорошим>> хешем}
+    \begin{itemize}
+        \item Вычисление скользящего хеша занимает $O(n)$
+        \item Сравнение строк при совпадении хеша -- $O(m)$
+    \end{itemize}
+    Тогда сложность алгоритма $O(n+m)$
+\end{frame}
+
+\begin{frame}
+    \frametitle{Применение}
+    \begin{itemize}
+        \item Алгоритм легко модифицируется для поиска набора образцов в тексте сохраняя
+              хорошее время работы
+        \item Из-за этого часто применяется для проверки на плагиат
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Материалы}
+    \begin{itemize}
+        \item \href{https://ru.wikipedia.org/wiki/%D0%90%D0%BB%D0%B3%D0%BE%D1%80%D0%B8%D1%82%D0%BC_%D0%A0%D0%B0%D0%B1%D0%B8%D0%BD%D0%B0_%E2%80%94_%D0%9A%D0%B0%D1%80%D0%BF%D0%B0}{Русская Википедия}
+        \item \href{https://en.wikipedia.org/wiki/Rabin%E2%80%93Karp_algorithm}{Английская Википедия}
+        \item Rabin M. O., Karp R. M. Efficient randomized pattern-matching algorithms -- статья Рабина и Карпа с описанием алгоритма
+        \item Dietzfelbinger M., Gil J., Matias Y., Pippenger N. Polynomial hash functions are reliable -- статья Дитзфелбингера и др. о полиномиальном хеше
+        \item Rabin M. O. Fingerprinting by random polynomials  -- статья про хеш Рабина
+    \end{itemize}
+\end{frame}
+\end{document}

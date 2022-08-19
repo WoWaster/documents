@@ -1,0 +1,12 @@
+---
+firstName: John
+lastName: Smith
+isAlive: true
+age: 27
+address:
+  city: New York
+  postalCode: 10021-3100
+children:
+  - Leah
+  - Mikey
+spouse:

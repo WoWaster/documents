@@ -1,0 +1,147 @@
+\documentclass[12pt, oneside]{memoir}
+
+\pdfvariable minorversion 7 % Set PDF version to 1.7.
+
+%%% Fonts and language setup.
+\usepackage{polyglossia}
+% Setup fonts.
+\usepackage{fontspec}
+\setmainfont{CMU Serif}
+\setsansfont{CMU Sans Serif}
+
+\usepackage{microtype} % Add fancy-schmancy font tricks.
+\usepackage{multicol}
+
+\usepackage{xcolor} % Add colors support.
+
+%% Math
+\usepackage{amsmath, amsfonts, amssymb, amsthm, mathtools} % Advanced math tools.
+\usepackage{thmtools}
+\usepackage{unicode-math} % Allow TTF and OTF fonts in math and allow direct typing unicode math characters.
+\unimathsetup{
+    warnings-off={
+            mathtools-colon,
+            mathtools-overbracket
+        }
+}
+\setmathfont{Latin Modern Math} % default
+\setmathfont[range={\setminus,\varnothing,\smashtimes}]{Asana Math}
+
+%%% Images
+\usepackage{graphicx}
+\graphicspath{{images/}}
+\usepackage{wrapfig} % Floating images.
+\usepackage{import}
+
+
+%%% Polyglossia setup after (nearly) everything as described in documentation.
+\setdefaultlanguage{russian}
+\setotherlanguage{english}
+
+
+%%% Custom commands
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\id}{\mathrm{id}}
+\renewcommand{\le}{\leqslant}
+\renewcommand{\ge}{\geqslant}
+\newcommand{\contradiction}{\smashtimes}
+\AtBeginDocument{\renewcommand{\Re}{\operatorname{Re}}}
+\AtBeginDocument{\renewcommand{\Im}{\operatorname{Im}}}
+\AtBeginDocument{\renewcommand{\phi}{\varphi}}
+\AtBeginDocument{\renewcommand{\epsilon}{\varepsilon}}
+
+%%% HyperRef
+\usepackage{hyperref}
+\begin{document}
+\section*{Сходимость рядов. Пономарев 144}
+
+\textbf{2633.} (1) $\displaystyle \sum_{n=1}^\infty \left(n^{\frac{1}{n^2 +1}} -1\right)$
+\[a_n = n^{\frac{1}{n^2 +1}} - 1 = e^{\frac{\ln n }{n^2 + 1}} - 1\]
+т.к. $\frac{\ln n }{n^2 + 1} \xrightarrow[n \to +\infty]{} 0$, значит
+\[e^{\frac{\ln n }{n^2 + 1}} - 1 \sim 1 + \frac{\ln n }{n^2 + 1} - 1  = \frac{\ln n }{n^2 + 1} \sim \frac{\ln n }{n^2} .\]
+
+Пусть $b_n = \frac{1}{n^{3/2}}$:
+\[\lim_{n \to +\infty} \frac{a_n}{b_n} = \lim_{n \to +\infty} \frac{\ln n}{n^2} \cdot n^{3/2} =
+    \lim_{n \to +\infty} \frac{\ln n}{\sqrt{n}} = 0\]
+Отсюда $b_n \ge a_n$, степень $\frac{1}{n^p}$ в $b_n$ равна $3/2 > 1$, по эталонному ряду ряд $\displaystyle \sum_{n=1}^\infty b_n$ сходится,
+значит и $\displaystyle \sum_{n=1}^\infty a_n$ сходится.
+
+\textbf{2635.} (2) $\displaystyle \sum_{n=1}^\infty \frac{1}{\ln^2\left(\sin \frac{1}{n}\right)}$
+\[a_n = \frac{1}{\ln^2\left(\sin \frac{1}{n}\right)} \sim \frac{1}{\ln^2\left(\frac{1}{n}\right)} = \frac{1}{\ln^2 n}\]
+
+Пусть $b_n = \frac{1}{n}$:
+\[\lim_{n \to +\infty} \frac{a_n}{b_n} = \lim_{n \to +\infty} \frac{n}{\ln^2 n} = \lim_{n \to +\infty} \frac{n}{2 \ln n} = \lim_{n \to +\infty} \frac{n}{2} = +\infty\]
+$\implies b_n \le a_n$, степень равна 1, $b_n$ расходится и вместе с ним расходится~$a_n$.
+
+\textbf{2636.} (3) $\displaystyle \sum_{n=1}^\infty \left(\cos \frac{a}{n}\right)^{n^3}$.
+По признаку Коши:
+\begin{multline*}
+    \lim_{n \to +\infty} \sqrt[n]{\left(\cos \frac{a}{n}\right)^{n^3}} =
+    \lim_{n \to +\infty}  \left(\cos \frac{a}{n}\right)^{n^2} =
+    \exp \lim_{n \to +\infty} n^2 \ln \left(\cos \frac{a}{n}\right) =\\
+    \exp \lim_{n \to +\infty} n^2 \ln \left(1 -\frac{a^2}{2n^2}\right) =
+    \exp \lim_{n \to +\infty} n^2 \left( -\frac{a^2}{2n^2}\right) =
+    e^{- \frac{a^2}{2}}
+\end{multline*}
+Для любого $a$ выполнено $- \frac{a^2}{2} \le 0$, значит $e^{- \frac{a^2}{2}} \le 1$.
+Отсюда если $a \neq 0$, то ряд сходится.
+
+\textbf{2638.} (4) $\displaystyle \sum_{n=1}^\infty \frac{n!}{n^{\sqrt{n}}}$.
+По формуле Стирлинга
+\begin{gather*}
+    n! \sim \sqrt{2 \pi n} \left(\frac{n}{e}\right)^n \implies n! > \left(\frac{n}{e}\right)^n\\
+    \lim_{n \to +\infty} \frac{\sqrt{2 \pi n} \left(\frac{n}{e}\right)^n}{ \left(\frac{n}{e}\right)^n} =
+    \lim_{n \to +\infty} \sqrt{2 \pi n} = +\infty\\
+    a_n = \frac{n!}{n^{\sqrt{n}}} > \frac{1}{n^{\sqrt{n}}} \left(\frac{n}{e}\right)^n = b_n
+    \intertext{по признаку Коши:}
+    \lim_{n \to +\infty} \sqrt[n]{b_n} =
+    \lim_{n \to +\infty} \sqrt[n]{\frac{1}{n^{\sqrt{n}}} \left(\frac{n}{e}\right)^n} =
+    \lim_{n \to +\infty} \frac{n}{e} \cdot n^{-\frac{1}{\sqrt{n}}} =
+    \lim_{n \to +\infty} \frac{n}{e} = +\infty
+\end{gather*}
+Значит $b_n$ расходится, $a_n$ тоже.
+
+\textbf{2639.} (5) $\displaystyle \sum_{n=2}^\infty \frac{n^{\ln n}}{(\ln n)^n}$
+\begin{gather*}
+    \begin{multlined}
+        a_n = \frac{n^{\ln n}}{(\ln n)^n} = \frac{e^{\ln^2 n}}{e^{n \ln n}}=
+        e^{\ln n (\ln n -n)} = \\
+        = e^{\ln n \cdot n \left(\frac{\ln n }{n} -1\right) } =
+        e^{ - n\ln n\left(1 - \frac{\ln n }{n} \right)} \sim e^{ - n \ln n}
+    \end{multlined}
+    \intertext{По признаку Коши}
+    \lim_{n \to +\infty} \sqrt[n]{\left(e^{-\ln n}\right)^n} =
+    \lim_{n \to +\infty} e^{- \ln n} = \lim_{n \to +\infty} \frac{1}{n} = 0
+\end{gather*}
+$0 < 1$ -- ряд сходится.
+
+\textbf{2642.} (6) $\displaystyle \sum_{n=1}^\infty \left[\ln \frac{1}{n^\alpha} - \ln \left(\sin \frac{1}{n^\alpha}\right)\right]$
+
+Если $\alpha \le 0$, то $a_n \to +\infty$, ряд не сходится.
+
+Пусть $\alpha > 0$
+\begin{multline*}
+    a_n = \ln \left(\frac{1}{n^\alpha} \cdot \frac{1}{\sin \frac{1}{n^\alpha}}\right) =
+    - \ln\left(n^\alpha \sin\frac{1}{n^\alpha}\right) \sim \\
+    \sim - \ln \left[n^\alpha \left(\frac{1}{n^\alpha} - \frac{1}{6 n^{3\alpha}}\right)\right] \sim
+    - \ln \left(1 - \frac{1}{6n^{2\alpha}}\right) \sim
+    - \left(- \frac{1}{6n^{2\alpha}}\right) = \frac{1}{6n^{2\alpha}}
+\end{multline*}
+\[a_n \sim \frac{1}{6n^{2\alpha}}\]
+Для сходимости необходимо $2\alpha > 1$, значит ряд сходится при $\alpha > \frac{1}{2}$.
+
+\textbf{2644.} (7) $\displaystyle \sum_{n=1}^\infty \frac{n^{2n}}{(n+a)^{n+b} (n+b)^{n+a}} \qquad (a>0,\ b>0)$
+\begin{multline*}
+    a_n = \frac{n^{2n}}{(n+a)^{n+b} (n+b)^{n+a}} =
+    \frac{n^{2n}}{n^{n+b} \left(1 + \frac{a}{n}\right)^{n+b} n^{n+a} \left(1 + \frac{b}{n}\right)^{n+a}} = \\
+    = \frac{n^{2n}}{n^{2n}n^{a+b} \left(1 + \frac{a}{n}\right)^{n+b} \left(1 + \frac{b}{n}\right)^{n+a}} =
+    \frac{1}{n^{a+b} \left(1 + \frac{a}{n}\right)^{n+b} \left(1 + \frac{b}{n}\right)^{n+a}} \sim \\
+    \sim \frac{1}{n^{a+b} \left(1 + \frac{a}{n}\right)^{n} \left(1 + \frac{b}{n}\right)^{n}} \sim
+    \frac{1}{n^{a+b} e^{a+b}}
+\end{multline*}
+Вывод: ряд сходится, если $a+b > 1$.
+\end{document}

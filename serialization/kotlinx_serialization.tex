@@ -1,0 +1,223 @@
+\documentclass[aspectratio=169]{beamer}
+
+% Setup fonts.
+\usepackage{fontspec}
+\setmainfont{Yanone Kaffeesatz}
+\setsansfont{Noto Sans}
+% \setmonofont{Fira Code}
+\setmonofont{Iosevka}
+
+%%% Fonts and language setup.
+\usepackage{polyglossia}
+%% Math
+\usepackage{amsmath, amsfonts, amssymb, amsthm, mathtools} % Advanced math tools.
+\usepackage{unicode-math} % Allow TTF and OTF fonts in math and allow direct typing unicode math characters.
+\unimathsetup{
+    warnings-off={
+            mathtools-colon,
+            mathtools-overbracket
+        }
+}
+\setmathfont{Fira Math}
+% \setmathfont{Asana Math}
+
+% \usetheme{Rochester}
+% \addtobeamertemplate{frametitle}{\vspace*{-0cm}}{\vspace*{-0.5cm}}
+% \usetheme{Madrid}
+\usecolortheme{Nord}
+\usefonttheme{Nord}
+\setbeamertemplate{navigation symbols}{}%remove navigation symbols
+
+
+\usepackage{minted}
+\usemintedstyle{nord}
+
+\title{Сериализация}
+\author{Николай Пономарев}
+\date{}
+
+%%% Polyglossia setup after (nearly) everything as described in documentation.
+\setdefaultlanguage{russian}
+\setotherlanguage{english}
+\begin{document}
+\begin{frame}[plain]
+    \maketitle
+\end{frame}
+
+\setbeamertemplate{navigation symbols}{%
+    \usebeamerfont{footline}%
+    \usebeamercolor[fg]{footline}%
+    \hspace{1em}%
+    \insertframenumber/\inserttotalframenumber
+}
+\begin{frame}
+    \frametitle{Что это и зачем нужно}
+    \textbf{Сериализация} --- это преобразования объектов и структур данных в известный формат с возможностью последующего восстановления.
+    Процесс обратный сериализации называется \textbf{десериализация}.
+
+    Основные применения:
+    \begin{itemize}
+        \item сохранение данных в локальное хранилище или базу данных
+        \item передача данных, например по сети
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{kotlinx.serialization}
+    Для Kotlin существует официальная библиотека \texttt{kotlinx.serialization}:
+    \begin{itemize}
+        \item официальный GitHub: \url{https://github.com/Kotlin/kotlinx.serialization}
+        \item краткий гайд на \href{https://kotlinlang.org/docs/serialization.html}{\textit{официальном сайте Kotlin}}
+        \item подробная документация на \href{https://github.com/Kotlin/kotlinx.serialization/blob/master/docs/serialization-guide.md}{\textit{GitHub}}
+    \end{itemize}
+    Кстати, буква \texttt{x} в названии пакета образована от слова \texttt{eXtension}.
+    В этот пакет попадают официальные библиотеки, которые не включены в \texttt{stdlib}.
+    Например:
+    \begin{itemize}
+        \item \texttt{kotlinx.coroutines} -- корутины
+        \item \texttt{kotlinx.datetime} -- работа с временем
+        \item \texttt{kotlinx.cli} -- парсер для CLI
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Форматы}
+    Официально библиотека поддерживает:
+    \begin{itemize}
+        \item JSON
+        \item CBOR
+        \item Protocol Buffers
+        \item Java .properties
+        \item HOCON
+    \end{itemize}
+    Благодаря сообществу так же поддерживаются:
+    \begin{itemize}
+        \item TOML
+        \item XML
+        \item YAML
+        \item множество других
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{JSON}
+
+    \begin{itemize}
+        \item JSON (JavaScript Object Notation) -- один из самых популярных и человеко-читаемых форматов.
+              Несмотря на то, что он произошел от JavaScript может использоваться в сочетании с любым языком программирования.
+        \item В \texttt{kotlinx.serialization} только JSON считается стабильным, поддержка остальных форматов пока что экспериментальна.
+        \item Примеры использования: конфигурационные файлы Windows Terminal и VS Code.
+        \item Возможно использование схем (schema) -- описания кодируемых данных.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{JSON. Типы}
+    JSON поддерживает следующие типы данных:
+    \begin{itemize}
+        \item \texttt{null}
+        \item Number -- число, целые и вещественные числа не различимы, максимального числа так же нет
+        \item String -- строка, записывается в двойных кавычках, поддерживает экранирование символов через \texttt{\textbackslash}
+        \item Boolean -- принимает \texttt{true} или \texttt{false}
+        \item Array -- упорядоченный список с элементами любого типа, записывается через [], разделяется запятыми
+        \item Object -- набор вида ключ-значение, где ключ имеет тип String, записывается через \{\}, пары отделяются запятыми, а ключ и значение разделяются двоеточием
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{JSON. Пример}
+    \inputminted[]{json}{serialization_examples/example.json}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{JSON Lines}
+    Формат -- альтернатива CSV, каждая строка представляет собой валидный JSON объект или массив.
+    \inputminted[]{json}{serialization_examples/example1.jsonl}
+    или
+    \inputminted[]{json}{serialization_examples/example2.jsonl}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Protocol Buffers}
+
+    \begin{itemize}
+        \item Protocol Buffers  -- бинарный формат сериализации, предложенный Google в качестве замены XML.
+        \item Для упрощения жизни разработчиков, Protobuf требует наличие схемы.
+        \item По умолчанию ни одно поле не может быть \texttt{null}.
+        \item Продвигается Google для использования в Android.
+    \end{itemize}
+\end{frame}
+\begin{frame}
+    \frametitle{Protobuf. Пример}
+    \inputminted[]{protobuf}{serialization_examples/example.proto}
+\end{frame}
+
+\begin{frame}
+    \frametitle{TOML}
+    TOML -- минималистичный формат, похожий на .ini файлы, но с более строгой спецификацией.
+    \inputminted[]{toml}{serialization_examples/example.toml}
+\end{frame}
+
+\begin{frame}
+    \frametitle{YAML}
+    YAML -- минималистичный формат. Является надмножеством JSON.
+    Используется, например, для настройки GitHub Actions.
+    \inputminted[]{yaml}{serialization_examples/example.yaml}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Простой пример. Сериализация}
+    \inputminted[]{kotlin}{serialization_examples/serialization1.kt}
+    Вывод:
+    \inputminted[]{json}{serialization_examples/serialization1.json}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Простой пример. Десериализация}
+    \inputminted[]{kotlin}{serialization_examples/serialization2.kt}
+    Вывод:
+    \inputminted[]{text}{serialization_examples/serialization2.txt}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Что сериализуется}
+    По-умолчанию сериализуются все свойства класса, но с некоторыми особенностями:
+    \begin{itemize}
+        \item Сериализуются только свойства имеющие backing field и не делегаты
+        \item В первичном конструкторе класса могут быть только свойства
+        \item Свойства с значением по-умолчанию не будут сериализоваться
+        \item Если свойство не нужно сериализовать, его можно обозначить аннотацией \mintinline{kotlin}{@Transient}, у такого свойства должно быть значение по умолчанию
+        \item Если свойство -- это ссылка, то объект по ссылке тоже должен иметь аннотацию \mintinline{kotlin}{@Serializable}
+        \item Типы generic'ов выводятся во время компиляции
+        \item Можно менять название свойств при сериализации с помощью \mintinline{kotlin}{@SerialName(name: String)}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Сложный пример}
+    \inputminted[firstline=6, lastline=21]{kotlin}{serialization_examples/hard_example.kt}
+\end{frame}
+\begin{frame}[fragile]
+    \frametitle{Сложный пример}
+    \inputminted[firstline=23, lastline=34]{kotlin}{serialization_examples/hard_example.kt}
+\end{frame}
+\begin{frame}[fragile]
+    \frametitle{Сложный пример. Вывод}
+    \inputminted[fontsize=\small]{json}{serialization_examples/hard_example.json}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Что еще можно делать}
+    \begin{itemize}
+        \item Писать собственные сериализаторы
+              \begin{itemize}
+                  \item Простой пример: хотим закодировать зеленый цвет \texttt{0x00ff00} читаемо -- не числом.
+                        Возможные варианты: строка \texttt{"00ff00"}, массив \texttt{[0,255,0]}, JSON объект \mintinline{json}{{"r":0,"g":255,"b":0}} -- все это возможно
+              \end{itemize}
+        \item Делать внешние классы сериализуемыми
+        \item «Перегружать» сериализаторы с помощью \mintinline{kotlin}{@Contextual}%, чтобы кодировать свойства по разному в зависимости от контекста
+        \item Работать с сложной иерархией классов
+        \item Настраивать вывод: каждый формат имеет собственные настройки
+    \end{itemize}
+\end{frame}
+\end{document}
