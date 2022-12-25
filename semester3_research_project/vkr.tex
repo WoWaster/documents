@@ -1,0 +1,50 @@
+% !TEX TS-program = xelatex
+% !BIB program = bibtex
+% !TeX spellcheck = ru_RU
+
+\input{header.tex}
+\input{header2.tex}
+
+\usepackage{totcount}
+
+\usepackage{caption}
+\usepackage{listings}
+
+\DeclareCaptionFont{white}{ \color{white} }
+\DeclareCaptionFormat{listing}{
+      \hspace{15pt}#1#2#3
+}
+\captionsetup[lstlisting]{ 
+  format=listing
+  %, labelfont=white, textfont=white
+  , singlelinecheck=false, margin=0pt, font={bf}
+}
+
+\begin{document}
+\input{title.tex}
+\maketitle
+\setcounter{tocdepth}{2}
+\tableofcontents
+
+\section*{Введение}
+\input{000intro}
+
+\section{Постановка задачи}
+\input{010task}
+
+\section{Обзор}
+\input{020related}
+
+\section{Реализация}
+\input{030implementation.tex}
+
+\section{Эксперимент}
+\input{070experiment}
+
+\section*{Заключение}
+\input{090conclusion}
+
+\setmonofont[Mapping=tex-text]{CMU Typewriter Text}
+\bibliographystyle{ugost2008ls}
+\bibliography{vkr}
+\end{document}

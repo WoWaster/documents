@@ -1,0 +1,178 @@
+% \documentclass{beamer}
+%Для защит онлайн лучше использовать разрешение 16x9
+\documentclass[aspectratio=169]{beamer}
+
+\usepackage{beamerthemesplit}
+\usepackage{wrapfig}
+\usetheme{SPbGU}
+\usepackage{pdfpages}
+\usepackage{amsmath}
+\usepackage{cmap} 
+\usepackage[T2A]{fontenc} 
+\usepackage[utf8]{inputenc}
+\usepackage[english,russian]{babel}
+\usepackage{indentfirst}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usepackage{multirow}
+\usepackage[noend]{algpseudocode}
+\usepackage{algorithm}
+\usepackage{algorithmicx}
+\usetikzlibrary{shapes,arrows}
+\usepackage{fancyvrb}
+\usepackage{appendixnumberbeamer}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{booktabs}
+
+\newtheorem{rutheorem}{Теорема}
+\newtheorem{ruproof}{Доказательство}
+\newtheorem{rudefinition}{Определение}
+\newtheorem{rulemma}{Лемма}
+
+\beamertemplatenavigationsymbolsempty
+
+% То, что в квадратных скобках, отображается внизу по центру каждого слайда. 
+\title[Оптимизация CRC--32]{Оптимизация алгоритма CRC--32 под RISC-V}
+
+% То, что в квадратных скобках, отображается в левом нижнем углу. 
+\institute[СПбГУ]{}
+
+% То, что в квадратных скобках, отображается в левом нижнем углу.
+\author[Николай Пономарев]{Николай Алексеевич Пономарев, группа 21.Б10-мм}
+ 
+\begin{document}
+{
+\setbeamertemplate{footline}{}
+% Лого университета или организации, отображается в шапке титульного листа
+\begin{frame}
+  \includegraphics[width=1.4cm]{pictures/SPbGU_Logo.png}
+  \vspace{-35pt}
+  \hspace{-10pt}
+  \begin{center}
+    \begin{tabular}{c}
+      \scriptsize{Санкт-Петербургский государственный университет} \\
+      \scriptsize{Кафедра системного программирования}
+    \end{tabular}
+    \titlepage
+  \end{center}
+
+  \btVFill
+
+  {\scriptsize
+    {\bfseries Научный руководитель:} ст. преподаватель кафедры ИАС К. К. Смирнов \\
+  }
+  \begin{center}
+    \vspace{5pt}
+    \scriptsize{Санкт-Петербург\\
+      2022}
+  \end{center}
+
+\end{frame}
+}
+
+% \begin{frame}[fragile]
+%   \frametitle{Введение}
+%   \begin{itemize}
+%     \item RISC-V набирает популярность
+%     \item Хотим оптимизировать популярные алгоритмы
+%     \item CRC--32 широко применяется и имеет множество способов оптимизации
+%   \end{itemize}
+% \end{frame}
+
+\begin{frame}
+  \frametitle{Постановка задачи}
+  \textbf{Целью} работы является реализация оптимизации CRC--32 с использованием аппаратных инструкций умножения многочленов на архитектуре RISC-V
+
+  \textbf{Задачи}:
+  \begin{itemize}
+    \item Изучить варианты оптимизации алгоритма CRC--32
+    \item Выбрать целевую платформу для проведения измерений с учетом необходимых расширений процессора
+    \item Адаптировать одну из существующих реализаций под RISC-V
+    \item Выполнить замеры производительности оптимизированного кода
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Алгоритм CRC--32 и существующие оптимизации}
+  Алгоритм CRC~(Cyclic Redundancy Check) используется для проверки целостности сообщения при передаче данных.
+  В данной работе речь идет о его варианте --- CRC-32.
+
+  Известные способы оптимизации:
+  \begin{itemize}
+    \item Заранее вычисленные таблицы значений
+    \item Использование аппаратных инструкций вычисления CRC-32
+    \item Использование инструкций умножения многочленов над $\mathbb{F}_2$
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Необходимые возможности процессора}
+  \begin{itemize}
+    \item RISC-V обладает модульной архитектурой
+    \item Инструкции для умножения многочленов над $\mathbb{F}_2$ содержатся в расширении B\footnote{Standard Extension for Bit Manipulation}
+    \item Можем использовать только 64-битную базу
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Платформы для измерений}
+  \begin{itemize}
+    \item Нет ни одного доступного процессора с расширением B
+    \item Необходим симулятор, были найдены:
+          \begin{itemize}
+            \item Spike
+            \item gem5
+          \end{itemize}
+    \item Для измерений подходит только gem5
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Реализация}
+  \begin{itemize}
+    \item В качестве базовой реализации была выбрана реализация из ядра Linux
+    \item Адаптированная реализация обрабатывает 128 бит за раз
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[t]
+  \frametitle{Эксперимент}
+  Эксперименты проводились на симуляторе gem5 со следующими характеристиками:
+  \begin{itemize}
+    \item MinorCPU с частотой 1~ГГц
+    \item 512~Мб ОЗУ DDR3 с частотой 1600 МГц
+  \end{itemize}
+
+  Исходные файлы компилировались с флагами \texttt{-O3 -static}, а затем запускались на симуляторе.
+
+  \begin{table}[h]
+    \begin{center}
+      \begin{tabularx}{0.95\linewidth}{*3{>{\raggedleft\arraybackslash}X}}
+        \toprule
+        Объем данных, байт & Стандартный алгоритм, тиков & Оптимизированный алгоритм, тиков \\ \midrule
+        128                & $121.4 \cdot 10^6$          & $109.8 \cdot 10^6$               \\ \midrule
+        1024               & $219.4 \cdot 10^6$          & $132.0 \cdot 10^6$               \\ \midrule
+        8192               & $1116.1 \cdot 10^6$         & $224.2 \cdot 10^6$               \\ \midrule
+        65536              & $7444.9 \cdot 10^6$         & $1077.9 \cdot 10^6$              \\
+        \bottomrule
+      \end{tabularx}
+    \end{center}
+    \caption{Результаты измерений}
+  \end{table}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Результаты}
+  \begin{itemize}
+    \item Изучены существующие способы оптимизации алгоритма CRC--32
+    \item Выбрана целевая платформа для проведения измерений с учетом необходимых расширений процессора
+    \item Проведена адаптация реализации для x86 под RISC-V с использованием инструкции clmul
+    \item Произведены измерения быстродействия оптимизированного кода на симуляторе gem5.
+  \end{itemize}
+\end{frame}
+
+\end{document}
