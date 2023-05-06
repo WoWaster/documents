@@ -1,0 +1,353 @@
+\documentclass[12pt, a4paper, oneside]{memoir}
+\input{preamble.tex}
+
+\title{Доказательство теоремы \textbf{2, b, \S 2}}
+\author{Пономарев Николай, 244 группа}
+\date{}
+
+\NewDocumentCommand{\FA}{}{\textbf{FA}}
+\RenewDocumentCommand{\land}{}{\mathbin{\&}}
+
+\usepackage{tikz}
+\usetikzlibrary{trees}
+\usepackage{pdflscape}
+\usepackage{forest}
+
+\semiisopage
+\begin{document}
+
+\maketitle
+Необходимо доказать следующую теорему с помощью средств аксиоматической теории чисел:
+\begin{theorem*}
+    Если $a = bq + c$, то совокупность общих делителей чисел $a$ и $b$ совпадает с совокупностью общих делителей чисел $b$ и $c$; в частности, $(a, b) = (b, c)$.
+\end{theorem*}
+
+На языке аксиоматической теории чисел (\FA) данная теорема записывается так\footnote{здесь и далее, запись $x \cdot y$ равносильна записи $xy$; запись $(a, b)$ равносильна $\gcd(a, b)$.}:
+\begin{theorem*}
+    \begin{equation}
+        \forall x \forall y \exists w \exists z ((x = yw + z) \rightarrow \gcd(x, y) = \gcd(y, z)) \label{thm}
+    \end{equation}
+\end{theorem*}
+
+Введем функциональный символ $\mid$:
+\begin{definition}[делимость]
+    \begin{equation}
+        y \mid x \Leftrightarrow \exists z (x = yz)
+    \end{equation}
+\end{definition}
+а так же $\neq$:
+\begin{definition}[неравенство]
+    \[x \neq y \Leftrightarrow \lnot (x = y)\]
+\end{definition}
+
+Определим НОД:
+\begin{definition}[НОД]
+    \begin{equation} \label{gcd}
+        \gcd(x, y) \Leftrightarrow \exists z (z \mid x \land z \mid y \land \forall w (w \mid x \land w \mid y \rightarrow w \mid z))
+    \end{equation}
+\end{definition}
+Очевидным следствием из определения являются факты:
+\begin{gather}
+    \gcd(x, y) \mid x \label{gcd:cor:1} \\
+    \gcd(x, y) \mid y \label{gcd:cor:2}
+\end{gather}
+
+Для доказательства нам потребуется следующая теорема:
+\begin{theorem}[\textbf{2, b, \S 1}] \label{auxthm}
+    Если в равенстве вида $k + l + \dotsb + n = p + q + \dotsb + s$ относительно всех членов, кроме какого-либо одного, известно, что они кратны $b$, то и этот один член кратен $b$.
+
+    Или на языке \FA\footnote{здесь и далее, при переходе к языку \FA{} мы будем переименовывать большинство переменных и констант, чтобы соответствовать принятым обозначениям в методе резолюций.}:
+    \begin{align}
+        \forall z ( & z \mid x_1 \land z \mid x_2 \land \dotsb \land z \mid x_n \land \notag \\
+                    & z \mid y_1 \land z \mid y_2 \land \dotsb \land z \mid y_m \land \notag \\
+                    & x_1 + \dotsb + x_n + w = y_1 + \dotsb + y_m \rightarrow \notag         \\
+                    & z \mid w)
+    \end{align}
+\end{theorem}
+\begin{proof}
+    Примем без доказательства.
+\end{proof}
+
+Теперь докажем вспомогательные леммы.
+\begin{lemma}
+    Если $a = bq+c$, то $\gcd(a, b) \mid c$.
+    Или на языке \FA:
+    \begin{equation}
+        \forall x \forall y \exists w \exists z ((x = yw + z) \rightarrow \gcd(x, y) \mid z) \label{lemma1}
+    \end{equation}
+\end{lemma}
+\begin{proof}
+    Для начала приведем отрицание \eqref{lemma1} к множеству предложений:
+    \begin{align*}
+                          & \lnot \forall x \forall y \exists w \exists z ((x = yw + z) \rightarrow \gcd(x, y) \mid z) \\
+        \Leftrightarrow{} & \lnot \forall x \forall y \exists w \exists z (\lnot (x = yw + z) \lor \gcd(x, y) \mid z)  \\
+        \Leftrightarrow{} & \exists x \exists y \forall w \forall z ((x = yw + z) \land \lnot (\gcd(x, y) \mid z))     \\
+        \Rightarrow {}    & \forall w \forall z ((a = bw + z) \land \lnot (\gcd(a, b) \mid z))                         \\
+        \Rightarrow{}     & (a = bw + z) \land \lnot (\gcd(a, b) \mid z),
+    \end{align*}
+    здесь $a$ и $b$~--- сколемовские константы
+
+    Теперь применим теорему \ref{auxthm} к $x = yq + c$ и $\gcd(x, y)$:
+    \[(\gcd(x, y) \mid x \land \gcd(x, y) \mid yq \land x = yq + c) \rightarrow \gcd(x, y) \mid c\]
+    Приведем это высказывание к множеству предложений:
+    \begin{align*}
+                          & (\gcd(x, y) \mid x \land \gcd(x, y) \mid yq \land x = yq + c) \rightarrow \gcd(x, y) \mid c             \\
+        \Leftrightarrow{} & \lnot (\gcd(x, y) \mid x \land \gcd(x, y) \mid yq \land x = yq + c) \lor \gcd(x, y) \mid c              \\
+        \Leftrightarrow{} & \lnot (\gcd(x, y) \mid x) \lor \lnot (\gcd(x, y) \mid yq) \lor (x \neq yq + c) \lor (\gcd(x, y) \mid c)
+    \end{align*}
+
+    И добавим к множеству предложений следствия из определения НОД:
+    \begin{gather*}
+        \gcd(u, v) \mid u\\
+        \gcd(u, v) \mid v
+    \end{gather*}
+
+    Применение метода резолюций доказываем лемму (см. \nameref{res1}).
+\end{proof}
+
+\begin{lemma}
+    Если $a = bq+c$, то $\gcd(b, c) \mid a$.
+    Или на языке \FA:
+    \begin{equation}
+        \forall x \forall y \exists w \exists z ((x = yw + z) \rightarrow \gcd(y, z) \mid x) \label{lemma2}
+    \end{equation}
+\end{lemma}
+\begin{proof}
+    Доказательство практически полностью аналогично предыдущей лемме и поэтому опущено.
+\end{proof}
+
+\begin{lemma}
+    Если $\gcd(x, y) \mid y$ и $\gcd(x, y) \mid z$, то $\gcd(x, y) \mid \gcd(y, z)$.
+    Или на языке \FA:
+    \begin{equation} \label{lemma3}
+        \forall x \forall y \forall z((\gcd(x, y) \mid y) \land (\gcd(x, y) \mid z) \rightarrow (\gcd(x, y) \mid \gcd(y, z)))
+    \end{equation}
+\end{lemma}
+\begin{proof}
+    Приведем отрицание \eqref{lemma3} к множеству предложений:
+    \begin{align*}
+                          & \lnot \forall x \forall y \forall z((\gcd(x, y) \mid y) \land (\gcd(x, y) \mid z) \rightarrow (\gcd(x, y) \mid \gcd(y, z)))  \\
+        \Leftrightarrow{} & \lnot \forall x \forall y \forall z(\lnot ((\gcd(x, y) \mid y) \land (\gcd(x, y) \mid z)) \lor (\gcd(x, y) \mid \gcd(y, z))) \\
+        \Leftrightarrow{} & \exists x \exists y \exists z ((\gcd(x, y) \mid y) \land (\gcd(x, y) \mid z) \land \lnot (\gcd(x, y) \mid \gcd(y, z)))       \\
+        \Rightarrow{}     & (\gcd(a, b) \mid b) \land (\gcd(a, b) \mid c) \land \lnot (\gcd(a, b) \mid \gcd(b, c)),
+    \end{align*}
+    где $a$, $b$ и $c$~--- сколемовские константы.
+
+    Замкнем квантором всеобщности \eqref{gcd} и приведем его к множеству предложений:
+    \begin{align*}
+                          & \forall x \forall y \exists z (z \mid x \land z \mid y \land \forall w (w \mid x \land w \mid y \rightarrow w \mid z))                   \\
+        \Leftrightarrow{} & \forall x \forall y \exists z (z \mid x \land z \mid y \land \forall w (\lnot (w \mid x) \lor \lnot (w \mid y) \lor (w \mid z)))         \\
+        \Rightarrow{}     & \forall x \forall y \forall w (f(x, y) \mid x \land f(x, y) \mid y \land (\lnot (w \mid x) \lor \lnot (w \mid y) \lor (w \mid f(x, y)))) \\
+        \Rightarrow{}     & f(x, y) \mid x \land f(x, y) \mid y \land (\lnot (w \mid x) \lor \lnot (w \mid y) \lor (w \mid f(x, y))),
+    \end{align*}
+    где $f(x,y)$~-- сколемовская функция.
+    Применение метода резолюций доказываем лемму (см. \nameref{res2}\footnote{Если какие-то из предложений не используются в выводе, то они не выписываются.}).
+\end{proof}
+
+\begin{lemma}
+    $\neq$ обладает транзитивностью.
+    На языке \FA:
+    \begin{equation}
+        \forall x \forall y \forall z (x \neq y \land y \neq z \rightarrow x \neq z) \label{lemma4}
+    \end{equation}
+\end{lemma}
+\begin{proof}
+    Очевидно из определения.
+\end{proof}
+
+\begin{lemma}
+    Если $a \mid b$ и $b \mid a$, то $a = b$. Или на языке \FA:
+    \begin{equation}
+        \forall x \forall y (x \mid y \land y \mid x \rightarrow x = y) \label{lemma5}
+    \end{equation}
+\end{lemma}
+
+\begin{proof}
+    Приведем отрицание \eqref{lemma5} к множеству предложений, раскрыв делимость по определению:
+    \begin{align*}
+                          & \lnot \forall x \forall y (x \mid y \land y \mid x \rightarrow x = y)                      \\
+        \Leftrightarrow{} & \lnot \forall x \forall y (\exists w (y = xw) \land \exists z (x = yz) \rightarrow x = y)  \\
+        \Leftrightarrow{} & \lnot \forall x \forall y (\lnot (\exists w (y = xw) \land \exists z (x = yz)) \lor x = y) \\
+        \Leftrightarrow{} & \exists x \exists y (\exists w (y = xw) \land \exists z (x = yz) \land x \neq y)           \\
+        \Rightarrow{}     & (b = aq) \land (a = bs) \land (a \neq b),
+    \end{align*}
+    где $a$, $b$, $q$, $s$~--- сколемовские константы.
+
+    Запишем симметричность равенства
+    \[\forall x \forall y (x = y \rightarrow y = x)\]
+    теперь приведем ее к множеству предложений:
+    \begin{align*}
+                          & \forall x \forall y (x = y \rightarrow y = x) \\
+        \Leftrightarrow{} & \forall x \forall y (x \neq y \lor y = x)     \\
+        \Rightarrow{}     & x \neq y \lor y = x
+    \end{align*}
+    Приведем \eqref{lemma4} к множеству предложений:
+    \begin{align*}
+                          & \forall x \forall y \forall z (x \neq y \land y \neq z \rightarrow x \neq z) \\
+        \Leftrightarrow{} & \forall x \forall y \forall z (x = y \lor y = z \lor x \neq z)               \\
+        \Rightarrow{}     & x = y \lor y = z \lor x \neq z
+    \end{align*}
+    Так же запишем транзитивность равенства
+    \[\forall x \forall y \forall z (x = y \land y = z \rightarrow x = z)\]
+    и приведем к множеству предложений
+    \begin{align*}
+                          & \forall x \forall y \forall z (x = y \land y = z \rightarrow x = z) \\
+        \Leftrightarrow{} & \forall x \forall y \forall z (x \neq y \lor y \neq z \lor x = z)   \\
+        \Rightarrow{}     & x \neq y \lor y \neq z \lor x = z
+    \end{align*}
+    И с помощью метода резолюций докажем лемму (см. \nameref{res3}).
+\end{proof}
+
+\begin{lemma}
+    \[\forall x \forall y (\gcd(x, y) = \gcd(y, x))\]
+\end{lemma}
+\begin{proof}
+    Доказательство очевидно, т.к. определение $\gcd$ симметрично относительно переменных $x$ и $y$.
+\end{proof}
+Далее позволим себе отождествлять $\gcd(x, y)$ и $\gcd(y, x)$.
+
+Теперь можем доказать теорему:
+\begin{proof}
+    Во всем доказательстве константы $a$, $b$, $q$, $c$, для удобства, подразумеваются константами из условия теоремы.
+
+    Для начала приведем условие теоремы \eqref{thm} к множеству предложений:
+    \begin{align*}
+                          & \lnot \forall x \forall y \exists w \exists z ((x = yw + z) \rightarrow \gcd(x, y) = \gcd(y, z)) \\
+        \Leftrightarrow{} & \lnot \forall x \forall y \exists w \exists z (\lnot (x = yw + z) \lor \gcd(x, y) = \gcd(y, z))  \\
+        \Leftrightarrow{} & \exists x \exists y \forall w \forall z ((x = yw + z) \land \gcd(x, y) \neq \gcd(y, z))          \\
+        \Rightarrow{}     & \forall w \forall z ((a = bw + z) \land \gcd(a, b) \neq \gcd(b, z))                              \\
+        \Rightarrow{}     & (a = bw + z) \land \gcd(a, b) \neq \gcd(b, z),
+    \end{align*}
+    где $a$, $b$~--- сколемовские константы.
+    Однако здесь мы можем сразу подставить $w$ и $z$ и получить
+    \[(a = bq + c) \land \gcd(a, b) \neq \gcd(b, c)\]
+
+    Приведем условия лемм 1, 2, 3, 5 к множествам предложений:
+    для леммы 1:
+    \[(x \neq yq + c) \lor \gcd(x, y) \mid c\]
+    для леммы 2:
+    \[(x \neq yq + c) \lor \gcd(y, c) \mid x\]
+    для леммы 3:
+    \[\lnot (\gcd(x, y) \mid y) \lor \lnot (\gcd(x, y) \mid z) \lor (\gcd(x, y) \mid \gcd(y, z))\]
+    для леммы 5:
+    \[\lnot (x \mid y) \lor \lnot (y \mid x) \lor x = y\]
+    Кроме того, будем использовать \eqref{gcd:cor:1} и \eqref{gcd:cor:2}.
+    Применим метод резолюций, чтобы доказать теорему (см. \nameref{res4}).
+\end{proof}
+
+\begin{landscape}
+    \subsection{Приложение 1}\label{res1}
+    \begin{forest}
+        for tree={
+        math content,
+        grow=north,
+        l=2cm
+        }
+        [nill
+        [{\lnot (\gcd(a, b) \mid z)}, edge label={node[midway,right] {$|^{z}_{c}$}}]
+        [{(\gcd(a, b) \mid c)}
+        [{a = bw + z}]
+        [{(x \neq yq + c) \lor (\gcd(x, y) \mid c)}, edge label={node[midway,right] {$|^{x\ y}_{a\ b}$}}
+        [{\gcd(u, v) \mid v}, edge label={node[midway,right] {$|^{u\ v}_{x\ yq}$}}]
+        [{\lnot (\gcd(x, y) \mid yq) \lor (x \neq yq + c) \lor (\gcd(x, y) \mid c)}
+        [{\gcd(u, v) \mid u}, , edge label={node[midway,right] {$|^{u\ v}_{x\ y}$}}]
+        [{\lnot (\gcd(x, y) \mid x) \lor \lnot (\gcd(x, y) \mid yq) \lor (x \neq yq + c) \lor (\gcd(x, y) \mid c)}]
+        ]]
+        ]
+        ]
+    \end{forest}
+
+    \subsection{Приложение 2}\label{res2}
+    \begin{forest}
+        for tree={
+        math content,
+        grow=north,
+        l=2cm
+        }
+        [nill
+        [{\lnot (\gcd(a, b) \mid \gcd(b, c))}]
+        [{\gcd(a, b) \mid f(b, c)}, edge label={node[midway,right] {$|^{f}_{\gcd}$}}
+        [{\gcd(a, b) \mid c}]
+        [{\lnot (\gcd(a, b) \mid y) \lor (\gcd(a, b) \mid f(b, y))}, edge label={node[midway,right] {$|^{y}_{c}$}}
+        [{\gcd(a, b) \mid b}]
+        [{\lnot (w \mid x) \lor \lnot (w \mid y) \lor (w \mid f(x, y))}, edge label={node[midway,right] {$|^{x\ w}_{b\ \gcd(a, b)}$}}]
+        ]
+        ]
+        ]
+    \end{forest}
+\end{landscape}
+
+\subsection{Приложение 3}\label{res3}
+\begin{forest}
+    for tree={
+    math content,
+    grow=north,
+    l=2cm
+    }
+    [nill
+    [{a = bs}]
+    [{a \neq bs}
+    [{x \neq y \lor y = x}, edge label={node[midway,right] {$|^{x\ y}_{a\ bs}$}}]
+    [{bs \neq a}
+    [{a \neq b}]
+    [{bs \neq z \lor z = b}, , edge label={node[midway,right] {$|^{z}_{a}$}}
+    [{x \neq y \lor y = x}, edge label={node[midway,right] {$|^{x\ y}_{b\ z}$}}]
+    [{b = z \lor bs \neq z}
+    [{x = y \lor y = z \lor x \neq z}, edge label={node[midway,right] {$|^{x\ \ y}_{bs\ b}$}}]
+    [{bs \neq b}
+    [{a \neq b}]
+    [{bs \neq z \lor a = z}, edge label={node[midway,right] {$|^{z}_{b}$}}
+    [{a = bs}]
+    [{x \neq y \lor y \neq z \lor x = z}, edge label={node[midway,right] {$|^{x\ y}_{a\ bs}$}}]
+    ]
+    ]
+    ]
+    ]
+    ]
+    ]
+    ]
+\end{forest}
+
+\begin{landscape}
+    \subsection{Приложение 4}\label{res4}
+    \begin{forest}
+        for tree={
+        math content,
+        grow=north,
+        l=2cm,
+        scale=0.7
+        }
+        [nill
+        [{\gcd(c, b) \mid \gcd(b, a)}
+        [{\gcd(b, c) \mid b}]
+        [{\lnot (\gcd(c, b) \mid b) \lor (\gcd(c, b) \mid \gcd(b, a))}
+        [{\gcd(b, c) \mid a}
+        [{(a = bq + c)}]
+        [{(x \neq yq + c) \lor \gcd(y, c) \mid x}, edge label={node[midway,right] {$|^{x\ y}_{a\ b}$}}]
+        ]
+        [{\lnot (\gcd(x, y) \mid y) \lor \lnot (\gcd(x, y) \mid z) \lor (\gcd(x, y) \mid \gcd(y, z))}, edge label={node[midway,right] {$|^{x\ y\ z}_{c\ b\ a}$}}]
+        ]
+        ]
+        [{\lnot (\gcd(b, c) \mid \gcd(a, b))}
+        [{\gcd(a, b) \mid \gcd(b, c)}
+        [{(\gcd(a, b) \mid b)}]
+        [{\lnot (\gcd(a, b) \mid b) \lor (\gcd(a, b) \mid \gcd(b, c))}
+        [{\lnot (\gcd(x, y) \mid y) \lor \lnot (\gcd(x, y) \mid z) \lor (\gcd(x, y) \mid \gcd(y, z))}, edge label={node[midway,right] {$|^{x\ y\ z}_{a\ b\ c}$}}]
+        [{\gcd(a, b) \mid c}
+        [{(a = bq + c)}]
+        [{(x \neq yq + c) \lor \gcd(x, y) \mid c}, edge label={node[midway,right] {$|^{x\ y}_{a\ b}$}}]
+        ]
+        ]
+        ]
+        [{\lnot (\gcd(a, b) \mid \gcd(b, c)) \lor \lnot (\gcd(b, c) \mid \gcd(a, b))}
+        [{\lnot (x \mid y) \lor \lnot (y \mid x) \lor x = y}, edge label={node[midway,right] {$|^{x\ y}_{\gcd(a, b)\ \gcd(b, c)}$}}]
+        [{\gcd(a, b) \neq \gcd(b, c)}]
+        ]
+        ]
+        ]
+    \end{forest}
+\end{landscape}
+
+
+
+\end{document}
