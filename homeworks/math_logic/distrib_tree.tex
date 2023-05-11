@@ -1,0 +1,35 @@
+\documentclass[12pt, margin=1cm]{standalone}
+\input{preamble.tex}
+
+\begin{document}
+
+\begin{prooftree}
+    \hypo{\forall x \forall y (x(y+1) = xy + x)\ \forall x \forall y (x + (y + 1) = (x + y) +1) \ (t_1(t_2+v) = t_1 t_2 + t_1 v) &\vdash (k(v+(l+1) = k(l+1) + kv) \ A(u)}
+    \infer1[]{\forall x \forall y (x(y+1) = xy + x)\ \forall x \forall y (x + (y + 1) = (x + y) +1) \ (t_1(t_2+v) = t_1 t_2 + t_1 v) &\vdash (k((v+l)+1) = k(l+1) + kv) \ A(u)}
+    \infer1[]{\forall x \forall y (x(y+1) = xy + x)\ \forall x \forall y (x + (y + 1) = (x + y) +1) \ (t_1(t_2+v) = t_1 t_2 + t_1 v) &\vdash (k((l+v)+1) = kl + kv+k) \ A(u)}
+    \infer1[]{\forall x \forall y (x(y+1) = xy + x)\ \forall x \forall y (x + (y + 1) = (x + y) +1) \ (t_1(t_2+v) = t_1 t_2 + t_1 v) &\vdash (k(l+(v+1)) = kl + k(v+1)) \ A(u)}
+    \hypo{&\vdash \forall x \forall y (x(y+1) = xy + x)\ \forall x \forall y (x + (y + 1) = (x + y) +1)}
+    \infer2[cut]{t_1(t_2+v) = t_1 t_2 + t_1 v &\vdash (k(l+(v+1)) = kl + k(v+1)) \ A(u)}
+    \infer1[$(\forall \vdash)$]{\forall x \forall y (x(y+v) = xy + xv) &\vdash (k(l+(v+1)) = kl + k(v+1)) \ A(u)}
+    \infer1[$(\vdash \forall)$]{\forall x \forall y (x(y+v) = xy + xv) &\vdash \forall x \forall y (x(y+(v+1)) = xy + x(v+1)) \ A(u)}
+    \infer1[def]{A(v) &\vdash A(v+1)\ A(u)}
+    \infer1[$(\vdash \implies)$]{&\vdash (A(v) \implies A(v+1))\ A(u)}
+    \infer1[$(\vdash \forall)$]{&\vdash \forall z (A(z) \implies A(z+1))\ A(u)}
+    \hypo{t = t &\vdash vw = vw\ A(u)}
+    \infer1[]{\forall x (x = x) &\vdash (vw = vw)\ A(u)}
+    \hypo{\forall x(x+0 = x) \ \forall x (x\cdot 0 = 0) &\vdash \forall x (x = x)}
+    \infer2[cut]{\forall x(x+0 = x) \ \forall x (x\cdot 0 = 0) &\vdash (vw = vw)\ A(u)}
+    \infer1[]{\forall x(x+0 = x) \ \forall x (x\cdot 0 = 0) &\vdash (vw = vw + 0)\ A(u)}
+    \infer1[]{\forall x(x+0 = x) \ \forall x (x\cdot 0 = 0) &\vdash (v(w+0) = vw + v\cdot0)\ A(u)}
+    \hypo{&\vdash \forall x(x+0 = x) \ \forall x (x\cdot 0 = 0)}
+    \infer2[cut]{&\vdash (v(w+0) = vw + v\cdot0)\ A(u)}
+    \infer1[$(\vdash \forall)$]{&\vdash \forall x \forall y (x(y+0) = xy + x\cdot0)\ A(u)}
+    \infer1[def]{&\vdash A(0)\ A(u)}
+    \infer2[$(\vdash \land)$]{&\vdash (A(0) \land \forall z (A(z) \implies A(z+1)))\  A(u)}
+    \hypo{A(t) &\vdash A(u)}
+    \infer1[$(\forall \vdash)$]{\forall z A(z) &\vdash A(u)}
+    \infer2[$(\implies \vdash)$]{A(0) \land \forall z (A(z) \implies A(z+1)) \implies \forall z A(z) &\vdash A(u)}
+    \infer1[$(\vdash \forall)$]{A(0) \land \forall z (A(z) \implies A(z+1)) \implies \forall z A(z) &\vdash \forall z A(z)}
+\end{prooftree}
+
+\end{document}

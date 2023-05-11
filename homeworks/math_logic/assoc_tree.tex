@@ -1,0 +1,37 @@
+\documentclass[12pt, margin=1cm]{standalone}
+\input{preamble.tex}
+
+\begin{document}
+% \forall x \forall y ((xy)z = x(yz))
+\begin{prooftree}
+    \hypo{(t = t)\ ((t_1 t_2)v = t_1(t_2 v)) &\vdash B(u)\ (klv + kl = klv+kl))}
+    \infer1[]{\forall x (x = x)\ ((t_1 t_2)v = t_1(t_2 v)) &\vdash B(u)\ (klv + kl = klv+kl))}
+    \hypo{\forall x \forall y \forall z (x(y+z) = xy + xz) &\vdash \forall x (x = x)}
+    \infer2[cut]{\forall x \forall y \forall z (x(y+z) = xy + xz)\ ((t_1 t_2)v = t_1(t_2 v)) &\vdash B(u)\ (klv + kl = klv+kl))}
+    \infer1[]{\forall x \forall y \forall z (x(y+z) = xy + xz)\ ((t_1 t_2)v = t_1(t_2 v)) &\vdash B(u)\ (klv + kl = k(lv+l))}
+    \infer1[]{\forall x \forall y \forall z (x(y+z) = xy + xz)\ ((t_1 t_2)v = t_1(t_2 v)) &\vdash B(u)\ ((kl)(v+1) = k(l(v+1)))}
+    \hypo{&\vdash \forall x \forall y \forall z (x(y+z) = xy + xz)}
+    \infer2[cut]{(t_1 t_2)v = t_1(t_2 v) &\vdash B(u)\ ((kl)(v+1) = k(l(v+1)))}
+    \infer1[$(\forall \vdash)$]{\forall x \forall y ((xy)v = x(yv)) &\vdash B(u)\ ((kl)(v+1) = k(l(v+1)))}
+    \infer1[$(\vdash \forall)$]{\forall x \forall y ((xy)v = x(yv)) &\vdash B(u)\ \forall x \forall y ((xy)(v+1) = x(y(v+1)))}
+    \infer1[def]{B(v) &\vdash B(v+1)\ B(u)}
+    \infer1[$(\vdash \implies)$]{&\vdash (B(v) \implies B(v+1))\ B(u)}
+    \infer1[$(\vdash \forall)$]{&\vdash \forall z (B(z) \implies B(z+1))\ B(u)}
+    \hypo{t = t &\vdash B(u)\ (0 = 0)}
+    \infer1[]{\forall x (x = x) &\vdash B(u)\ (0 = 0)}
+    \hypo{\forall x (x = x) &\vdash \forall x (x \cdot 0 = 0)}
+    \infer2[cut]{\forall x (x \cdot 0 = 0) &\vdash B(u)\ (0 = 0)}
+    \infer1[]{\forall x (x \cdot 0 = 0) &\vdash B(u)\ (0 = v \cdot 0)}
+    \infer1[]{\forall x (x \cdot 0 = 0) &\vdash B(u)\ ((vw)\cdot 0 = v(w \cdot 0))}
+    \hypo{&\vdash \forall x (x \cdot 0 = 0)}
+    \infer2[cut]{&\vdash B(u)\ ((vw)\cdot 0 = v(w \cdot 0))}
+    \infer1[$(\vdash \forall)$]{&\vdash B(u)\ \forall x \forall y ((xy)\cdot 0 = x(y \cdot 0))}
+    \infer1[def]{&\vdash B(0)\ B(u)}
+    \infer2[$(\vdash \land)$]{&\vdash (B(0) \land \forall z (B(z) \implies B(z+1)))\  B(u)}
+    \hypo{B(t) &\vdash B(u)}
+    \infer1[$(\forall \vdash)$]{\forall z B(z) &\vdash B(u)}
+    \infer2[$(\implies \vdash)$]{B(0) \land \forall z (B(z) \implies B(z+1)) \implies \forall z B(z) &\vdash B(u)}
+    \infer1[$(\vdash \forall)$]{B(0) \land \forall z (B(z) \implies B(z+1)) \implies \forall z B(z) &\vdash \forall z B(z)}
+\end{prooftree}
+
+\end{document}

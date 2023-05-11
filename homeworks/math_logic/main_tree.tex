@@ -1,0 +1,69 @@
+% \documentclass[10pt, a4paper, oneside, landscape]{memoir}
+\documentclass[12pt, margin=0.5cm, multi=prooftree]{standalone}
+\input{preamble.tex}
+
+\title{Доказательство теоремы \textbf{2, b, \S 2}}
+\author{Пономарев Николай, 244 группа}
+\date{}
+
+
+
+\begin{document}
+
+\begin{prooftree}
+    \hypo{}
+    \infer1[]{u = wv + r &\vdash s \div u \land s \div v \implies s \div r}
+
+    \hypo{}
+    \infer1[]{u = wv + r &\vdash s \div v \land s \div r \implies s \div u}
+    \infer2[$(\vdash \land)$]{u = wv + r &\vdash (s \div u \land s \div v \implies s \div r) \land (s \div v \land s \div r \implies s \div u)}
+    % s не входит свободно в заключение, s != u,v,w,r
+    \infer[left label = (**)]1[$(\vdash \forall)$]{u = wv + r &\vdash \forall z ((z \div u \land z \div v \implies z \div r) \land (z \div v \land z \div r \implies z \div u))}
+    \infer1[$(\vdash \implies)$]{&\vdash u = wv + r \implies \forall z ((z \div u \land z \div v \implies z \div r) \land (z \div v \land z \div r \implies z \div u))}
+    % u, v, w, r -- не входят свободно в заключение правила!
+    \infer[left label = (*)]1[$(\vdash \forall)$]{&\vdash \forall x \forall y \forall p \forall q (x = py + q \implies \forall z ((z \div x \land z \div y \implies z \div q) \land (z \div y \land z \div q \implies z \div x)))}
+\end{prooftree}
+
+\begin{prooftree}
+    \hypo{4}
+    % \hypo{&\vdash \forall w \forall x \forall y \forall z (z \div x \land z \div y \land x = y + w \implies z \mid w)}
+    \hypo{(5)}
+    \infer1[]{(s \div v) \  (s \div r) \ (u = wv + r) &\vdash (s \div u)\ (t_4 \div t_2)}
+    \hypo{(6)}
+    \infer1[]{(s \div v) \  (s \div r) \ (u = wv + r) &\vdash (s \div u)\ (t_4 \div t_3)}
+    \infer2[$(\vdash \land)$]{(s \div v) \  (s \div r) \ (u = wv + r) &\vdash (s \div u)\ (t_4 \div t_2 \land t_4 \div t_3)}
+    \hypo{(7)}
+    \infer1[]{(s \div v) \  (s \div r) \ (u = wv + r) &\vdash (s \div u)\ (t_2 = t_3 + t_1)}
+    \infer2[$(\vdash \land)$]{(s \div v) \  (s \div r) \ (u = wv + r) &\vdash (s \div u)\ (t_4 \div t_2 \land t_4 \div t_3 \land t_2 = t_3 + t_1)}
+    \hypo{(8)}
+    \infer1[]{(t_4 \mid t_1)\ (s \div v) \  (s \div r) \ (u = wv + r) &\vdash s \div u}
+    \infer2[$(\implies \vdash)$]{(t_4 \div t_2 \land t_4 \div t_3 \land t_2 = t_3 + t_1 \implies t_4 \mid t_1)\ (s \div v) \  (s \div r) \ (u = wv + r) &\vdash s \div u}
+    \infer1[$(\forall \vdash)$]{\forall w \forall x \forall y \forall z (z \div x \land z \div y \land x = y + w \implies z \mid w)\ (s \div v) \  (s \div r) \ (u = wv + r) &\vdash s \div u}
+    \infer2[cut]{(s \div v) \  (s \div r) \ (u = wv + r) &\vdash s \div u}
+    \infer1[$(\land \vdash)$]{(s \div v \land s \div r) \ (u = wv + r) &\vdash s \div u}
+    \infer1[$(\vdash \implies)$]{u = wv + r &\vdash s \div v \land s \div r \implies s \div u}
+    \infer1[]{}
+\end{prooftree}
+
+\begin{prooftree}
+    \hypo{4}
+    % \hypo{&\vdash \forall w \forall x \forall y \forall z (z \div x \land z \div y \land x = y + w \implies z \mid w)}
+    \hypo{(1)}
+    \infer1[]{(s \div u) \ (s \div v)\ (u = wv + r) &\vdash (s \div r)\ (t_4 \div t_2)}
+    \hypo{(2)}
+    \infer1[]{(s \div u) \ (s \div v)\ (u = wv + r) &\vdash (s \div r)\ (t_4 \div t_3)}
+    \infer2[$(\vdash \land)$]{(s \div u) \ (s \div v)\ (u = wv + r) &\vdash (s \div r)\ (t_4 \div t_2 \land t_4 \div t_3)}
+    \hypo{(3)}
+    \infer1[]{(s \div u) \ (s \div v)\ (u = wv + r) &\vdash (s \div r)\ (t_2 = t_3 + t_1)}
+    \infer2[$(\vdash \land)$]{(s \div u) \ (s \div v)\ (u = wv + r) &\vdash (s \div r)\ (t_4 \div t_2 \land t_4 \div t_3 \land t_2 = t_3 + t_1)}
+    \hypo{(4)}
+    \infer1[]{(t_4 \mid t_1)\ (s \div u) \ (s \div v)\ (u = wv + r) &\vdash s \div r}
+    \infer2[$(\implies \vdash)$]{(t_4 \div t_2 \land t_4 \div t_3 \land t_2 = t_3 + t_1 \implies t_4 \mid t_1)\ (s \div u) \ (s \div v)\ (u = wv + r) &\vdash s \div r}
+    \infer1[$(\forall \vdash)$]{\forall w \forall x \forall y \forall z (z \div x \land z \div y \land x = y + w \implies z \mid w)\ (s \div u) \ (s \div v)\ (u = wv + r) &\vdash s \div r}
+    \infer2[cut]{(s \div u) \ (s \div v)\ (u = wv + r) &\vdash s \div r}
+    \infer1[$(\land \vdash)$]{(s \div u \land s \div v)\ (u = wv + r) &\vdash s \div r}
+    \infer1[$(\vdash \implies)$]{u = wv + r &\vdash s \div u \land s \div v \implies s \div r}
+
+\end{prooftree}
+
+\end{document}

@@ -103,9 +103,11 @@
 \renewenvironment{proof}[1][\proofname]{\begin{proofReplace}}{\end{proofReplace}}
 % \declaretheorem[name=Доказательство, numbered=no, style=myProofStyleWithFrame]{longProof}
 
-%%% Memoir settings
-\chapterstyle{ger}
-\setlength{\headheight}{2\baselineskip}
+\NewDocumentCommand{\FA}{}{\textbf{FA}}
+\RenewDocumentCommand{\land}{}{\mathbin{\&}}
+\RenewDocumentCommand{\implies}{}{\rightarrow}
+\AtBeginDocument{\RenewDocumentCommand{\div}{}{\mid}}
+\usepackage{ebproof}
 
 %%% HyperRef
 \usepackage{hyperref}
