@@ -1,0 +1,142 @@
+\documentclass[aspectratio=169]{beamer}
+\usepackage{fontspec}
+\setmainfont{Yanone Kaffeesatz}
+\setsansfont{Noto Sans}
+\setmonofont{Fira Code}
+%%% Fonts and language setup.
+\usepackage{polyglossia}
+\usepackage[autostyle]{csquotes}
+%% Math
+\usepackage{amsmath, amsfonts, amssymb, amsthm, mathtools} % Advanced math tools.
+\usepackage{unicode-math} % Allow TTF and OTF fonts in math and allow direct typing unicode math characters.
+\unimathsetup{
+    warnings-off={
+            mathtools-colon,
+            mathtools-overbracket
+        }
+}
+\setmathfont{Fira Math}
+\newfontfamily{\cyrillicfont}{Fira Math}
+
+
+\usetheme{Rochester}
+\usecolortheme[style=light]{Nord}
+\usefonttheme{Nord}
+\setbeamertemplate{navigation symbols}{}%remove navigation symbols
+
+
+\usepackage{minted}
+\usemintedstyle{catppuccin-latte}
+
+\title{Инфраструктура сборки F\#}
+\author{Николай Пономарев}
+\date{}
+
+
+%%% Polyglossia setup after (nearly) everything as described in documentation.
+\setdefaultlanguage{russian}
+\setotherlanguage{english}
+
+\begin{document}
+
+\begin{frame}
+    \titlepage
+\end{frame}
+
+\begin{frame}
+    \frametitle{FAKE}
+
+    FAKE\footnote{\href{https://fake.build/index.html}{Официальный сайт}}~%
+    \uncover<2->{
+        (F\# Make)~--- система автоматизации сборки и релиза приложений.
+
+        Целью проекта является замена \enquote{устаревших} скриптов на bash или powershell, скриптами на F\#.
+
+        Способы использования FAKE:
+        \begin{itemize}
+            \item Уменьшение количества зависимостей в CI/CD
+            \item Создание воспроизводимых и тестируемых скриптов
+            \item Замена скриптов написанных на bash/powershell
+            \item Автоматизация ручных действий
+        \end{itemize}
+    }
+\end{frame}
+
+\begin{frame}
+    \frametitle{Использование FAKE}
+    FAKE можно запускать несколькими способами:
+    \begin{itemize}
+        \item FAKE runner
+              \begin{itemize}
+                  \item По сути заменяет MSBuild и устанавливается как отдельное приложение
+              \end{itemize}
+        \item F\# interactive (FSI)
+              \begin{itemize}
+                  \item Выполняется как обычный F\# скрипт
+              \end{itemize}
+        \item Использование готового проекта
+              \begin{itemize}
+                  \item MiniScaffold
+                  \item SAFE-Dojo
+              \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Пример использования FAKE}
+    \begin{minted}[breaklines,fontsize=\small]{fsharp}
+#r "paket:
+nuget Fake.Core.Target //"
+open Fake.Core
+// *** Define Targets ***
+Target.create "Clean" (fun _ -> Trace.log " --- Cleaning stuff --- ")
+Target.create "Build" (fun _ -> Trace.log " --- Building the app --- ")
+Target.create "Deploy" (fun _ -> Trace.log " --- Deploying app --- ")
+open Fake.Core.TargetOperators
+// *** Define Dependencies ***
+"Clean" ==> "Build" ==> "Deploy"
+// *** Start Build ***
+Target.runOrDefault "Deploy"
+    \end{minted}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Paket}
+    Paket\footnote{\href{https://fsprojects.github.io/Paket/index.html}{Официальный сайт}}~--- замена NuGet из мира F\#
+
+    Зачем оно надо:
+    \begin{itemize}
+        \item Правильная работа с транзитивными зависимостями
+              \begin{itemize}
+                  \item NuGet не различает транзитивные и прямые зависимости
+                  \item NuGet выбирает версии не самым адекватным образом
+              \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{MiniScaffold}
+    MiniScaffold\footnote{\href{https://github.com/TheAngryByrd/MiniScaffold}{Репозиторий}}~--- готовый шаблон проекта для F\#.
+
+    \begin{minipage}{0.45\linewidth}
+        Зачем это надо:
+        \begin{itemize}
+            \item Уже готовая структура проекта
+            \item Тщательно подобранные библиотеки
+            \item Готовые настройки репозитория
+            \item Инфраструктура, заточенная под F\#
+        \end{itemize}
+    \end{minipage}
+    \begin{minipage}{0.45\linewidth}
+        Что включено:
+        \begin{itemize}
+            \item Автоматизация сборки через FAKE
+            \item Управление пакетами через Paket
+            \item Модульное тестирование и оценка покрытия с помощью Expecto/Altcover
+            \item Форматирование кода с помощью Fantomas
+        \end{itemize}
+    \end{minipage}
+
+
+\end{frame}
+\end{document}
