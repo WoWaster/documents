@@ -54,5 +54,12 @@
         "-c",
         "%DIR%/",
         "%TMPFILE%"
+    ],
+    "todohighlight.keywords": [
+        {
+            // TODO:
+            "text": "\\remark",
+            "backgroundColor": "DarkOrchid"
+        }
     ]
 }

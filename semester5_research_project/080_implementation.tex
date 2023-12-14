@@ -3,16 +3,109 @@
 
 \section{Реализация}
 
-\remark{Здесь и далее я пока сдался писать нормальный текст}
+В данном разделе описывается процесс компиляции приложений, с различными системами сборки, на примерах проектов с открытым исходным кодом.
 
-\remark{Перетащить все \foreignquote{english}{TODO:} ремарки из обзора сюда}
+\remark{Считаем, что в системе есть тулчейн из репозиторией, qemu с binfmt.}
+% TODO: ?
+% \subsection{! (Make)}
 
-\remark{Можно рассказать как делать sysroot через debootstrap}
+\subsection{Libusb (Autotools)}
 
-\remark{Можно показать докер или чрут (хотя наверное это глупо), НО у меня так где-то валяется набросок для рантайма}
+\libusb{}\footnote{\url{https://github.com/libusb/libusb}}~--- небольшая библиотека, предоставляющая универсальный API для доступа к USB устройствам на различных операционных системах.
+В качестве системы сборки использует \autotools{}.
 
-\remark{Можно показать конфиг ядра для VF2 для докера}
+Для сборки потребуется создать sysroot c необходимыми зависимостями.
+Для его создания будем использовать утилиту \debootstrap{}, которая умеет создавать sysroot \debian{}-подобных дистрибутивов.
 
-\remark{Можно что-нибудь показать с Jenkins}
+Для удобства будем считать, что путь к sysroot хранится в переменной среды \sysrootPath{}, тогда sysroot для сборки \libusb{} можно создать командой
+\begin{minted}[breaklines]{console}
+# debootstrap --arch=riscv64 --include=libudev-dev,pkg-config,umockdev,libumockdev-dev unstable $SYSROOT_PATH http://ftp.debian.org/debian
+\end{minted}
+Флаг \texttt{--arch} указывает на архитектуру создаваемого sysroot, флаг \texttt{--include} позволяет указать необходимые пакеты, которые необходимо установить, помимо базовой системы.
+После этого передается кодовое название версии дистрибутива, в данном случае используется \debian{} \textsc{Unstable}, так как текущая стабильная версия~--- \textsc{Bookworm}~--- не поддерживает архитектуру \riscv{}.
+Последними двумя аргументами являются путь, где будет создан sysroot, и ссылка на зеркало, с которого будут скачиваться пакеты.
 
-\remark{Можно примеры тулчейн файлов для CMake и Meson, а также personality для pkgconf}
+Далее для сборки достаточно выполнить:
+\begin{minted}[breaklines]{console}
+$ ./bootstrap.sh
+$ mkdir build && cd build
+$ CC="riscv64-linux-gnu-gcc --sysroot=$SYSROOT_PATH" ../configure --enable-examples-build --enable-tests-build --enable-udev --host=riscv64-linux-gnu
+$ make
+\end{minted}
+
+Флаг \texttt{--host} указывает triple для кросс-компиляции, а для передачи sysroot переопределяется переменная окружения \texttt{CC}.
+В данном проекте файл \texttt{configure} поддерживает флаг в \texttt{--with-sysroot}, но, к сожалению, он ничего не делает.
+
+Другим способом передать путь к sysroot будет добавление его непосредственно в переменную \texttt{CFLAGS}:
+\begin{minted}[breaklines]{console}
+$ CFLAGS="--sysroot=$SYSROOT_PATH" ../configure --enable-examples-build --enable-tests-build --enable-udev --host=riscv64-linux-gnu
+\end{minted}
+
+\subsection{SingleApplication (CMake)}
+
+\singleapp{}\footnote{\url{https://github.com/itay-grudev/SingleApplication/}}~--- компонент для \qt{}, позволяющий создавать приложения, у которых одновременно может запущен только один экземпляр.
+
+Проект поддерживает сборку как с помощью \qmake{}, и с помощью \cmake{}.
+В данном разделе рассмотрим сборку с помощью второго.
+
+Для кросс-компиляции с помощью \cmake{} необходимо создать toolchain файл\footnote{\url{https://cmake.org/cmake/help/book/mastering-cmake/chapter/Cross\%20Compiling\%20With\%20CMake.html}} примерно такого содержания
+
+\remark{И тут всё сломалось...}
+
+\remark{Пример тулчейн файла + фикс moc}
+
+\subsection{Trik Runtime (QMake)}
+
+\remark{Docker + chroot}
+
+\subsection{Umockdev (Meson)}
+
+\remark{Пример тулчейн файла для Meson + personality для pkgconf}
+
+\subsection{Trik Runtime (Jenkins)}
+
+\remark{Jenkins + конфиг ядра для VF2 для докера }
+
+% \subsection{GitLab}
+
+% Make
+% При необходимости передачи sysroot, он может быть дописан к пути компилятора, например
+% \begin{minted}[breaklines]{console}
+% CC="riscv64-linux-gnu-gcc --sysroot=/sysroot" make ...
+% \end{minted}
+% либо к аргументам компилятора, например
+% \begin{minted}[breaklines]{console}
+% CFLAGS="--sysroot=/sysroot" make ...
+% \end{minted}
+
+% Meson
+% Выяснить эти проще всего путем выполнения chroot в sysroot и исполнения команды
+% \begin{minted}[breaklines]{console}
+% pkgconf --dump-personality
+% \end{minted}
+
+% GitLab
+% Раннер гитлаба написан на Go, и существует собранный под RISC-V, но пока его можно найти только в их артефактах сборки.
+% На LPi4A не проверял, т.к. наша версия имеет мало места на eMMC и докеру будет неприятно, а внешний SSD периодически отваливается.
+% На VisionFive2 потребовалась пересборка ядра, спасибо вики Gentoo, что рассказали что нужно включить в конфиге ядра.
+% Даже их официальная инструкция говорит о том, что требуется пересборка ядра.
+% \remark{(TODO: аккуратнее прокликать menuconfig, потому что я делал это поздно ночью, мог включить что-то ненужное)}
+% Кроме того, с гитлабом есть проблема: синхронизация из \GitHub{} в GitLab требует GitLab Premium, наверное можно взять self-hosted, но это большая боль как по мне.
+% Есть ещё Action, который синкает репо ручками, тоже кажется костылём.
+
+% Jenkins
+% Java, которая умеет в риск, всё супер. В дебиановском репе пакеты под архитектуру All. На VisionFive2 по умолчанию старые репозитории, и он не стартует. Если вписать http://ftp.ru.debian.org/debian/ и установить более новую Java, то всё становится хорошо
+% \begin{minted}{console}
+% # update-alternatives --set iptables /usr/sbin/iptables-legacy
+% # update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy
+% \end{minted}
+
+% docker-pipelines~--- плагин чтобы использовать docker
+% \begin{minted}{console}
+% # usermod -aG docker jenkins
+% \end{minted}
+
+% И серверу и агенту на одной платке тесно.
+% Надо разносить, но наверное для компании, если у них уже Jenkins, норм.
+
+% Надо ещё проверить как поллить ГХ на тему коммитов
