@@ -5,9 +5,7 @@
 
 В данном разделе описывается процесс компиляции приложений, с различными системами сборки, на примерах проектов с открытым исходным кодом.
 
-\remark{Считаем, что в системе есть тулчейн из репозиторией, qemu с binfmt.}
-% TODO: ?
-% \subsection{! (Make)}
+\remark{Считаем, что в системе есть тулчейн из репозиторией, \qemu{} с \textsc{binfmt}.}
 
 \subsection{Libusb (Autotools)}
 
@@ -45,38 +43,48 @@ $ CFLAGS="--sysroot=$SYSROOT_PATH" ../configure --enable-examples-build --enable
 
 \singleapp{}\footnote{\url{https://github.com/itay-grudev/SingleApplication/}}~--- компонент для \qt{}, позволяющий создавать приложения, у которых одновременно может запущен только один экземпляр.
 
-Проект поддерживает сборку как с помощью \qmake{}, и с помощью \cmake{}.
-В данном разделе рассмотрим сборку с помощью второго.
+Проект поддерживает сборку как с помощью \qmake{}, так и с помощью \cmake{}.
+В данном разделе рассмотрим сборку с помощью второго, и собирать будем пример под названием \texttt{calculator}.
+
+Для поддержки \qt{} нам потребуется sysroot со следующими зависимостями \remark{тут должен быть список зависимостей для \debian{}, либо прямо команда \debootstrap{}.}
 
 Для кросс-компиляции с помощью \cmake{} необходимо создать toolchain файл\footnote{\url{https://cmake.org/cmake/help/book/mastering-cmake/chapter/Cross\%20Compiling\%20With\%20CMake.html}} примерно такого содержания
 
-\remark{И тут всё сломалось...}
+\begin{minted}[breaklines]{cmake}
+set(CMAKE_SYSTEM_NAME Linux)
+set(CMAKE_SYSTEM_PROCESSOR riscv64)
 
-\remark{Пример тулчейн файла + фикс moc}
+set(CMAKE_SYSROOT $ENV{SYSROOT_PATH})
+set(CMAKE_C_COMPILER /usr/bin/riscv64-linux-gnu-gcc)
+set(CMAKE_CXX_COMPILER /usr/bin/riscv64-linux-gnu-g++)
+
+set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
+\end{minted}
+
+Затем при конфигурации проекта нужно указать toolchain с помощью флага \texttt{-DCMAKE\_TOOLCHAIN\_FILE}, например так
+\begin{minted}[breaklines]{console}
+$ cmake -B build-riscv -G Ninja -DCMAKE_TOOLCHAIN_FILE=riscv64.cmake
+$ cmake --build build-riscv
+\end{minted}
+
+\remark{Требуется починка moc, при этом требуется менять CMakeLists.txt либо запускать moc из sysroot под QEMU}
 
 \subsection{Trik Runtime (QMake)}
 
-\remark{Docker + chroot}
+\remark{Тут должен быть рассказ про нативную сборку в эмуляторе двумя способами: в Docker контейнере и chroot}
 
 \subsection{Umockdev (Meson)}
 
-\remark{Пример тулчейн файла для Meson + personality для pkgconf}
+\remark{Тут должен быть рассказ про использование Meson с Vala, с примером тулчейн файла и personality файла для pkgconf}
 
 \subsection{Trik Runtime (Jenkins)}
 
-\remark{Jenkins + конфиг ядра для VF2 для докера }
+\remark{Тут дожен быть рассказ про настройку Jenkins на VisionFive2, про пересборку ядра с поддержкой Docker, куда-то стоит залить конфиг ядра.}
 
 % \subsection{GitLab}
-
-% Make
-% При необходимости передачи sysroot, он может быть дописан к пути компилятора, например
-% \begin{minted}[breaklines]{console}
-% CC="riscv64-linux-gnu-gcc --sysroot=/sysroot" make ...
-% \end{minted}
-% либо к аргументам компилятора, например
-% \begin{minted}[breaklines]{console}
-% CFLAGS="--sysroot=/sysroot" make ...
-% \end{minted}
 
 % Meson
 % Выяснить эти проще всего путем выполнения chroot в sysroot и исполнения команды
