@@ -1,0 +1,159 @@
+% !TeX spellcheck = ru_RU
+% !TEX root = vkr.tex
+
+\section{Тестирование}
+
+В данном разделе приводится краткое описание процесса компиляции приложений, с различными системами сборки, на примерах проектов с открытым исходным кодом, а также выявленных трудностей в процессе сборки.
+
+Подробные инструкции могут быть найдены в репозитории.
+
+\subsection{Libusb (Autotools)}
+
+\libusb{}\footnote{\url{https://github.com/libusb/libusb}}~--- небольшая библиотека, предоставляющая универсальный API для доступа к USB устройствам на различных операционных системах.
+В качестве системы сборки использует \autotools{}.
+
+Система сборки \autotools{} для включения кросс-компиляции требует указания флага \texttt{--host} скрипту \texttt{configure}, значением которого является необходимый triple.
+
+В некоторых версиях \autotools{} поддерживает использование sysroot с помощью флага \texttt{--with-sysroot}, тем не менее в данном проекте он не работает.
+Для решений этой проблемы можно переопределить переменные окружения \texttt{CC}~(\texttt{CXX}) или \texttt{CFLAGS}~(\texttt{CXXFLAGS}) и \texttt{LDFLAGS}, добавив туда флаг \texttt{--sysroot}.
+
+% Для сборки потребуется создать sysroot c необходимыми зависимостями.
+% Для его создания будем использовать утилиту \debootstrap{}, которая умеет создавать sysroot \debian{}-подобных дистрибутивов.
+
+% Для удобства будем считать, что путь к sysroot хранится в переменной среды \sysrootPath{}, тогда sysroot для сборки \libusb{} можно создать командой
+% \begin{minted}[breaklines]{console}
+% # debootstrap --arch=riscv64 --include=libudev-dev,pkg-config,umockdev,libumockdev-dev unstable $SYSROOT_PATH http://ftp.debian.org/debian
+% \end{minted}
+% Флаг \texttt{--arch} указывает на архитектуру создаваемого sysroot, флаг \texttt{--include} позволяет указать необходимые пакеты, которые необходимо установить, помимо базовой системы.
+% После этого передается кодовое название версии дистрибутива, в данном случае используется \debian{} \textsc{Unstable}, так как текущая стабильная версия~--- \textsc{Bookworm}~--- не поддерживает архитектуру \riscv{}.
+% Последними двумя аргументами являются путь, где будет создан sysroot, и ссылка на зеркало, с которого будут скачиваться пакеты.
+
+% Далее для сборки достаточно выполнить:
+% \begin{minted}[breaklines]{console}
+% $ ./bootstrap.sh
+% $ mkdir build && cd build
+% $ CC="riscv64-linux-gnu-gcc --sysroot=$SYSROOT_PATH" ../configure --enable-examples-build --enable-tests-build --enable-udev --host=riscv64-linux-gnu
+% $ make
+% \end{minted}
+
+% Флаг \texttt{--host} указывает triple для кросс-компиляции, а для передачи sysroot переопределяется переменная окружения \texttt{CC}.
+% В данном проекте файл \texttt{configure} поддерживает флаг в \texttt{--with-sysroot}, но, к сожалению, он ничего не делает.
+
+% Другим способом передать путь к sysroot будет добавление его непосредственно в переменную \texttt{CFLAGS}:
+% \begin{minted}[breaklines]{console}
+% $ CFLAGS="--sysroot=$SYSROOT_PATH" ../configure --enable-examples-build --enable-tests-build --enable-udev --host=riscv64-linux-gnu
+% \end{minted}
+
+\subsection{SingleApplication (CMake)}
+
+\singleapp{}\footnote{\url{https://github.com/itay-grudev/SingleApplication/}}~--- компонент для \qt{}, позволяющий создавать приложения, у которых одновременно может запущен только один экземпляр.
+Поддерживает как \qmake{}, так и \cmake{}, в данном разделе рассмотрим последний.
+
+\cmake{} использует собственную терминологию при кросс-сборке.
+Так, под target платформой в \cmake{} подразумевается то же самое, что и под host платформой в \ref{subsec:defs}.
+Для описания целевой платформы используются специальные toolchain файлы\footnote{\url{https://cmake.org/cmake/help/book/mastering-cmake/chapter/Cross\%20Compiling\%20With\%20CMake.html}}.
+
+Кросс-компиляция проектов, использующих \qt{}, с помощью \cmake{} происходит достаточно просто, тем не менее не без проблем.
+По умолчанию \cmake{} запускает собственные утилиты \qt{}, такие как \textsc{moc}~(\textsc{Meta-Object Compiler}), из предоставленного ему sysroot.
+В качестве решения можно указать путь к нативному исполняемому файлу\footnote{\url{https://stackoverflow.com/questions/39075040/cmake-cmake-automoc-in-cross-compilation}}, либо позволить \cmake{} запускать исполняемые файлы другой архитектуры с помощью эмулятора.
+Первое решение требует изменения \texttt{CMakeLists.txt} собираемого проекта, так как требуется вмешательство на довольно раннем этапе работы \cmake{}.
+
+% В данном разделе рассмотрим сборку с помощью второго, и собирать будем пример под названием \texttt{calculator}.
+
+% Для поддержки \qt{} нам потребуется sysroot со следующими зависимостями \remark{тут должен быть список зависимостей для \debian{}, либо прямо команда \debootstrap{}.}
+
+% Для кросс-компиляции с помощью \cmake{} необходимо создать toolchain файл\footnote{\url{https://cmake.org/cmake/help/book/mastering-cmake/chapter/Cross\%20Compiling\%20With\%20CMake.html}} примерно такого содержания
+
+% \begin{minted}[breaklines]{cmake}
+% set(CMAKE_SYSTEM_NAME Linux)
+% set(CMAKE_SYSTEM_PROCESSOR riscv64)
+
+% set(CMAKE_SYSROOT $ENV{SYSROOT_PATH})
+% set(CMAKE_C_COMPILER /usr/bin/riscv64-linux-gnu-gcc)
+% set(CMAKE_CXX_COMPILER /usr/bin/riscv64-linux-gnu-g++)
+
+% set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+% set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+% set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+% set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
+% \end{minted}
+
+% Затем при конфигурации проекта нужно указать toolchain с помощью флага \texttt{-DCMAKE\_TOOLCHAIN\_FILE}, например так
+% \begin{minted}[breaklines]{console}
+% $ cmake -B build-riscv -G Ninja -DCMAKE_TOOLCHAIN_FILE=riscv64.cmake
+% $ cmake --build build-riscv
+% \end{minted}
+
+\subsection{TRIK Runtime (QMake)}
+\label{subsec:qmake_runtime}
+
+\trik{}~--- среда исполнения робототехнического конструктора ТРИК.
+В качестве системы сборки используется \qmake{}.
+
+Вариант сборки \qt{} специально для кросс-сборки не рассматривался.
+
+Оба способа нативной сборки в эмуляторе требуют наличия \qemu{} в системе.
+Использование \docker{} может быть более простым способом, так как работа в нём не отличается от использования обычной системы.
+Тем не менее sysroot позволяет использовать гораздо больше дистрибутивов \linux{}, в отличие от \docker{}, где официальная поддержка образов для \riscv{} заявлена лишь у \debian{} и \textsc{Alpine}.
+
+\subsection{Umockdev (Meson)}
+
+\umockdev{}~--- библиотека, имитирующая устройства в ОС \linux{}.
+Используется для написания интеграционных тестов, например в \libusb{}.
+Написана на языке \textsc{Vala}, который компилируется в \textsc{C}, а затем уже в нативный код.
+Для сборки используется \meson{}.
+
+Несмотря на большие возможности для кросс-компиляции, документация \meson{} не всегда корректно описывает поля toolchain файла.
+Так например, поле \texttt{sys\_root} не влияет на флаги компилятора и путь к sysroot необходимо передавать самостоятельно\footnote{Данное поведение было замечено при использовании \meson{} v1.3.0 на \debian{} \textsc{Sid}.}.
+
+Для поиска зависимостей \meson{} использует pkg-config, в современных версиях \linux{} используется альтернативная его реализация~--- pkgconf.
+pkgconf поддерживает кросс-сборку с помощью специальных personality файлов с путями поиска.
+Для каждого sysroot потребуется создавать отдельный personality файл из-за использования абсолютных путей.
+Также проблемой может быть выяснение самих путей, так как в различных дистрибутивах используется разная структура файловой системы.
+
+\subsection{TRIK Runtime (Jenkins)}
+
+Для проверки работы \ci{} системы \jenkins{} была предпринята попытка выполнить с его помощью сборку проекта \trik{}.
+Запуск производился на одноплатном компьютере \textsc{StarFive VisionFive V2}.
+
+На прошивке от октября 2023 года было выявлено несколько проблем.
+Во-первых, по умолчанию используются замороженные зеркала за декабрь 2022 года, которые содержат старую версию \java{}, не поддерживаемую \jenkins{}.
+Для решения это проблемы необходимо использовать актуальные зеркала и установить новую версию \java{}\footnote{Тем не менее выполнять полное обновление системы разработчики прошивки не рекомендуют.}.
+
+Во-вторых, ядро \linux{} собрано в минималистичной конфигурации.
+В такой конфигурации не запускается \docker{}, необходимый для лучшей воспроизводимости сборок в \jenkins{}.
+Решением является пересборка ядра вручную с включением необходимых модулей\footnote{Такое решение предлагает официальная документация: \url{https://doc-en.rvspace.org/VisionFive2/AN_Docker/}.}.
+
+% \subsection{GitLab}
+
+% Meson
+% Выяснить эти проще всего путем выполнения chroot в sysroot и исполнения команды
+% \begin{minted}[breaklines]{console}
+% pkgconf --dump-personality
+% \end{minted}
+
+% GitLab
+% Раннер гитлаба написан на Go, и существует собранный под RISC-V, но пока его можно найти только в их артефактах сборки.
+% На LPi4A не проверял, т.к. наша версия имеет мало места на eMMC и докеру будет неприятно, а внешний SSD периодически отваливается.
+% На VisionFive2 потребовалась пересборка ядра, спасибо вики Gentoo, что рассказали что нужно включить в конфиге ядра.
+% Даже их официальная инструкция говорит о том, что требуется пересборка ядра.
+% \remark{(TODO: аккуратнее прокликать menuconfig, потому что я делал это поздно ночью, мог включить что-то ненужное)}
+% Кроме того, с гитлабом есть проблема: синхронизация из \GitHub{} в GitLab требует GitLab Premium, наверное можно взять self-hosted, но это большая боль как по мне.
+% Есть ещё Action, который синкает репо ручками, тоже кажется костылём.
+
+% Jenkins
+% Java, которая умеет в риск, всё супер. В дебиановском репе пакеты под архитектуру All. На VisionFive2 по умолчанию старые репозитории, и он не стартует. Если вписать http://ftp.ru.debian.org/debian/ и установить более новую Java, то всё становится хорошо
+% \begin{minted}{console}
+% # update-alternatives --set iptables /usr/sbin/iptables-legacy
+% # update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy
+% \end{minted}
+
+% docker-pipelines~--- плагин чтобы использовать docker
+% \begin{minted}{console}
+% # usermod -aG docker jenkins
+% \end{minted}
+
+% И серверу и агенту на одной платке тесно.
+% Надо разносить, но наверное для компании, если у них уже Jenkins, норм.
+
+% Надо ещё проверить как поллить ГХ на тему коммитов

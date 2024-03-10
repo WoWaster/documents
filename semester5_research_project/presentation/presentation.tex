@@ -1,0 +1,190 @@
+% \documentclass{beamer}
+%Для защит онлайн лучше использовать разрешение 16x9
+\documentclass[aspectratio=169]{beamer}
+
+\input{preamble.tex}
+
+% То, что в квадратных скобках, отображается внизу по центру каждого слайда.
+\title[Обзор инфраструктуры сборки]{Обзор инфраструктуры сборки проектов с открытым исходным кодом}
+
+% То, что в квадратных скобках, отображается в левом нижнем углу.
+\institute[СПбГУ]{}
+
+% То, что в квадратных скобках, отображается в левом нижнем углу.
+\author[Николай Пономарев]{Пономарев Николай Алексеевич, группа 21.Б10-мм}
+
+\begin{document}
+{
+\setbeamertemplate{footline}{}
+% Лого университета или организации, отображается в шапке титульного листа
+\begin{frame}
+	\includegraphics[width=1.4cm]{pictures/SPbGU_Logo.png}
+	\vspace{-35pt}
+	\hspace{-10pt}
+	\begin{center}
+		\begin{tabular}{c}
+			\scriptsize{Санкт-Петербургский государственный университет} \\
+			\scriptsize{Кафедра системного программирования}
+		\end{tabular}
+		\titlepage
+	\end{center}
+
+	\btVFill
+
+	{\scriptsize
+		% У научного руководителя должна быть указана научная степень
+		\textbf{Научный руководитель:} Я. А. Кириленко, старший преподаватель кафедры системного программирования
+	}
+	\begin{center}
+		\vspace{5pt}
+		\scriptsize{Санкт-Петербург\\
+			2024}
+	\end{center}
+
+\end{frame}
+}
+
+\begin{frame}[fragile]
+	\frametitle{Введение}
+	\begin{itemize}
+		\item На рынке всё больше устройств на архитектурах отличных от \amd{}, например \riscv{} или \arm{}
+		\item Нужно переносить используемые приложения, но сначала надо научиться собирать приложения на другой архитектуре и настраивать \ci{} для них
+		\item В основном изучаем проекты на \textsc{C/C++}
+	\end{itemize}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Постановка задачи}
+	\textbf{Целью} данной работы является изучение возможностей по созданию
+	инфраструктуры для сборки проектов с открытым исходным кодом.
+
+	\textbf{Задачи}:
+	\begin{enumerate}
+		\item Провести обзор видов сборки проектов на языках \textsc{C}/\textsc{C++}
+		\item Провести обзор поддержки нативной и кросс-сборки в системах сборки
+		\item Исследовать возможность настройки \ci{} на архитектурах, отличных от \amd{}
+		\item Протестировать изученные возможности систем сборки на реальных проектах
+		\item Описать процесс компиляции и настройки \ci{} на примере проектов с различными системами сборки
+	\end{enumerate}
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Виды сборки}
+
+	\begin{itemize}
+		\item Нативная сборка
+		      \begin{itemize}
+			      \item Сборка производится на целевой платформе
+			      \item Обычный способ сборки
+			      \item Требует оборудования на целевой архитектуре
+		      \end{itemize}
+		\item Кросс-сборка
+		      \begin{itemize}
+			      \item Целевая платформа отличается от платформы, на которой производится сборка
+			      \item Могут быть сложности с удовлетворением зависимостей
+			      \item Не во всех проектах есть поддержка
+		      \end{itemize}
+		\item Нативная сборка в эмуляторе
+		      \begin{itemize}
+			      \item Приложения считают, что они запущены на своей целевой платформе
+			      \item \qemu{} + \textsc{binfmt\_misc} позволяют не запускать виртуальную машину целиком
+			      \item Малая скорость исполнения
+		      \end{itemize}
+	\end{itemize}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Поддержка кросс-компиляции в системах сборки}
+
+	\begin{itemize}
+		\item Make
+		      \begin{itemize}
+			      \item При аккуратно написанном Makefile поддерживает кросс-компиляцию
+		      \end{itemize}
+		\item Autotools
+		      \begin{itemize}
+			      \item Поддерживает кросс-компиляцию из коробки
+			      \item Могут быть сложности с указанием зависимостей
+		      \end{itemize}
+		\item CMake
+		      \begin{itemize}
+			      \item Хорошая поддержка кросс-сборки
+			      \item Иногда требует правки сборочных скриптов
+		      \end{itemize}
+		\item QMake
+		      \begin{itemize}
+			      \item Требует сборки в специальном кросс режиме
+			      \item Можно использовать нативную сборку в эмуляторе
+		      \end{itemize}
+		\item Meson
+		      \begin{itemize}
+			      \item Большие возможности кросс-компиляции
+			      \item Плохая документация
+			      \item Сложности с поиском зависимостей с помощью pkg-config
+		      \end{itemize}
+	\end{itemize}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Поддержка в \ci{} системах}
+
+	\begin{itemize}
+		\item \GitHub{}
+		      \begin{itemize}
+			      \item В своём облаке поддерживает только \amd{}
+			      \item Self-hosted runner официально поддерживает \amd{} и \arm{}
+			      \item Self-hosted runner написан на \dotnet{}, проверить работу на \riscv{} невозможно
+		      \end{itemize}
+		\item \gitlab{}
+		      \begin{itemize}
+			      \item В своём облаке поддерживает только \amd{}
+			      \item Self-hosted runner поддерживает множество архитектур, в том числе \riscv{}
+		      \end{itemize}
+		\item \jenkins{}
+		      \begin{itemize}
+			      \item Написан на \java{}, которая поддерживает множество архитектур
+		      \end{itemize}
+	\end{itemize}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Тестирование}
+
+	\begin{itemize}
+		% \item Libusb (Autotools)
+		\item SingleApplication (CMake)
+		      \begin{itemize}
+			      \item \cmake{} пытается использовать утилиты \qt{} для целевой платформы
+		      \end{itemize}
+		      % \item TRIK Runtime (QMake)
+		      % \item Umockdev (Meson)
+		      % \begin{itemize}
+		      % 	\item
+		      % \end{itemize}
+		\item TRIK Runtime (Jenkins)
+		      \begin{itemize}
+			      \item Попытка запустить на StarFive VisionFive V2
+			      \item Потребовалась пересборка ядра
+			      \item На одной плате серверу и агенту \enquote{тесно}
+		      \end{itemize}
+	\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Результаты}
+	Полностью достигнуты следующие результаты:
+	\begin{enumerate}
+		\item Проведен обзор видов сборки проектов на языках \textsc{C}/\textsc{C++}
+		\item Проведен обзор поддержки нативной и кросс-сборки в системах сборки
+		\item Исследована возможность настройки \ci{} на архитектурах, отличных от \amd{}
+		\item Протестированы изученные возможности систем сборки на реальных проектах
+	\end{enumerate}
+	Частично достигнуты следующие результаты:
+	\begin{enumerate}
+		\item Описан процесс компиляции и настройки \ci{} на примере проектов с различными системами сборки
+	\end{enumerate}
+
+\end{frame}
+\end{document}

@@ -1,0 +1,75 @@
+%%% Обязательные пакеты
+%% Beamer
+\usepackage{beamerthemesplit}
+\usetheme{SPbGU}
+\beamertemplatenavigationsymbolsempty
+\usepackage{appendixnumberbeamer}
+
+%% Локализация
+\usepackage{fontspec}
+\setmainfont{CMU Serif}
+\setsansfont{CMU Sans Serif}
+\setmonofont{CMU Typewriter Text}
+%\setmonofont{Fira Code}[Contextuals=Alternate,Scale=0.9]
+%\setmonofont{Inconsolata}
+% \newfontfamily\cyrillicfont{CMU Serif}
+
+\usepackage{polyglossia}
+\setdefaultlanguage{russian}
+\setotherlanguage{english}
+\usepackage[autostyle]{csquotes} % Правильные кавычки в зависимости от языка
+
+%% Графика
+\usepackage{wrapfig} % Позволяет вставлять графику, обтекаемую текстом
+\usepackage{pdfpages} % Позволяет вставлять многостраничные pdf документы в текст
+
+%% Математика
+\usepackage{amsmath, amsfonts, amssymb, amsthm, mathtools} % "Адекватная" работа с математикой в LaTeX
+
+% Математические окружения с русским названием
+\newtheorem{rutheorem}{Теорема}
+\newtheorem{ruproof}{Доказательство}
+\newtheorem{rudefinition}{Определение}
+\newtheorem{rulemma}{Лемма}
+
+%%% Дополнительные пакеты. Используются в презентации, но могут быть отключены при необходимости
+\usepackage{tikz} % Мощный пакет для создание рисунков, однако может очень сильно замедлять компиляцию
+\usetikzlibrary{decorations.pathreplacing,calc,shapes,positioning,tikzmark}
+
+\usepackage{multirow} % Ячейка занимающая несколько строк в таблице
+
+%% Пакеты для оформления алгоритмов на псевдокоде
+\usepackage[noend]{algpseudocode}
+\usepackage{algorithm}
+\usepackage{algorithmicx}
+
+\usepackage{fancyvrb}
+
+\usepackage{xurl}
+\newcommand{\riscv}{\textsc{RISC-V}}
+\newcommand{\qemu}{\textsc{QEMU}}
+\newcommand{\remark}[1]{\textit{\small #1}}
+% \declaretheorem[name=Определение, numberwithin=section, style=definition]{definition}
+\newcommand{\ci}{\textsc{CI}}
+\newcommand{\amd}{\textsc{x86-64}}
+\newcommand{\arm}{\textsc{ARM}}
+\newcommand{\dotnet}{\textsc{.NET}}
+\newcommand{\gitlab}{\textsc{GitLab}}
+\newcommand{\power}{\textsc{PowerPC}}
+\newcommand{\jenkins}{\textsc{Jenkins}}
+\newcommand{\java}{\textsc{Java}}
+\newcommand{\libusb}{\textsc{Libusb}}
+\newcommand{\autotools}{\textsc{Autotools}}
+\newcommand{\debootstrap}{\textsc{debootstrap}}
+\newcommand{\debian}{\textsc{Debian}}
+\newcommand{\sysrootPath}{\texttt{\$SYSROOT\_PATH}}
+\newcommand{\linux}{\textsc{Linux}}
+\newcommand{\qt}{\textsc{Qt}}
+\newcommand{\cmake}{\textsc{CMake}}
+\newcommand{\qmake}{\textsc{QMake}}
+\newcommand{\singleapp}{\textsc{SingleApplication}}
+\newcommand{\trik}{\textsc{TRIK Runtime}}
+\newcommand{\umockdev}{\textsc{Umockdev}}
+\newcommand{\meson}{\textsc{Meson}}
+\newcommand{\docker}{\textsc{Docker}}
+\newcommand{\GitHub}{\textsc{GitHub}}
