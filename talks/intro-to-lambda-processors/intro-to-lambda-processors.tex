@@ -1,0 +1,782 @@
+\documentclass[aspectratio=169]{beamer}
+
+% Setup fonts.
+\usepackage{fontspec}
+\setmainfont{Yanone Kaffeesatz}
+\setsansfont{Noto Sans}
+\setmonofont{Fira Code}
+
+%%% Fonts and language setup.
+\usepackage[russian]{babel}
+
+%% Math
+\usepackage{amsmath, amsfonts, amsthm, mathtools} % Advanced math tools.
+\usepackage{amssymb}
+\usepackage{unicode-math} % Allow TTF and OTF fonts in math and allow direct typing unicode math characters.
+% \usepackage{euler-math}
+\unimathsetup{
+    warnings-off={
+            mathtools-colon,
+            mathtools-overbracket
+        }
+}
+\setmathfont{Fira Math}
+\setmathfont{Asana Math}[
+Scale = MatchUppercase,
+range = {\Coloneq}
+]
+\usepackage{csquotes}
+
+%%% Beamer
+\usetheme{Madrid}
+% \usetheme[style=light,footlineauthor,footlinevenue]{Nord}
+% \usetheme{Goettingen}
+\usecolortheme[style=light]{Nord}
+\usefonttheme{Nord}
+\setbeamertemplate{navigation symbols}{} %remove navigation symbols
+\setbeamertemplate{headline}{%
+    \begin{beamercolorbox}[ht=2.25ex,dp=3.75ex]{section in head/foot}
+        \insertnavigation{\paperwidth}
+    \end{beamercolorbox}%
+}%
+\useinnertheme{circles}
+
+%%% Misc
+\usepackage{simplebnf}
+
+\usepackage{tikz}
+\usetikzlibrary{positioning, graphs, graphdrawing}
+\usegdlibrary{trees, layered}
+
+
+%%% Code
+\usepackage[kpsewhich,newfloat]{minted}
+\usemintedstyle{catppuccin-latte}
+\SetupFloatingEnvironment{listing}{name=Листинг}
+
+\title{Введение в лямбда-процессоры}
+\author{Николай Пономарев}
+\institute[Матмех СПбГУ]{Математико-механический факультет СПбГУ}
+\date{18 марта 2024 г.}
+
+\usepackage{hyperref}
+
+\begin{document}
+\begin{frame}[plain,noframenumbering]
+    \maketitle
+\end{frame}
+
+\section{Введение}
+
+\begin{frame}
+    \frametitle{Самый главный слайд}
+
+    \begin{alertblock}{Дисклеймер}
+        Строгости изложения не будет!
+    \end{alertblock}
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{План}
+
+    \begin{block}{Главная цель}
+        Посмотреть на лямбда-процессоры взглядом системного программиста
+    \end{block}
+
+    По пути посмотрим на то
+    \begin{itemize}
+        \item Как работает \enquote{обычный} процессор
+        \item Откуда вырастает идея лямбда-процессора
+        \item \enquote{Ассемблеры} для лямбда-процессора
+              \begin{itemize}
+                  \item Их много!
+              \end{itemize}
+        \item Что люди в мире уже делали
+    \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{Мотивировка}
+    \begin{itemize}
+        \item Будем считать, что ЯП делятся только на две парадигмы:
+              \begin{itemize}
+                  \item Императивную
+                  \item Функциональную
+              \end{itemize}
+        \item На самом деле больше, иначе непонятно куда девать \textsc{Prolog, APL, miniKanren} и иже с ними
+        \item Но разберемся как исполнять программы с точки зрения процессора только в этих двух парадигмах
+    \end{itemize}
+\end{frame}
+
+\section{Императивные языки}
+
+\begin{frame}
+    \frametitle{Исполнение императивных языков I}
+    \begin{itemize}
+        \item Про языки с виртуальной машиной говорить сложно
+        \item Возьмём \enquote{простой} язык~--- Си~--- и посмотрим как его будет исполнять процессор
+    \end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Исполнение императивных языков II}
+    \begin{columns}
+        \begin{column}{0.5\linewidth}
+            \begin{listing}[H]
+                \inputminted[firstline=3, fontsize=\footnotesize]{c}{figures/fac.c}
+                \caption{Факториал на языке Си}
+            \end{listing}
+        \end{column}
+        \begin{column}{0.5\linewidth}
+            \begin{listing}[H]
+                \inputminted[fontsize=\scriptsize]{asm}{figures/fac.S}
+                \caption{Факториал на Ассемблере RISC-V}
+            \end{listing}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Исполнение императивных языков III}
+    \begin{itemize}
+        \item Дальше только машинные коды, но нам ни к чему
+        \item<+-> Исполнять такой код очень просто!
+        \item<+-| alert@+> \textbf{А что будет с функциональными языками?}
+    \end{itemize}
+\end{frame}
+
+\section{Лямбда исчисление}
+\begin{frame}
+    \frametitle{\enquote{Ассемблер} для функциональных языков}
+
+    \begin{quotation}<+->
+        \enquote{The purpose of the present paper is to propose a definition of effective calculability which is thought to correspond satisfactorily to the somewhat vague intuitive notion in terms of which problems of this class are often stated, and to show, by means of an example, that not every problem of this class is solvable.}
+
+        \raggedleft
+        (Alonzo Church, 1936)
+    \end{quotation}
+
+    \begin{quotation}<+->
+        \enquote{The lambda calculus is not only simple, it is also sufficiently expressive to allow us to translate any high-level functional language into it.}
+
+        \raggedleft
+        (Simon L. Peyton Jones, 1987)
+    \end{quotation}
+    % TODO: Ссылка на библиографию
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{Бестиповое лямбда исчисление}
+
+    \begin{itemize}
+        \item Лямбда исчисление задается примерно так:
+              \begin{center}
+                  \begin{bnf}
+                      $e$ ::=
+                      | $c$ : константы
+                      | $v$ : переменные
+                      | $\lambda v.e$ : лямбда абстракции
+                      | $e\ e$ : применение
+                      ;;
+                  \end{bnf}
+              \end{center}
+        \item Пара важных формальностей
+              \begin{itemize}
+                  \item Абстракция распространяется максимально вправо
+                        \[\lambda x. \lambda y. x\ y \leftrightarrow \lambda x. \lambda y. (x\ y)\]
+                  \item Применение левоассоциативная операция
+                        \[e_1\ e_2\ e_3 \leftrightarrow (e_1\ e_2)\ e_3\]
+                  \item Есть встроенные функции (например, $+$)
+              \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Как на этом программировать?}
+
+    \begin{itemize}
+        \item $\alpha$-конверсия: переименование связанных переменных
+              \[\lambda x.+\ x\ 1 \xleftrightarrow[\alpha]{} \lambda y.+\ y\ 1\]
+        \item $\eta$-конверсия: обеспечение экстенсиональности
+              \[\lambda x.+\ 1\ x \xleftrightarrow[\eta]{} +\ 1\]
+        \item $\beta$-редукция: вычисление
+              \begin{align*}
+                  (\lambda f.f\ 3)\ (\lambda x.+\ x\ 1) & \xrightarrow[\beta]{} (\lambda x.+\ x\ 1)\ 3 \\
+                                                        & \xrightarrow[\beta]{} +\ 3\ 1                \\
+                                                        & \xrightarrow[\beta]{} 4
+              \end{align*}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Редексы и нормальная форма}
+
+    Очевидно, что способов редукции множество, поэтому формализуем этот процесс
+
+    \begin{definition}
+        Терм вида $(\lambda v. F)\ G$ называется редексом, а терм $F[v \coloneq G]$ его сокращением.
+    \end{definition}
+    \begin{definition}
+        Лямбда терм вида $\lambda v. E$ или $v\ E_1 \dots E_n$ находится в нормальной форме, если $E$ или $E_1, \dots, E_n$ при $n \ge 0$, также находятся в нормальной форме.
+    \end{definition}
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{Стратегии редукции}
+
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            Строгие стратегии:
+            \begin{description}
+                \item[Applicative order] вычисляет слева направо, изнутри наружу
+                \item[Call-by-value] вычисляет слева направо, изнутри наружу, не заходя в лямбда-абстракцию
+            \end{description}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            Ленивые стратегии:
+            \begin{description}
+                \item[Normal order] вычисляет слева направо, снаружи внутрь
+                \item[Call-by-need] вычисляет слева направо, снаружи внутрь, не заходя в лямбда-абстракцию
+            \end{description}
+        \end{column}
+    \end{columns}
+    Call-by-value и call-by-need могут не привести к нормальной форме!
+\end{frame}
+
+\begin{frame}
+    \frametitle{Комбинаторы}
+
+    \begin{definition}
+        Комбинатором называют замкнутый лямбда терм
+    \end{definition}
+
+    Канонические примеры комбинаторов:
+    \begin{gather*}
+        S \leftrightarrow \lambda f. \lambda g. \lambda x. f\ x\ (g\ x) \\
+        K \leftrightarrow \lambda x. \lambda y. x \qquad \omega \leftrightarrow \lambda x. x\ x\\
+        I \leftrightarrow \lambda x. x \qquad \Omega \leftrightarrow \omega\ \omega
+    \end{gather*}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Рекурсия в $\lambda$ исчислении}
+
+    У нас отсутствуют имена для термов, но как тогда выразить рекурсию?
+
+    Есть красивые теоремы о комбинаторе неподвижной точки, но мы обойдемся только определением:
+    \[Y\ F \rightarrow F\ (Y\ F)\]
+    А можно и без рекурсии:
+    \[Y \leftrightarrow \lambda f. (\lambda x.f\ (x\ x))\ (\lambda x.f\ (x\ x))\]
+
+\end{frame}
+
+\section{Редукция графов}
+
+\begin{frame}
+    \frametitle{AST представление лямбда терма}
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \begin{itemize}
+                \item Строковое представление удобно для человека
+                \item Работать удобнее с древовидным представлением
+                \item $@$~--- применение
+                \item $\lambda x$~--- абстракция
+                \item NOT~--- встроенная функция
+                \item TRUE~--- константа
+                \item $x$~--- переменная
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \begin{figure}
+                \begin{tikzpicture}
+                    \node (a) {$@$}
+                    child {node {$\lambda x$}
+                            child {node (t) {$@$}
+                                    child {node {NOT}}
+                                    child {node {$x$}}}}
+                    child {node (tr) {$TRUE$}};
+
+                    \node [below = 0.1 of tr] {$\searrow$};
+
+                    \node [right = of t] {$@$}
+                    child {node {NOT}}
+                    child {node {$TRUE$}};
+                \end{tikzpicture}
+                \caption{AST представление терма $(\lambda x.$ NOT $x)$ TRUE до и после редукции}
+            \end{figure}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Красота редукции графов I}
+    \[(\lambda x.\text{AND}\ x\ x)\ (\text{NOT TRUE}) \rightarrow \text{AND}\ (\text{NOT TRUE})\ (\text{NOT TRUE})\]
+
+    \begin{figure}
+        \begin{tikzpicture}
+            \node (a) {$@\$$} [sibling distance=13mm]
+            child {node {$\lambda x$}
+                    child {node {$@$}
+                            child {node {$@$}
+                                    child {node {AND}}
+                                    child {node {$x$}}
+                                }
+                            child {node {$x$}}
+                        }
+                }
+            child {node {$@$}
+                    child {node {NOT}}
+                    child {node {TRUE}}
+                };
+
+            \node [right = 1.5 of a] {$\rightarrow$};
+
+            \node [right = 3 of a ] {$@$} [sibling distance=20mm, level distance = 1.5cm]
+            child  {node (and1) {$@$}
+                    child {node {AND}}}
+            child {node (app1) {$@$}
+                    child {node {NOT}}
+                    child {node {TRUE}}
+                };
+            \draw (and1) -- (app1);
+        \end{tikzpicture}
+    \end{figure}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Красота редукции графов II}
+    \[\text{AND}\ (\text{NOT TRUE})\ (\text{NOT TRUE}) \rightarrow \text{AND}\ \text{FALSE}\ \text{FALSE} \rightarrow \text{FALSE}\]
+
+    \begin{figure}
+        \begin{tikzpicture}
+            \node (a) {$@$} [sibling distance=20mm, level distance = 1.5cm]
+            child  {node (and1) {$@$}
+                    child {node {AND}}}
+            child {node (app1) {$@\$$}
+                    child {node {NOT}}
+                    child {node {TRUE}}
+                };
+            \draw (and1) -- (app1);
+
+            \node [right = 2 of a] {$\rightarrow$};
+
+            \node [right = 4 of a] (b) {$@$} [sibling distance=20mm, level distance = 1.5cm]
+            child  {node (and2) {$@$}
+                    child {node {AND}}}
+            child {node (app2) {FALSE}};
+            \draw (and2) -- (app2);
+
+            \node [right = 1.5 of b] {$\rightarrow$};
+            \node [right = 3 of b]{FALSE};
+        \end{tikzpicture}
+    \end{figure}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Рекурсия в редукции графов}
+
+    \[Y \ f \rightarrow f\ (Y\ f) \]
+    \begin{columns}[T]
+        \begin{column}{0.5\textwidth}
+            Вариант 1:
+            \begin{figure}
+                \begin{tikzpicture}
+                    \node (a) {$@\$$}
+                    child {node {$Y$}}
+                    child {node {$f$}};
+
+                    \node [right = 0.25 of a] {$\rightarrow$};
+                    \node [right = of a] {$@\$$}
+                    child {node {$f$}}
+                    child {node {$@$}
+                            child {node {$Y$}}
+                            child {node {$f$}}
+                        };
+                \end{tikzpicture}
+            \end{figure}
+        \end{column}
+        \begin{column}[T]{0.5\textwidth}
+            Вариант 2:
+            \begin{figure}
+                \begin{tikzpicture}
+                    \node (a) {$@\$$}
+                    child {node {$Y$}}
+                    child {node {$f$}};
+
+                    \node [right = 0.25 of a] {$\rightarrow$};
+                    \node [right = of a] (b) {$@\$$}
+                    child {node {$f$}};
+
+                    \draw[out=45, in=315, loop] (b) to (b);
+                \end{tikzpicture}
+            \end{figure}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Реализация редукции графов}
+
+    \begin{itemize}
+        \item Идея красивая
+        \item<+-> На привычных ЯП может быть красиво реализована
+        \item<+-| alert@+> \textbf{Но как воспроизвести её в железе?}
+            \begin{itemize}
+                \item Что делать со свободными переменными?
+                \item Достатоточно ли одношаговой редукции?
+            \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\section{Суперкомбинаторы}
+
+\begin{frame}
+    \frametitle{Суперкомбинаторы I}
+
+    \begin{definition}
+        Суперкомбинатор \${}S, арности $n$,~--- это лямбда терм вида
+        \[\lambda x_1. \lambda x_2 \dots \lambda x_n. E,\]
+        где $E$ не является абстракцией, и выполняются условия
+        \begin{itemize}
+            \item В \${}S нет свободных переменных
+            \item Любая лямбда абстракция в $E$ есть суперкомбинатор
+            \item $n \ge 0$, то есть абстракций может вообще не быть
+        \end{itemize}
+    \end{definition}
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{Суперкомбинаторы II}
+
+    \begin{definition}
+        Суперкомибнаторным редексом называется применение суперкомбинатора арности $n$ к $n$ аргументам.
+
+        Редукция суперкомбинатора заменяет суперкомибнаторный редекс на тело суперкомбинатора, подставляя аргументы на место соответствующих им переменных.
+    \end{definition}
+
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            Примеры суперкомбинаторов:
+            \begin{gather*}
+                3 \qquad \lambda f. f\ (\lambda x. +\ x\ x) \\
+                \lambda x.+\ x\ 1 \qquad \lambda x. \lambda y.-\ y\ x
+            \end{gather*}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            Примеры не суперкомбинаторов:
+            \begin{gather*}
+                \lambda y.-\ y\ x\\
+                \lambda f.f\ (\lambda x.f\ x\ 2)
+            \end{gather*}
+        \end{column}
+    \end{columns}
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{Редукция суперкомбинаторов}
+
+    \begin{columns}
+        \begin{column}{0.2\textwidth}
+            \begin{gather*}
+                \text{\${}Y}\ w\ y = +\ y\ w \\
+                \text{\${}X}\ x = \text{\${}Y}\ x\ x \\
+                \text{\${}Prog} = \text{\${}X}\ 4 \\
+                \hline
+                \text{\${}Prog}
+            \end{gather*}
+        \end{column}
+        \begin{column}{0.2\textwidth}
+            \begin{align*}
+                              & \text{\${}Prog}    \\
+                \rightarrow{} & \text{\${}X}\ 4    \\
+                \rightarrow{} & \text{\${}Y}\ 4\ 4 \\
+                \rightarrow{} & +\ 4\ 4            \\
+                \rightarrow{} & 8
+            \end{align*}
+        \end{column}
+    \end{columns}
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{Рекурсия в суперкомбинаторах}
+
+    Использование $Y$ комбинатора в суперкомбинаторах нерационально:
+    \begin{itemize}
+        \item Суперкомбинаторы могут быть рекурсивными, в отличие от лямбда термов, у них есть имена
+              \[\text{\${}F}\ x = \text{\${}G}\ (\text{\${}F}\ (-\ x\ 1))\ 0\]
+        \item Использование $Y$ комбинатора потребует дополнительное определение
+              \begin{gather*}
+                  \text{\${}F} = Y\ \text{\${}F1} \\
+                  \text{\${}F1}\ F\ x = \text{\${}G}\ (\text{F}\ (-\ x\ 1))\ 0
+              \end{gather*}
+    \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{Конвертация лямбда терма в суперкомбинатор}
+
+    ПОКА есть лямбда абстракции в терме:
+    \begin{enumerate}
+        \item Выбрать лямбда абстракцию, у которой нет лямбда абстракций в теле
+        \item Абстрагироваться по всем свободным переменным
+        \item Дать имя лямбда абстракции
+        \item Заменить лямбда абстракцию на её имя, примененное ко всем свободным переменным
+        \item Переместить лямбда абстракцию в список \enquote{скомпилированных}
+    \end{enumerate}
+
+\end{frame}
+
+\section{SKI}
+
+\begin{frame}
+    \frametitle{$SKI$ комбинаторы}
+
+    А что если мы хотим ещё более примитивный способ представления термов?
+    Тут нам помогут комбинаторы $SKI$:
+    \begin{gather*}
+        I \leftrightarrow \lambda x. x \\
+        K \leftrightarrow \lambda x. \lambda y. x \\
+        S \leftrightarrow \lambda f. \lambda g. \lambda x. f\ x\ (g\ x)
+    \end{gather*}
+    Оказывается через них выражаются любые лямбда термы!
+\end{frame}
+
+\begin{frame}
+    \frametitle{Правила преобразования}
+
+    \begin{align*}
+        \lambda x.x        & \Rightarrow I                                    \\
+        \lambda x.c        & \Rightarrow K\ c\quad (c \neq x)                 \\
+        \lambda x.e_1\ e_2 & \Rightarrow S\ (\lambda x.e_1)\ (\lambda x. e_2)
+    \end{align*}
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{Вычисление в $SKI$}
+
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \begin{align*}
+                                & (\lambda x.+\ x\ x)\ 5                                 \\
+                S \Rightarrow{} & S\ (\lambda x.+\ x)\ (\lambda x.x)\ 5                  \\
+                S \Rightarrow{} & S\ (S\ (\lambda x.+)\ (\lambda x.x))\ (\lambda x.x)\ 5 \\
+                I \Rightarrow{} & S\ (S\ (\lambda x.+)\ I)\ (\lambda x.x)\ 5             \\
+                I \Rightarrow{} & S\ (S\ (\lambda x.+)\ I)\ I\ 5                         \\
+                K \Rightarrow{} & S\ (S\ (K\ +)\ I)\ I\ 5
+            \end{align*}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \begin{align*}
+                              & S\ (S\ (K\ +)\ I)\ I\ 5 \\
+                \rightarrow{} & S\ (K\ +)\ I\ 5\ (I\ 5) \\
+                \rightarrow{} & K\ +\ 5\ (I\ 5)\ (I\ 5) \\
+                \rightarrow{} & +\ (I\ 5)\ (I\ 5)       \\
+                \rightarrow{} & +\ 5\ (I\ 5)            \\
+                \rightarrow{} & +\ 5\ 5                 \\
+                \rightarrow{} & 10
+            \end{align*}
+        \end{column}
+    \end{columns}
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{Замечание I (теоретическое)}
+
+    $SKI$ даже не самый минимальный набор комбинаторов
+    \begin{align*}
+                      & S\ K\ K\ x   &               & I\ x \\
+        \rightarrow{} & K\ x\ (K\ x) & \rightarrow{} & x    \\
+        \rightarrow{} & x            &               &
+    \end{align*}
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{Замечание II (практическое)}
+
+    Очевидно, что при трансляции в $SKI$ происходит взрыв размера терма, поэтому, обычно, вводят дополнительные \enquote{оптимизирующие} комбинаторы
+
+    \begin{align*}
+        B\ f\ g\ x      & \rightarrow f\ (g\ x)         \\
+        C\ f\ g\ x      & \rightarrow f\ x\ g           \\
+        S'\ c\ f\ g\ x  & \rightarrow c\ (f\ x)\ (g\ x) \\
+        B^*\ c\ f\ g\ x & \rightarrow c\ (f\ (g\ x))    \\
+        C'\ c\ f\ g\ x  & \rightarrow c\ (f\ x)\ g
+    \end{align*}
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{Замечание III (рекурсивное)}
+
+    Для рекурсии необходим $Y$ комбинатор.
+    Если думать об $Y$ комбинаторе ровно так, как в разделе про редукцию графов, то $Y$ комбинатор при трансляции стоит считать встроенное функцией
+
+\end{frame}
+
+\section{Существующие решения}
+\begin{frame}
+    \frametitle{Историческая справка}
+    Попыток создать лямбда-процессор было немало.
+    Две важные вехи:
+    \begin{description}
+        \item[1980-е] Активное развитие функциональных языков программирования и теории вокруг них, конференция The Functional Programming Languages and Computer Architecture $\implies$ множество идей о создании функциональных машин
+        \item[2010+] Массовость FPGA, проникновение ФП в массовые ЯП, идея специализированных ускорителей $\implies$ возрождение идеи лямбда-процессора
+    \end{description}
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{Проекты 1980-х}
+
+    \begin{description}
+        \item[1975] Язык SASL Дэвида Тернера
+        \item[1980] SKIM~--- реализация машины на $SKI$ для SASL авторства Томаса Кларка и его команды из Кембриджа
+        \item[1982] Суперкомбинаторы Джона Хьюза
+        \item[1986] NORMA~--- параллельная $SKI$ машина авторства Марка Шивеля из Исследовательского центра Остина
+        \item[1987] GRIP~--- созданная командой Саймона Пейтона Джонса в Университетском колледже Лондона машина, основанная на суперкомбинаторах.
+            Была реализована на процессорах Motorola 68020
+    \end{description}
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{Reduceron}
+    \framesubtitle{Matthew Naylor \& Colin Runciman, 2008--2012}
+
+    \begin{itemize}
+        \item Процессор, основанный на суперкомбинаторах
+        \item Реализован на DSL для Haskell~--- York Lava
+        \item Для программирования используется своё подмножества Haskell~--- F-lite
+        \item В последней версии выполнял один шаг редукции за один цикл
+        \item А также поддерживал большое количество оптимизаций: спекулятивное исполнение, параллельность, анализ зависимостей
+    \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{PilGRIM}
+    \framesubtitle{Arjan Boeijink, Philip K. F. Hölzenspies \& Jan Kuper, 2011}
+
+    \begin{itemize}
+        \item RISC-style набор инструкций
+        \item Наличие конвейера
+        \item Цель~--- реализация в кремнии
+        \item Идея реализации с помощью Clash
+        \item Так никогда и не был реализован
+    \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{fun arch}
+    \framesubtitle{Cecil Accetti, Peilin Liu, et al., 2020+}
+
+    \begin{itemize}
+        \item Целое семейство процессоров
+        \item Использует свои RISC-style инструкции, которые описывают особые комбинаторы:
+              \[\lambda f. \lambda g. \lambda h. \lambda x. \lambda y.f\ (g\ (h\ x\ y)) \Rightarrow C^{x(x(xxx))}_{5[1,2,3,4,5]}\]
+        \item Кажется, проект умер
+    \end{itemize}
+
+\end{frame}
+
+\appendix
+\begin{frame}[allowframebreaks]
+    \frametitle{Источники}
+    \begin{thebibliography}{}
+        \bibitem{Church1936}
+        A. Church \newblock
+        An Unsolvable Problem of Elementary Number Theory \newblock
+        American Journal of Mathematics, 58 (1936) 345 \newblock
+        https://doi.org/10.2307/2371045
+        \bibitem{SPJ1987}
+        S. L. Peyton Jones \newblock
+        The implementation of functional programming languages \newblock
+        Prentice Hall Internaltional (UK) Ltd., 1987
+        \bibitem{Sestoft2003}
+        P. Sestoft \newblock
+        Demonstrating Lambda Calculus Reduction \newblock
+        Electronic Notes in Theoretical Computer Science, 45 (2003) \newblock
+        https://doi.org/10.1016/S1571-0661(04)80973-3
+        \bibitem{Stewart2023}
+        R. Stewart \newblock
+        HAFLANG - A History of Functional Hardware \newblock
+        https://haflang.github.io/history.html (accessed March 18, 2024).
+        \bibitem{Turner1979}
+        D. A. Turner \newblock
+        A new implementation technique for applicative languages \newblock
+        Software: Practice and Experience, 9 (1979) 31–49 \newblock
+        https://doi.org/10.1002/spe.4380090105
+        \bibitem{Clarke1980}
+        T. J. W. Clarke, P. J. S. Gladstone, C. D. MacLean, \& A. C. Norman \newblock
+        SKIM - The S, K, I reduction machine \newblock
+        Proceedings of the 1980 ACM conference on LISP and functional programming (New York, NY, USA: Association for Computing Machinery, 1980), pp. 128–135 \newblock
+        https://doi.org/10.1145/800087.802798
+        \bibitem{Hughes1982}
+        R. J. M. Hughes \newblock
+        Super-combinators a new implementation method for applicative languages \newblock
+        Proceedings of the 1982 ACM symposium on LISP and functional programming (New York, NY, USA: Association for Computing Machinery, 1982), pp. 1–10 \newblock https://doi.org/10.1145/800068.802129
+        \bibitem{Scheevel1986}
+        M. Scheevel \newblock
+        NORMA: a graph reduction processor \newblock
+        Proceedings of the 1986 ACM conference on LISP and functional programming (New York, NY, USA: Association for Computing Machinery, 1986), pp. 212–219 \newblock
+        https://doi.org/10.1145/319838.319864
+        \bibitem{SPJ1989}
+        S. L. Peyton Jones \newblock
+        Parallel Implementations of Functional Programming Languages \newblock
+        The Computer Journal, 32 (1989) 175–186 \newblock
+        https://doi.org/10.1093/comjnl/32.2.175
+        \bibitem{Naylor2008}
+        M. Naylor \& C. Runciman \newblock
+        The Reduceron: Widening the von Neumann Bottleneck for Graph Reduction Using an FPGA \newblock
+        In O. Chitil, Z. Horváth, \& V. Zsók,eds., Implementation and Application of Functional Languages (Berlin, Heidelberg: Springer, 2008), pp. 129–146 \newblock
+        https://doi.org/10.1007/978-3-540-85373-2\_8
+        \bibitem{Naylor2012}
+        M. Naylor \& C. Runciman \newblock
+        The Reduceron reconfigured and re-evaluated \newblock
+        Journal of Functional Programming, 22 (2012) 574–613 \newblock
+        https://doi.org/10.1017/S0956796812000214
+        \bibitem{Boeijink2011}
+        A. Boeijink, P. K. F. Hölzenspies, \& J. Kuper \newblock
+        Introducing the PilGRIM: A Processor for Executing Lazy Functional Languages \newblock
+        In J. Hage, \& M.T. Morazán,eds., Implementation and Application of Functional Languages (Berlin, Heidelberg: Springer, 2011), pp. 54–71 \newblock
+        https://doi.org/10.1007/978-3-642-24276-2\_4
+        \bibitem{Accetti2020}
+        C. A. R. A. Melo, P. Liu, \& R. Ying \newblock
+        A Platform for Full-Stack Functional Programming \newblock
+        2020 IEEE International Symposium on Circuits and Systems (ISCAS) (2020), pp. 1–5 \newblock
+        https://doi.org/10.1109/ISCAS45731.2020.9180772
+        \bibitem{Accetti2022a}
+        C. Accetti, R. Ying, \& P. Liu \newblock
+        Structured Combinators for Efficient Graph Reduction \newblock
+        IEEE Computer Architecture Letters, 21 (2022) 73–76 \newblock
+        https://doi.org/10.1109/LCA.2022.3198844
+        \bibitem{Accetti2022b}
+        C. Accetti \& P. Liu \newblock
+        Architectural Support for Functional Programming \newblock
+        2022 IFIP/IEEE 30th International Conference on Very Large Scale Integration (VLSI-SoC) (2022), pp. 1–2 \newblock
+        https://doi.org/10.1109/VLSI-SoC54400.2022.9939644
+        \bibitem{Moskvin2011}
+        Д. Москвин \newblock
+        Системы типизации лямбда-исчисления \newblock
+        https://www.lektorium.tv/course/22797 (accessed March 18, 2024)
+        \bibitem{Litvinov}
+        Ю. Литвинов \newblock
+        Лекция про лямбда исчисление \newblock
+        https://github.com/yurii-litvinov/courses/tree/master/structures-and-algorithms (accessed March 18, 2024)
+    \end{thebibliography}
+\end{frame}
+
+\end{document}
