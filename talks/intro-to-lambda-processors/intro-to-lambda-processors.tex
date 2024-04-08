@@ -1,4 +1,6 @@
-\documentclass[aspectratio=169]{beamer}
+% \documentclass[aspectratio=169]{beamer}
+% \documentclass[a4paper]{article}
+% \usepackage{beamerarticle}
 
 % Setup fonts.
 \usepackage{fontspec}
@@ -125,13 +127,13 @@ range = {\Coloneq}
     \frametitle{Исполнение императивных языков II}
     \begin{columns}
         \begin{column}{0.5\linewidth}
-            \begin{listing}[H]
+            \begin{listing}[h]
                 \inputminted[firstline=3, fontsize=\footnotesize]{c}{figures/fac.c}
                 \caption{Факториал на языке Си}
             \end{listing}
         \end{column}
         \begin{column}{0.5\linewidth}
-            \begin{listing}[H]
+            \begin{listing}[h]
                 \inputminted[fontsize=\scriptsize]{asm}{figures/fac.S}
                 \caption{Факториал на Ассемблере RISC-V}
             \end{listing}
@@ -426,10 +428,10 @@ range = {\Coloneq}
         \item Идея красивая
         \item<+-> На привычных ЯП может быть красиво реализована
         \item<+-| alert@+> \textbf{Но как воспроизвести её в железе?}
-            \begin{itemize}
-                \item Что делать со свободными переменными?
-                \item Достатоточно ли одношаговой редукции?
-            \end{itemize}
+              \begin{itemize}
+                  \item Что делать со свободными переменными?
+                  \item Достатоточно ли одношаговой редукции?
+              \end{itemize}
     \end{itemize}
 \end{frame}
 
@@ -646,7 +648,7 @@ range = {\Coloneq}
         \item[1982] Суперкомбинаторы Джона Хьюза
         \item[1986] NORMA~--- параллельная $SKI$ машина авторства Марка Шивеля из Исследовательского центра Остина
         \item[1987] GRIP~--- созданная командой Саймона Пейтона Джонса в Университетском колледже Лондона машина, основанная на суперкомбинаторах.
-            Была реализована на процессорах Motorola 68020
+              Была реализована на процессорах Motorola 68020
     \end{description}
 
 \end{frame}
