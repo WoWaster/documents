@@ -1,0 +1,248 @@
+% \documentclass[aspectratio=169]{beamer}
+% \documentclass[a4paper]{article}
+% \usepackage{beamerarticle}
+
+% Setup fonts.
+\usepackage{fontspec}
+\mode<beamer>{
+\setmainfont{Yanone Kaffeesatz}
+\setsansfont{Roboto}
+\setmonofont{Fira Code}
+}
+\mode<article>{
+\setmainfont{CMU Serif}
+\setsansfont{CMU Sans Serif}
+\setmonofont{CMU Typewriter Text}
+}
+
+%%% Fonts and language setup.
+\usepackage{polyglossia}
+
+%% Math
+\usepackage{amsmath, amsfonts, amsthm, mathtools} % Advanced math tools.
+\usepackage{amssymb}
+\usepackage{unicode-math} % Allow TTF and OTF fonts in math and allow direct typing unicode math characters.
+% \usepackage{euler-math}
+\unimathsetup{
+    warnings-off={
+            mathtools-colon,
+            mathtools-overbracket
+        }
+}
+\mode<beamer>{
+\setmathfont{Fira Math}
+\setmathfont{Asana Math}[
+Scale = MatchUppercase,
+range = {\Coloneq}
+]
+}
+\mode<article>{
+\setmathfont{Latin Modern Math} % default
+\setmathfont[range={\setminus,\varnothing,\smashtimes}]{Asana Math}
+}
+\usepackage{csquotes}
+
+%%% Beamer
+\usetheme{Madrid}
+\usecolortheme[style=light]{Nord}
+\usefonttheme{Nord}
+\setbeamertemplate{navigation symbols}{} %remove navigation symbols
+% \setbeamertemplate{headline}{%
+%     \begin{beamercolorbox}[ht=2.25ex,dp=3.75ex]{section in head/foot}
+%         \insertnavigation{\paperwidth}
+%     \end{beamercolorbox}%
+% }%
+\useinnertheme{circles}
+
+
+
+%%% Misc
+
+\setdefaultlanguage{russian}
+\setotherlanguage{english}
+
+\uselanguage{russian}
+\languagepath{russian}
+\newtranslation[to = russian]{Definition}{Определение}
+\newtranslation[to = russian]{definition}{определение}
+
+
+%%% Code
+% \usepackage[kpsewhich,newfloat]{minted}
+% \usemintedstyle{catppuccin-latte}
+% \SetupFloatingEnvironment{listing}{name=Листинг}
+
+\title{Data mining: задачи, техники и приложения}
+\author{Николай Пономарев}
+\institute[Матмех СПбГУ]{Математико-механический факультет СПбГУ}
+\date{2 мая 2024 г.}
+
+\usepackage{hyperref}
+
+\begin{document}
+\begin{frame}[plain,noframenumbering]
+    \maketitle
+\end{frame}
+
+\textbf{Дисклеймер:} данный текст просто пересобранная презентация, саму статью можно найти в конце
+
+\section{Введение}
+
+\begin{frame}
+    \frametitle{Немного о терминологии}
+
+    \uncover<+->{Две близких области: Information Retrieval~(IR) и Data Mining~(DM)}
+
+    \begin{definition}<+->
+        IR~--- наука об организации информации и алгоритмах её \textit{быстрого} получения
+    \end{definition}
+
+    \begin{definition}<+->
+        DM~--- наука о методах обнаружения в данных ранее \textit{неизвестных} и практически полезных знаний
+    \end{definition}
+
+    \uncover<+->{Формально, наш курс про IR}
+
+\end{frame}
+
+\section{Задачи}
+
+\begin{frame}[allowframebreaks]
+    \frametitle{Задачи}
+    \begin{definition}
+        Классификация~(classification)~--- процесс разделения новых наблюдений~(observation) на предопределенные классы
+    \end{definition}
+
+    \begin{definition}
+        Кластеризация~(clustering)~--- процесс разбиения данных (или наблюдений о них) на группы
+    \end{definition}
+
+    \mode<beamer>{\pagebreak}
+
+    \begin{definition}
+        Анализ выбросов~(outlier analysis)~--- способ извлечения полезных знаний из выбросов
+    \end{definition}
+
+    \begin{definition}
+        Ассоциативный анализ~(association analysis)~--- процесс поиска ассоциаций среди данных, которые удовлетворяют определенным статистическим требованиям
+    \end{definition}
+
+\end{frame}
+
+\section{Техники}
+
+\begin{frame}
+    \frametitle{Статистические подходы}
+
+    Строится статистическая модель, а затем анализируется следующими способами:
+
+    \begin{description}[Байесовские сети]
+        \item[Байесовские сети] способ выяснения зависимостей между переменными \enquote{с помощью} формулы Байеса
+        \item[Корреляция] используется для установления зависимости между фактами
+        \item[Регрессия] установление соответствия между случайными переменными отражающими связь между зависимой переменной и независимыми переменными х
+        \item[Факторный анализ] используется для поиска основных источников корреляции
+    \end{description}
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{Машинное обучение и нейронные сети}
+
+    \begin{itemize}
+        \item Развивает идеи статистических методов
+        \item В каком-то смысле автоматизирует анализ
+        \item Часто результаты лучше
+        \item Модно
+    \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{Ещё техники}
+
+    \begin{itemize}
+        \item СУБД
+        \item Генетические алгоритмы
+        \item Нечёткие множества
+        \item Визуализация
+    \end{itemize}
+
+\end{frame}
+
+\section{Приложения}
+\begin{frame}
+    \frametitle{Телекоммуникации}
+
+    Телеком и мобильные операторы используют data mining для
+    \begin{itemize}
+        \item Маркетинга
+              \begin{itemize}
+                  \item Классификация и кластеризация $\Rightarrow$ таргетированная реклама
+              \end{itemize}
+        \item Удержания клиентов
+              \begin{itemize}
+                  \item Классификация и кластеризация $\Rightarrow$ обнаружение недовольных клиентов
+              \end{itemize}
+        \item Создание оптимальных тарифов
+        \item Оптимизация использования инфраструктуры
+    \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{Продажи}
+
+    Торговым предприятиям нужен DM для исследования
+    \begin{itemize}
+        \item Поведения покупателей
+              \begin{itemize}
+                  \item Ассоциативный анализ
+              \end{itemize}
+        \item Корзины
+        \item Выбора товаров
+        \item Расстановки продуктов на полках
+              \begin{itemize}
+                  \item Кластеризация
+              \end{itemize}
+        \item Влияния акций
+    \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{Медицина}
+
+    В медицине DM используется для
+    \begin{itemize}
+        \item Обнаружения и анализа хронических заболеваний
+        \item Поиск эффективных лекарств
+        \item Отслеживать вероятность эпидемий
+    \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{Зачем ещё это надо?}
+
+    \begin{itemize}
+        \item Финансы
+        \item Предотвращение преступлений
+        \item Рекомендательные системы
+        \item Реклама
+    \end{itemize}
+
+\end{frame}
+
+\appendix
+\begin{frame}
+    \frametitle{Источник}
+    \begin{thebibliography}{}
+        \bibitem{main}
+        M. K. Gupta \& P. Chandra \newblock
+        A comprehensive survey of data mining \newblock
+        International Journal of Information Technology, 12 (2020) 1243–1257 \newblock
+        \url{https://doi.org/10.1007/s41870-020-00427-7}
+    \end{thebibliography}
+\end{frame}
+
+\end{document}
