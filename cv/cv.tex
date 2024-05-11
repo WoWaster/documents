@@ -1,0 +1,89 @@
+\documentclass[a4paper, 12pt]{moderncv}
+%%% PDF settings
+\pdfvariable minorversion 7 % Set PDF version to 1.7.
+
+%%% Fonts and language setup.
+\usepackage{polyglossia}
+% Setup fonts.
+\usepackage{fontspec}
+% \setmainfont{CMU Serif}
+% \setsansfont{CMU Sans Serif}
+\setmainfont{Roboto} % Здесь поменял местами, потому что локализация походу ломает дефолтный санс шрифт
+\setsansfont{CMU Serif}
+\setmonofont{CMU Typewriter Text}
+
+\usepackage{microtype} % Add fancy-schmancy font tricks
+
+\usepackage{xcolor} % Add colors support.
+
+%% Math
+\usepackage{amsmath, amsfonts, amssymb, amsthm, mathtools} % Advanced math tools.
+\usepackage{thmtools}
+\usepackage{unicode-math} % Allow TTF and OTF fonts in math and allow direct typing unicode math characters.
+\unimathsetup{
+    warnings-off={
+            mathtools-colon,
+            mathtools-overbracket
+        }
+}
+\setmathfont{Latin Modern Math} % default
+\setmathfont[range={\setminus,\varnothing,\smashtimes}]{Asana Math}
+
+%%% Images
+\usepackage{graphicx}
+\graphicspath{{figures/}}
+\usepackage{import}
+
+%%% Polyglossia setup after (nearly) everything as described in documentation.
+\setdefaultlanguage{russian}
+\setotherlanguage{english}
+
+\usepackage{csquotes}
+
+
+\moderncvtheme[orange]{classic}
+
+\photo[48pt]{photo}
+\firstname{Николай}
+\familyname{Пономарев}
+\email{wowasterdev@gmail.com}
+\address{г. Санкт-Петербург}{Россия}
+\extrainfo{\faGithub{} \href{https://github.com/WoWaster}{WoWaster}}
+
+\sethintscolumnlength{0.3\textwidth} % Русский слишком широкий :(
+
+\begin{document}
+
+\maketitle
+
+\section{Интересы}
+
+\cvline{}{Системное программирование:}
+\cvlistitem{Программирование embedded устройств}
+\cvlistitem{Компиляторы}
+\cvlistitem{RTL проектирование}
+\cvlistitem{Функциональные языки}
+\cvlistitem{Оптимизация ПО}
+
+\section{Образование}
+
+\cventry{2021~-- н.~в.}{Бакалавр}{Санкт-Петербургский государственный университет}{}{}{Направление: Технологии программирования (Математическое обеспечение и администрирование
+    информационных систем)}
+
+\section{Опыт работы}
+
+\cventry{июль 2023~-- н.~в.}{Лаборант-исследователь}{Лаборатория YADRO}{СПбГУ}{}{}
+
+\section{Технические навыки}
+
+\cvline{ЯП}{Haskell, F\#, C, Python, C\#, RISC-V ASM}
+\cvline{Технологии}{GNU/Linux, Git, QEMU}
+
+\section{Владение языками}
+
+\cvlanguage{Русский}{Родной}{}
+\cvlanguage{Английский}{B2}{}
+
+
+
+\end{document}
