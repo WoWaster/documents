@@ -1,15 +1,15 @@
 {
     "latex-workshop.latex.recipes": [
         {
-            "name": "latexmk (xelatex)",
-            "tools": [
-                "xelatexmk"
-            ]
-        },
-        {
             "name": "latexmk (lualatex)",
             "tools": [
                 "lualatexmk"
+            ]
+        },
+        {
+            "name": "latexmk (xelatex)",
+            "tools": [
+                "xelatexmk"
             ]
         },
     ],
