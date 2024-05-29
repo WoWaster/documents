@@ -2,13 +2,13 @@
 % !TEX root = vkr.tex
 % Опциональные добавления используемых пакетов. Вполне может быть, что они вам не понадобятся, но в шаблоне приведены примеры их использования.
 \usepackage{tikz} % Мощный пакет для создание рисунков, однако может очень сильно замедлять компиляцию
-\usetikzlibrary{decorations.pathreplacing,calc,shapes,positioning,tikzmark}
+\usetikzlibrary{decorations.pathreplacing,calc,shapes,positioning,tikzmark, arrows.meta}
 
 % Библиотека для TikZ, которая генерирует отдельные файлы для каждого рисунка
 % Позволяет ускорить компиляцию, однако имеет свои ограничения
 % Например, ломает пример выделения кода в листинге из шаблона
-% \usetikzlibrary{external}
-% \tikzexternalize[prefix=figures/]
+\usetikzlibrary{external}
+\tikzexternalize[prefix=figures/]
 
 \newcounter{tmkcount}
 
@@ -80,3 +80,6 @@
 \newcommand{\cfpqdata}{\textsc{CFPQ\_Data}}
 \newcommand{\pip}{\textsc{pip}}
 \newcommand{\poetry}{\textsc{Poetry}}
+\newcommand{\gitlab}{\textsc{GitLab}}
+
+\usepackage{xurl}
