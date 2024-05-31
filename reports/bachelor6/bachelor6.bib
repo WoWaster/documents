@@ -8,6 +8,31 @@
   langid = {russian}
 }
 
+@online{abzalovGLLbasedContextFreePath2023,
+  title = {{{GLL-based Context-Free Path Querying}} for {{Neo4j}}},
+  author = {Abzalov, Vadim and Pogozhelskaya, Vlada and Kutuev, Vladimir and Grigorev, Semyon},
+  date = {2023-12-19},
+  eprint = {2312.11925},
+  eprinttype = {arxiv},
+  eprintclass = {cs},
+  doi = {10.48550/arXiv.2312.11925},
+  url = {http://arxiv.org/abs/2312.11925},
+  urldate = {2024-05-31},
+  abstract = {We propose GLL-based context-free path querying algorithm which handles queries in Extended Backus-Naur Form (EBNF) using Recursive State Machines (RSM). Utilization of EBNF allows one to combine traditional regular expressions and mutually recursive patterns in constraints natively. The proposed algorithm solves both the reachability-only and the all-paths problems for the all-pairs and the multiple sources cases. The evaluation on realworld graphs demonstrates that utilization of RSMs increases performance of query evaluation. Being implemented as a stored procedure for Neo4j, our solution demonstrates better performance than a similar solution for RedisGraph. Performance of our solution of regular path queries is comparable with performance of native Neo4j solution, and in some cases our solution requires significantly less memory.},
+  pubstate = {preprint},
+  version = {1},
+  keywords = {Computer Science - Databases}
+}
+
+@inproceedings{azimovContextfreePathQuerying2018,
+  title = {Context-Free Path Querying by Matrix Multiplication},
+  author = {Azimov, Rustam and Grigorev, Semyon},
+  date = {2018-06-10},
+  pages = {1--10},
+  doi = {10.1145/3210259.3210264},
+  abstract = {Context-free path querying is a technique, which recently gains popularity in many areas, for example, graph databases, bioinformatics, static analysis, etc. In some of these areas, it is often required to query large graphs, and existing algorithms demonstrate a poor performance in this case. The generalization of matrix-based Valiant's context-free language recognition algorithm for graph case is widely considered as a recipe for efficient context-free path querying; however, no progress has been made in this direction so far. We propose the first generalization of matrix-based Valiant's algorithm for context-free path querying. Our generalization does not deliver a truly sub-cubic worst-case complexity algorithm, whose existence still remains a hard open problem in the area. On the other hand, the utilization of matrix operations (such as matrix multiplication) in the process of context-free path query evaluation makes it possible to efficiently apply a wide class of optimizations and computing techniques, such as GPGPU (General-Purpose computing on Graphics Processing Units), parallel processing, sparse matrix representation, distributed-memory computation, etc. Indeed, the evaluation on a set of conventional benchmarks shows, that our algorithm outperforms the existing ones.}
+}
+
 @online{draghiciSemEnovArithmetic2023a,
   title = {Sem\textbackslash "enov {{Arithmetic}}, {{Affine VASS}}, and {{String Constraints}}},
   author = {Draghici, Andrei and Haase, Christoph and Manea, Florin},
@@ -39,6 +64,23 @@
   urldate = {2024-05-27},
   abstract = {Interactions between amino acids that are close in the spatial structure, but not necessarily in the sequence, play important structural and functional roles in proteins. These non-local interactions ought to be taken into account when modeling collections of proteins. Yet the most popular representations of sets of related protein sequences remain the profile Hidden Markov Models. By modeling independently the distributions of the conserved columns from an underlying multiple sequence alignment of the proteins, these models are unable to capture dependencies between the protein residues. Non-local interactions can be represented by using more expressive grammatical models. However, learning such grammars is difficult. In this work, we propose to use information on protein contacts to facilitate the training of probabilistic context-free grammars representing families of protein sequences. We develop the theory behind the introduction of contact constraints in maximum-likelihood and contrastive estimation schemes and implement it in a machine learning framework for protein grammars. The proposed framework is tested on samples of protein motifs in comparison with learning without contact constraints. The evaluation shows high fidelity of grammatical descriptors to protein structures and improved precision in recognizing sequences. Finally, we present an example of using our method in a practical setting and demonstrate its potential beyond the current state of the art by creating a grammatical model of a meta-family of protein motifs. We conclude that the current piece of research is a significant step towards more flexible and accurate modeling of collections of protein sequences. The software package is made available to the community.},
   pmcid = {PMC6428041}
+}
+
+@inproceedings{elekesGraphBLASSolutionSIGMOD2020,
+  title = {A {{GraphBLAS}} Solution to the {{SIGMOD}} 2014 {{Programming Contest}} Using Multi-Source {{BFS}}},
+  booktitle = {2020 {{IEEE High Performance Extreme Computing Conference}} ({{HPEC}})},
+  author = {Elekes, Marton and Nagy, Attila and Sandor, David and Antal, Janos Benjamin and Davis, Timothy A. and Szarnyas, Gabor},
+  date = {2020-09-22},
+  pages = {1--7},
+  publisher = {IEEE},
+  location = {Waltham, MA, USA},
+  doi = {10.1109/HPEC43674.2020.9286186},
+  url = {https://ieeexplore.ieee.org/document/9286186/},
+  urldate = {2024-05-31},
+  abstract = {The GraphBLAS standard defines a set of fundamental building blocks for formulating graph algorithms in the language of linear algebra. Since its first release in 2017, the expressivity of the GraphBLAS API and the performance of its implementations (such as SuiteSparse:GraphBLAS) have been studied on a number of textbook graph algorithms such as BFS, single-source shortest path, and connected components. However, less attention was devoted to other aspects of graph processing such as handling typed and attributed graphs (also known as property graphs), and making use of complex graph query techniques (handling paths, aggregation, and filtering). To study these problems in more detail, we have used GraphBLAS to solve the case study of the 2014 SIGMOD Programming Contest, which defines complex graph processing tasks that require a diverse set of operations. Our solution makes heavy use of multi-source BFS algorithms expressed as sparse matrix-matrix multiplications along with other GraphBLAS techniques such as masking and submatrix extraction. While the queries can be formulated in GraphBLAS concisely, our performance evaluation shows mixed results. For some queries and data sets, the performance is competitive with the hand-optimized top solutions submitted to the contest, however, in some cases, it is currently outperformed by orders of magnitude.},
+  eventtitle = {2020 {{IEEE High Performance Extreme Computing Conference}} ({{HPEC}})},
+  isbn = {978-1-72819-219-2},
+  langid = {english}
 }
 
 @online{GeneratingGrammarconformantTexts,
@@ -76,6 +118,19 @@
   keywords = {Computer Science - Formal Languages and Automata Theory,Computer Science - Logic in Computer Science}
 }
 
+@dataset{hellingsConjunctiveContextFreePath2014,
+  title = {Conjunctive {{Context-Free Path Queries}}},
+  author = {Hellings, Jelle},
+  date = {2014},
+  publisher = {OpenProceedings.org},
+  doi = {10.5441/002/ICDT.2014.15},
+  url = {https://openproceedings.org/ICDT/2014/paper_34.pdf},
+  urldate = {2024-05-31},
+  abstract = {In graph query languages, regular expressions are commonly used to specify the labeling of paths. A natural step in increasing the expressive power of these query languages is replacing regular expressions by context-free grammars. With the Conjunctive Context-Free Path Queries (CCFPQ) we introduce such a language based on the well-known Conjunctive Regular Path Queries (CRPQ).},
+  langid = {english},
+  keywords = {Database Technology,Database Theory}
+}
+
 @online{hellingsQueryingPathsGraphs2016,
   title = {Querying for {{Paths}} in {{Graphs}} Using {{Context-Free Path Queries}}},
   author = {Hellings, Jelle},
@@ -105,6 +160,16 @@
   urldate = {2024-05-27},
   abstract = {Regular Path Queries (RPQs) represent a powerful tool for querying graph databases and are of particular interest, because they form the building blocks of other query languages, and because they can be used in many theoretical or practical contexts for different purposes. In this paper we present a novel system for processing regular path queries on massive data graphs. As confirmed by an extensive experimental evaluation, our system scales linearly with the number of vertices and/or edges, and it can efficiently query graphs up to a billion vertices and 100 billion edges.},
   isbn = {978-1-4503-4215-5}
+}
+
+@incollection{orachevContextFreePathQuerying2020,
+  title = {Context-{{Free Path Querying}} by {{Kronecker Product}}},
+  author = {Orachev, Egor and Epelbaum, Ilya and Azimov, Rustam and Grigorev, Semyon},
+  date = {2020-08-17},
+  pages = {49--59},
+  doi = {10.1007/978-3-030-54832-2_6},
+  abstract = {Context-free path queries (CFPQ) extend the regular path queries (RPQ) by allowing context-free grammars to be used as constraints for paths. Algorithms for CFPQ are actively developed, but J. Kuijpers et al. have recently concluded, that existing algorithms are not performant enough to be used in real-world applications. Thus the development of new algorithms for CFPQ is justified. In this paper, we provide a new CFPQ algorithm which is based on such linear algebra operations as Kronecker product and transitive closure and handles grammars presented as recursive state machines. Thus, the proposed algorithm can be implemented by using high-performance libraries and modern parallel hardware. Moreover, it avoids grammar growth which provides the possibility for queries optimization.},
+  isbn = {978-3-030-54831-5}
 }
 
 @book{parrDefinitiveANTLRReference2013,
@@ -162,6 +227,22 @@
   urldate = {2024-05-29},
   abstract = {Recursive Descent (RD) parsers are popular because their control flow follows the structure of the grammar and hence they are easy to write and to debug. However, the class of grammars which admit RD parsers is very limited. Backtracking techniques may be used to extend this class, but can have explosive runtimes and cannot deal with grammars with left recursion. Tomita-style RNGLR parsers are fully general but are based on LR techniques and do not have the direct relationship with the grammar that an RD parser has. We develop the fully general GLL parsing technique which is recursive descent-like, and has the property that the parse follows closely the structure of the grammar rules, but uses RNGLR-like machinery to handle non-determinism. The resulting recognisers run in worst-case cubic time and can be built even for left recursive grammars.},
   keywords = {context free languages,generalised parsing,recursive descent,RNGLR and RIGLR parsing}
+}
+
+@online{shemetovaOneAlgorithmEvaluate2021,
+  title = {One {{Algorithm}} to {{Evaluate Them All}}: {{Unified Linear Algebra Based Approach}} to {{Evaluate Both Regular}} and {{Context-Free Path Queries}}},
+  shorttitle = {One {{Algorithm}} to {{Evaluate Them All}}},
+  author = {Shemetova, Ekaterina and Azimov, Rustam and Orachev, Egor and Epelbaum, Ilya and Grigorev, Semyon},
+  date = {2021-03-26},
+  eprint = {2103.14688},
+  eprinttype = {arxiv},
+  eprintclass = {cs},
+  doi = {10.48550/arXiv.2103.14688},
+  url = {http://arxiv.org/abs/2103.14688},
+  urldate = {2024-05-31},
+  abstract = {The Kronecker product-based algorithm for context-free path querying (CFPQ) was proposed by Orachev et al. (2020). We reduce this algorithm to operations over Boolean matrices and extend it with the mechanism to extract all paths of interest. We also prove \$O(n\textasciicircum 3/\textbackslash log\{n\})\$ time complexity of the proposed algorithm, where n is a number of vertices of the input graph. Thus, we provide the alternative way to construct a slightly subcubic algorithm for CFPQ which is based on linear algebra and incremental transitive closure (a classic graph-theoretic problem), as opposed to the algorithm with the same complexity proposed by Chaudhuri (2008). Our evaluation shows that our algorithm is a good candidate to be the universal algorithm for both regular and context-free path querying.},
+  pubstate = {preprint},
+  keywords = {Computer Science - Databases,Computer Science - Programming Languages}
 }
 
 @article{virtanenSciPyFundamentalAlgorithms2020,
