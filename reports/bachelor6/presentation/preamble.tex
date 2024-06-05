@@ -32,10 +32,9 @@
 \newtheorem{rudefinition}{Определение}
 \newtheorem{rulemma}{Лемма}
 
-
 %%% Дополнительные пакеты. Используются в презентации, но могут быть отключены при необходимости
 \usepackage{tikz} % Мощный пакет для создание рисунков, однако может очень сильно замедлять компиляцию
-\usetikzlibrary{decorations.pathreplacing,calc,shapes,positioning,tikzmark}
+\usetikzlibrary{decorations.pathreplacing,calc,shapes,positioning,tikzmark, arrows.meta}
 
 \usepackage{multirow} % Ячейка занимающая несколько строк в таблице
 
@@ -45,3 +44,26 @@
 \usepackage{algorithmicx}
 
 \usepackage{fancyvrb}
+
+\newcommand{\GitHub}{\textsc{GitHub}}
+\newcommand{\python}{\textsc{Python}}
+\newcommand{\networkx}{\textsc{NetworkX}}
+\newcommand{\cfpqdata}{\textsc{CFPQ\_Data}}
+\newcommand{\pip}{\textsc{pip}}
+\newcommand{\poetry}{\textsc{Poetry}}
+\newcommand{\gitlab}{\textsc{GitLab}}
+\newcommand{\pyformlang}{\textsc{Pyformlang}}
+\newcommand{\scipy}{\textsc{SciPy}}
+\newcommand{\antlr}{\textsc{ANTLR4}}
+\usepackage[kpsewhich,newfloat]{minted}
+
+\newcommand\blfootnote[1]{%
+	\begingroup
+	\renewcommand\thefootnote{}\footnote{#1}%
+	\addtocounter{footnote}{-1}%
+	\endgroup
+}
+
+\useinnertheme{circles}
+
+\usepackage{xurl}
