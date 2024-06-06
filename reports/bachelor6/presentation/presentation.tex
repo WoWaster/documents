@@ -33,7 +33,7 @@
 
 	{\scriptsize
 		% У научного руководителя должна быть указана научная степень
-		\textbf{Научный руководитель:} доцент кафедры системного программирования, к. ф.-м. н., Григорьев С. В. \\
+		\textbf{Научный руководитель:} доцент кафедры системного программирования, к.ф.-м.н., Григорьев С. В. \\
 	}
 	\begin{center}
 		\vspace{5pt}
@@ -47,9 +47,9 @@
 \begin{frame}
 	\frametitle{Введение}
 	\begin{itemize}
-		\item На мат-мехе читается курс по формальным языкам
-		\item Домашние задание требуют реализации нетривиальных алгоритмов
-		\item На проверку домашних заданий преподаватели тратят большое количество времени
+		\item На СПбГУ читается курс по формальным языкам
+		\item Домашние задания требуют реализации нетривиальных алгоритмов
+		\item Тесты обязательны, но не всегда покрывают граничные случаи
 		\item Алгоритмические задачи хорошо проверяются с помощью property-based тестирования
 	\end{itemize}
 \end{frame}
@@ -58,12 +58,12 @@
 % Описание выносимых на защиту результатов, процесса или особенностей их достижения и т.д.
 \begin{frame}
 	\frametitle{Постановка задачи}
-	\textbf{Цель}: разработать инфраструктуру для автоматизации проверки задач по курсу \enquote{Теория формальных языков}.
+	\textbf{Цель}: разработать инфраструктуру для автоматизации проверки задач по курсу \enquote{Теория формальных языков}
 
 	\textbf{Задачи}:
 	\begin{enumerate}
-		\item Изучить способы автоматического тестирования учебных задач.
-		\item Создать базовую инфраструктуру для автоматического тестирования.
+		\item Изучить способы автоматического тестирования учебных задач
+		\item Создать базовую инфраструктуру для автоматического тестирования
 		\item Произвести проверку автоматических тестов, путём реализации решений
 		\item Исправить накопленный технический долг
 		      \begin{enumerate}
@@ -99,9 +99,22 @@
 \end{frame}
 
 \begin{frame}
+	\frametitle{Требования к реализации}
+
+	\begin{itemize}
+		\item Тесты должны быть открытыми
+		\item Тесты должны быть property-based
+		\item Задачи должны сдаваться с помощью PR
+		\item Имена и сигнатуры требуемых функций и классов известны заранее
+		\item Архитектуру проекта и связь между модулями студенты определяют сами
+	\end{itemize}
+
+\end{frame}
+
+\begin{frame}
 	\frametitle{Используемые технологии}
 
-	Используемые технологии во многом были зафиксированы.
+	Используемые технологии во многом были зафиксированы
 	\begin{itemize}
 		\item \python{}~--- основной язык программирования
 		\item \textsc{Pytest}~--- библиотека для тестирования
@@ -111,20 +124,6 @@
 		\item \scipy{}~--- библиотека для работы с разреженными матрицами
 		\item \antlr{}~--- инструмент для генерации парсеров
 		\item \textsc{Grammarinator}~--- инструмент генерации слов по грамматике \antlr{}
-	\end{itemize}
-
-\end{frame}
-
-\begin{frame}
-	\frametitle{Требования к реализации}
-
-	Научным руководителем были зафиксированы следующие требования к тестам:
-	\begin{itemize}
-		\item Тесты должны быть открытыми
-		\item Тесты должны быть property-based
-		\item Задачи должны сдаваться с помощью PR
-		\item Имена и сигнатуры требуемых функций и классов известны заранее
-		\item Архитектуру проекта и связь между модулями студенты определяют сами
 	\end{itemize}
 
 \end{frame}
@@ -151,11 +150,12 @@
 
 \end{frame}
 
-\begin{frame}
+\begin{frame}[t]
 	\frametitle{Структура решения}
 
-	Здесь будет диаграмма с тем, что есть про задания и слова про реализацию (или лучше словами?)
-
+	\begin{center}
+		\includegraphics[height = 0.8\textheight, keepaspectratio, trim=0.8cm 0.8cm 0.8cm 0.8cm,clip]{pictures/project_structure.pdf}
+	\end{center}
 \end{frame}
 
 \begin{frame}
@@ -165,7 +165,7 @@
 		\item При реализации потребовалось обновить пакеты
 		\item Получили проблемы с \pip{}
 		\item В семестре обновили зависимости библиотеки \cfpqdata
-		\item На будущее решили перейти на \poetry
+		\item Перешли на \poetry
 	\end{itemize}
 
 \end{frame}
@@ -181,31 +181,34 @@
 		\item Необходимость предупреждать студентов о том, что решения нужно оптимизировать
 	\end{itemize}
 
-	\begin{center}
-		\begin{tikzpicture}[shorten >=1pt, node distance=2cm, on grid]
-			\node [circle, draw] (3) {3};
-			\node [circle, draw, right = of 3] (4) {4};
-			\node [circle, draw, right = of 4] (6) {6};
-			\node [circle, draw, right = of 6] (7) {7};
-			\node [circle, draw, right = of 7] (8) {8};
-			\node [circle, draw, right = of 8] (9) {9};
+	\begin{figure}
+		\caption{Зависимость задач друг от друга}
+		\begin{center}
+			\begin{tikzpicture}[shorten >=1pt, node distance=2cm, on grid]
+				\node [circle, draw] (3) {3};
+				\node [circle, draw, right = of 3] (4) {4};
+				\node [circle, draw, right = of 4] (6) {6};
+				\node [circle, draw, right = of 6] (7) {7};
+				\node [circle, draw, right = of 7] (8) {8};
+				\node [circle, draw, right = of 8] (9) {9};
 
-			\path[->] (9) edge (8);
-			\path[->] (8) edge (7);
-			\path[->] (7) edge (6);
-			\path[->] (6) edge (4);
-			\path[->] (4) edge (3);
+				\path[->] (9) edge (8);
+				\path[->] (8) edge (7);
+				\path[->] (7) edge (6);
+				\path[->] (6) edge (4);
+				\path[->] (4) edge (3);
 
-			\path[->] (7) edge [bend right] (4);
-			\path[->] (8) edge [bend right] (4);
-			\path[->] (9) edge [bend right] (4);
+				\path[->] (7) edge [bend right] (4);
+				\path[->] (8) edge [bend right] (4);
+				\path[->] (9) edge [bend right] (4);
 
-			\path[->] (8) edge [bend left] (6);
-			\path[->] (9) edge [bend left] (6);
+				\path[->] (8) edge [bend left] (6);
+				\path[->] (9) edge [bend left] (6);
 
-			\path[->] (9) edge [bend right] (7);
-		\end{tikzpicture}
-	\end{center}
+				\path[->] (9) edge [bend right] (7);
+			\end{tikzpicture}
+		\end{center}
+	\end{figure}
 
 \end{frame}
 
@@ -230,7 +233,21 @@
 \begin{frame}
 	\frametitle{Ход работы студента}
 
-	Сюда чё и как сдавать
+	\begin{center}
+		\includegraphics[width=\textwidth, keepaspectratio]{pictures/student_workflow.pdf}
+	\end{center}
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Планы на будущее}
+
+	Для исправления выявленных недостатков в будущем планируется:
+	\begin{enumerate}
+		\item добавить ручные тесты
+		\item добавить тесты на наличие вспомогательных функций
+		\item добавить ограничение на скорость исполнения алгоритмов
+	\end{enumerate}
 
 \end{frame}
 
