@@ -535,4 +535,4 @@
 \def\numberline#1{\savenumberline{#1.}}
 
 %% Запретим тексту выезжать на поля вообще и совсем
-\sloppy
+% \sloppy
