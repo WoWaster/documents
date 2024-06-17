@@ -1,0 +1,20 @@
+*.bak
+*.log
+*.out
+*.aux
+*.bbl
+*.blg
+*.pag
+*.toc
+*.xdv
+*.pdf
+*.dvi
+*.fls
+/.aspell*
+/*.synctex.gz
+*.fdb_latexmk
+_minted-*
+
+# Tex Studio files
+*.txss2
+

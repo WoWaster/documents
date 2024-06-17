@@ -1,0 +1,254 @@
+% \documentclass{beamer}
+%Для защит онлайн лучше использовать разрешение 16x9
+\documentclass[aspectratio=169]{beamer}
+
+\input{preamble.tex}
+
+% То, что в квадратных скобках, отображается внизу по центру каждого слайда.
+\title[Инфраструктура тестирования]{Разработка инфраструктуры для автоматизации проверки задач по курсу \enquote{Теория формальных языков}}
+
+% То, что в квадратных скобках, отображается в левом нижнем углу.
+\institute[СПбГУ]{}
+
+% То, что в квадратных скобках, отображается в левом нижнем углу.
+\author[Николай Пономарев]{Николай Алексеевич Пономарев, группа 21.Б10-мм}
+
+\begin{document}
+{
+\setbeamertemplate{footline}{}
+% Лого университета или организации, отображается в шапке титульного листа
+\begin{frame}
+	\includegraphics[width=1.4cm]{pictures/SPbGU_Logo.png}
+	\vspace{-35pt}
+	\hspace{-10pt}
+	\begin{center}
+		\begin{tabular}{c}
+			\scriptsize{Санкт-Петербургский государственный университет} \\
+			\scriptsize{Кафедра системного программирования}
+		\end{tabular}
+		\titlepage
+	\end{center}
+
+	\btVFill
+
+	{\scriptsize
+		% У научного руководителя должна быть указана научная степень
+		\textbf{Научный руководитель:} доцент кафедры системного программирования, к.ф.-м.н., Григорьев С. В. \\
+	}
+	\begin{center}
+		\vspace{5pt}
+		\scriptsize{Санкт-Петербург\\
+			2024}
+	\end{center}
+
+\end{frame}
+}
+
+\begin{frame}
+	\frametitle{Введение}
+	\begin{itemize}
+		\item На СПбГУ читается курс по формальным языкам
+		\item Домашние задания требуют реализации нетривиальных алгоритмов
+		\item Тесты обязательны, но не всегда покрывают граничные случаи
+		\item Алгоритмические задачи хорошо проверяются с помощью property-based тестирования
+	\end{itemize}
+\end{frame}
+
+% Обязательный слайд: четкая формулировка цели данной работы и постановка задачи
+% Описание выносимых на защиту результатов, процесса или особенностей их достижения и т.д.
+\begin{frame}
+	\frametitle{Постановка задачи}
+	\textbf{Цель}: разработать инфраструктуру для автоматизации проверки задач по курсу \enquote{Теория формальных языков}
+
+	\textbf{Задачи}:
+	\begin{enumerate}
+		\item Изучить способы автоматического тестирования учебных задач
+		\item Создать базовую инфраструктуру для автоматического тестирования
+		\item Произвести проверку автоматических тестов, путём реализации решений
+		\item Исправить накопленный технический долг
+		      \begin{enumerate}
+			      \item Сменить систему управления зависимостями
+			      \item Обновить зависимости
+		      \end{enumerate}
+	\end{enumerate}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Виды автоматических тестов}
+
+	Автоматические тесты можно характеризовать несколькими способами:
+	\begin{itemize}
+		\item По видимости
+		      \begin{itemize}
+			      \item открытые
+			      \item закрытые
+		      \end{itemize}
+		\item По способу реализации
+		      \begin{itemize}
+			      \item ручные
+			      \item property-based
+			      \item смешанные
+		      \end{itemize}
+		\item По способу сдачи решений
+		      \begin{itemize}
+			      \item Learning Management Systems
+			      \item Pull Request
+			      \item \GitHub{} \textsc{Classroom}
+		      \end{itemize}
+	\end{itemize}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Требования к реализации}
+
+	\begin{itemize}
+		\item Тесты должны быть открытыми
+		\item Тесты должны быть property-based
+		\item Задачи должны сдаваться с помощью PR
+		\item Имена и сигнатуры требуемых функций и классов известны заранее
+		\item Архитектуру проекта и связь между модулями студенты определяют сами
+	\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Используемые технологии}
+
+	Используемые технологии во многом были зафиксированы
+	\begin{itemize}
+		\item \python{}~--- основной язык программирования
+		\item \textsc{Pytest}~--- библиотека для тестирования
+		\item \cfpqdata{}~--- библиотека-датасет графов и грамматик
+		\item \pyformlang{}~--- библиотека для работы с грамматиками, регулярными выражениями и различными конечными автоматами
+		\item \networkx{}~--- библиотека для работы с графами
+		\item \scipy{}~--- библиотека для работы с разреженными матрицами
+		\item \antlr{}~--- инструмент для генерации парсеров
+		\item \textsc{Grammarinator}~--- инструмент генерации слов по грамматике \antlr{}
+	\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Инфраструктура решения}
+
+	Тесты к нереализованным студентом задачам необходимо пропускать.
+	Это можно сделать с помощью:
+	\begin{itemize}
+		\item создания отдельных репозиториев для каждой задачи
+		\item конфигурации системы тестирования
+		\item проверки наличия требуемых функций
+	\end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile=singleslide]
+	\frametitle{Условный запуск тестов}
+
+	\begin{center}
+		\inputminted[]{python3}{pictures/minimal_example.py}
+	\end{center}
+
+\end{frame}
+
+\begin{frame}[t]
+	\frametitle{Структура решения}
+
+	\begin{center}
+		\includegraphics[height = 0.8\textheight, keepaspectratio, trim=0.8cm 0.8cm 0.8cm 0.8cm,clip]{pictures/project_structure.pdf}
+	\end{center}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Обновление используемых инструментов}
+
+	\begin{itemize}
+		\item При реализации потребовалось обновить пакеты
+		\item Получили проблемы с \pip{}
+		\item В семестре обновили зависимости библиотеки \cfpqdata
+		\item Перешли на \poetry
+	\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Апробация}
+
+	Весной курс читался первокурсникам магистратуры ИТМО.
+	В течение семестра были выявлены следующие проблемы:
+	\begin{itemize}
+		\item Отсутствие ручных тестов
+		\item Необходимость тестирования всех требуемых функции
+		\item Необходимость предупреждать студентов о том, что решения нужно оптимизировать
+	\end{itemize}
+
+	\begin{figure}
+		\caption{Зависимость задач друг от друга}
+		\begin{center}
+			\begin{tikzpicture}[shorten >=1pt, node distance=2cm, on grid]
+				\node [circle, draw] (3) {3};
+				\node [circle, draw, right = of 3] (4) {4};
+				\node [circle, draw, right = of 4] (6) {6};
+				\node [circle, draw, right = of 6] (7) {7};
+				\node [circle, draw, right = of 7] (8) {8};
+				\node [circle, draw, right = of 8] (9) {9};
+
+				\path[->] (9) edge (8);
+				\path[->] (8) edge (7);
+				\path[->] (7) edge (6);
+				\path[->] (6) edge (4);
+				\path[->] (4) edge (3);
+
+				\path[->] (7) edge [bend right] (4);
+				\path[->] (8) edge [bend right] (4);
+				\path[->] (9) edge [bend right] (4);
+
+				\path[->] (8) edge [bend left] (6);
+				\path[->] (9) edge [bend left] (6);
+
+				\path[->] (9) edge [bend right] (7);
+			\end{tikzpicture}
+		\end{center}
+	\end{figure}
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Результаты}
+
+	\begin{enumerate}
+		\item Изучены способы автоматического тестирования учебных задач
+		\item Создана базовая инфраструктура для автоматического тестирования
+		\item Произведена проверка автоматических тестов, путём реализации решений
+		\item Исправлен накопленный технический долг
+	\end{enumerate}
+	\blfootnote{Исходный код тестов и инфраструктуры: \url{https://github.com/FormalLanguageConstrainedPathQuerying/formal-lang-course}}
+	\blfootnote{Имя пользователя: \texttt{WoWaster}}
+	\blfootnote{Исходный код решений находится в приватном репозитории}
+	\blfootnote{Pull Request в проект \cfpqdata{}: \url{https://github.com/FormalLanguageConstrainedPathQuerying/CFPQ_Data/pull/92}}
+
+\end{frame}
+
+\appendix
+
+\begin{frame}
+	\frametitle{Ход работы студента}
+
+	\begin{center}
+		\includegraphics[width=\textwidth, keepaspectratio]{pictures/student_workflow.pdf}
+	\end{center}
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Планы на будущее}
+
+	Для исправления выявленных недостатков в будущем планируется:
+	\begin{enumerate}
+		\item добавить ручные тесты
+		\item добавить тесты на наличие вспомогательных функций
+		\item добавить ограничение на скорость исполнения алгоритмов
+	\end{enumerate}
+
+\end{frame}
+
+\end{document}
