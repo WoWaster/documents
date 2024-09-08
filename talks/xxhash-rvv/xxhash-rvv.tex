@@ -1,4 +1,7 @@
-\documentclass[aspectratio=169, handout]{beamer}
+\documentclass[
+    aspectratio=169,
+    % handout
+]{beamer}
 % \documentclass[a4paper]{article}
 % \usepackage{beamerarticle}
 
@@ -72,8 +75,8 @@
 % \usemintedstyle{solarized-light}
 % \SetupFloatingEnvironment{listing}{name=Листинг}
 
-\title[Оптимизация xxHash для RISC-V]{Боль и страдания в мире оптимизации для RISC-V}
-\subtitle{Оптимизация xxHash для RISC-V с использованием различных реализаций RVV}
+\title[Оптимизация xxHash для RISC-V]{Оптимизация xxHash для RISC-V с использованием различных реализаций RVV}
+\subtitle{Длинная дорога к ускорению маленькой библиотеки для RISC-V}
 \author{Николай Пономарев}
 \institute[Матмех СПбГУ]{Математико-механический факультет СПбГУ}
 \date{20 сентября 2024 г.}
@@ -85,12 +88,12 @@
     \maketitle
 \end{frame}
 
-\begin{frame}
-    \frametitle{Обо мне}
+% \begin{frame}
+%     \frametitle{Обо мне}
 
-    Надо???
+%     Надо???
 
-\end{frame}
+% \end{frame}
 
 \begin{frame}
     \frametitle{С чего всё начиналось (весна 2023)}
@@ -186,16 +189,9 @@
 
     \begin{itemize}[<+->]
         \item BPI-F3 с SpacemiT X60 и RVV 1.0
-        \item Апрстримовые компиляторы!
+        \item Апстримовые компиляторы!
         \item И наконец-то ускорение!
     \end{itemize}
-    % Первая плата с C908 имеет очень странную топологию CPU.
-
-    % Дождались BPI-F3.
-
-    % Версия вдохновленная SVE заработала отлично!
-
-    % (А ещё в GCC завезли поддержку XTheadVector, но кажется, там бага)
 
     \ %
 
@@ -208,13 +204,13 @@
     \begin{center}
         \begin{tabularx}{\textwidth}{YZZZ}
             \toprule
-                                   & Скалярная версия, Мб/с & Векторная версия, Мб/с & Ускорение, раз \\
+                                  & Скалярная версия, Мб/с & Векторная версия, Мб/с & Ускорение, раз \\
             \midrule
-            Урезанный RVV~0.7.1    & 169.3                  & 116.0                  & 0.69           \\
+            Урезанный RVV~0.7.1   & 169.3                  & 116.0                  & 0.69           \\
             \midrule
-            Полноценный RVV~ 0.7.1 & 645.3                  & 472.6                  & 0.73           \\
+            Полноценный RVV~0.7.1 & 645.3                  & 472.6                  & 0.73           \\
             \midrule
-            RVV 1.0                & 516.3                  & 2036.0                 & 3.94           \\
+            RVV 1.0               & 516.3                  & 2036.0                 & 3.94           \\
             \bottomrule
         \end{tabularx}
     \end{center}
@@ -222,10 +218,17 @@
 \end{frame}
 
 \begin{frame}
-    \frametitle{???}
+    \frametitle{Выводы}
 
-    Выводы на тему развития экосистемы???
+    \begin{itemize}[<+->]
+        \item Появление бета версий расширений в доступном \enquote{железе} ведёт к усложнению поддержки кода
+        \item Между возможностью скомпилировать код и измерить ускорение может пройти достаточно большое количество времени
+        \item Нельзя утверждать, что на другом ядре получится добиться ускорения
+    \end{itemize}
 
+    \ %
+
+    \uncover<+->{\centering \Huge  Спасибо!}
 \end{frame}
 
 % \appendix
