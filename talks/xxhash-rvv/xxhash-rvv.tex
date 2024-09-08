@@ -1,0 +1,264 @@
+\documentclass[aspectratio=169, handout]{beamer}
+% \documentclass[a4paper]{article}
+% \usepackage{beamerarticle}
+
+% Setup fonts.
+\usepackage{fontspec}
+\setmainfont{Iosevka Etoile}
+\setsansfont{Iosevka Aile}
+\setmonofont{Iosevka}
+
+
+%%% Fonts and language setup.
+\usepackage{polyglossia}
+
+%% Math
+\usepackage{amsmath, amsfonts, amsthm, mathtools} % Advanced math tools.
+\usepackage{amssymb}
+\usepackage{unicode-math} % Allow TTF and OTF fonts in math and allow direct typing unicode math characters.
+% \usepackage{euler-math}
+\unimathsetup{
+    warnings-off={
+            mathtools-colon,
+            mathtools-overbracket
+        }
+}
+\setmathfont{Fira Math}
+% \setmathfont{Asana Math}[
+% Scale = MatchUppercase,
+% range = {\Coloneq}
+% ]
+% \setmathfont{GFS Neohellenic Math}
+\usepackage{csquotes}
+
+\usepackage{booktabs}
+\usepackage{colortbl}
+\usepackage{tabularx}
+\arrayrulecolor{solarizedAccent}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcolumntype{Z}{>{\raggedleft\arraybackslash}X}
+
+%%% Beamer
+% \usetheme{Madrid}
+\usetheme{Boadilla}
+% \usetheme{Berlin}
+\usecolortheme{solarized}
+% \usecolortheme[style=light]{Nord}
+% \usefonttheme{Nord}
+\setbeamertemplate{navigation symbols}{} %remove navigation symbols
+% % \setbeamertemplate{headline}{%
+% %     \begin{beamercolorbox}[ht=2.25ex,dp=3.75ex]{section in head/foot}
+% %         \insertnavigation{\paperwidth}
+% %     \end{beamercolorbox}%
+% % }%
+\useinnertheme{circles}
+\usefonttheme[stillsansserifsmall,stillsansseriftext]{serif}
+% \usepackage{appendixnumberbeamer}
+\setbeamertemplate{page number in head/foot}[appendixframenumber]
+
+%%% Misc
+
+\setdefaultlanguage{russian}
+\setotherlanguage{english}
+
+\uselanguage{russian}
+\languagepath{russian}
+\newtranslation[to = russian]{Definition}{Определение}
+\newtranslation[to = russian]{definition}{определение}
+
+
+%%% Code
+% \usepackage[kpsewhich,newfloat]{minted}
+% \usemintedstyle{solarized-light}
+% \SetupFloatingEnvironment{listing}{name=Листинг}
+
+\title[Оптимизация xxHash для RISC-V]{Боль и страдания в мире оптимизации для RISC-V}
+\subtitle{Оптимизация xxHash для RISC-V с использованием различных реализаций RVV}
+\author{Николай Пономарев}
+\institute[Матмех СПбГУ]{Математико-механический факультет СПбГУ}
+\date{20 сентября 2024 г.}
+
+\usepackage{hyperref}
+
+\begin{document}
+\begin{frame}[plain,noframenumbering]
+    \maketitle
+\end{frame}
+
+\begin{frame}
+    \frametitle{Обо мне}
+
+    Надо???
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{С чего всё начиналось (весна 2023)}
+
+    \begin{itemize}[<+->]
+        \item Большой интерес лаборатории к векторному расширению RISC-V
+        \item И наивное ожидание SBC с поддержкой RVV 1.0
+        \item В качестве подопытного~--- библиотека xxHash
+              \begin{itemize}
+                  \item Алгоритм хеширования, поддерживающий векторизацию
+                  \item Готовые реализации для SSE2, AVX, NEON, SVE
+                  \item Использование intrinsic функций для оптимизации
+              \end{itemize}
+    \end{itemize}
+
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Что умеет RISC-V}
+
+    \begin{itemize}
+        \item Векторное расширение RISC-V $\equiv$ RVV
+        \item В природе встречается две версии:
+              \begin{itemize}
+                  \item RVV 0.7.1~--- в ядрах Xuantie C906 (Sipeed Lichee RV, MangoPi MQ) и C910 (Beagle V, Sipeed Lichee Pi 4A)
+                  \item RVV 1.0~--- в ядрах Xuantie C908 и C920, SpacemiT X60 (Banana Pi BPI-F3)
+              \end{itemize}
+        \item<+-> Программные инструменты не готовы поддерживать RVV 0.7.1
+    \end{itemize}
+
+    \ %
+
+    \uncover<+->{$\implies$ для работы с RVV 0.7.1 требуются инструменты напрямую от вендора}
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{Первые эксперименты~--- QEMU (весна 2023)}
+
+    \begin{itemize}[<+->]
+        \item Зачем использовать плату, если есть эмулятор?
+        \item Поддержка только RVV 1.0
+        \item Векторные операции target архитектуры исполняются на скалярных регистрах host устройства
+    \end{itemize}
+
+    \ %
+
+    \uncover<+->{$\implies$ QEMU~--- инструмент тестирования \textbf{корректности}, не быстродействия}
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{Первые эксперименты~--- Lichee RV (весна 2023)}
+
+    \begin{itemize}[<+->]
+        \item Sipeed Lichee RV с ядрами Xuantie C906
+        \item RVV 0.7.1 с поддержкой элементов размером 32 бита и меньше
+        \item \textcolor{solarizedRed}{Проблема 1:} чем компилировать?
+        \item \textcolor{solarizedGreen}{Решение 1:} будем использовать форк GCC 10 от Xuantie
+        \item \textcolor{solarizedRed}{Проблема 2:} xxHash использует элементы по 64 бита
+        \item \textcolor{solarizedGreen}{Решение 2:} используем 32-битные элементы
+        \item \textcolor{solarizedRed}{Проблема 3:} внутри алгоритма используется сложение, нужно помнить про перенос
+        \item \textcolor{solarizedGreen}{Решение 3:} будем таскать за собой перенос, но это потребует масок
+    \end{itemize}
+
+    \ %
+
+    \uncover<+->{$\implies$ получим слишком много лишних действий $\implies$ получить нормальную скорость \textbf{невозможно}}
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{Полноценный RVV 0.7.1 (осень 2023)}
+
+    \begin{itemize}[<+->]
+        \item Sipeed LicheePi 4A с Xuantie C910 и полноценным RVV 0.7.1
+        \item Код стал проще и более похож на уже существующий
+        \item К этому времени в апстриме компиляторов поменялись названия intrinsic функций
+        \item Пришлось использовать макросы для тестирования в QEMU
+        \item Однако ускорения не получилось
+        \item Возможная проблема~--- дороговизна инструкции перестановки элементов вектора
+    \end{itemize}
+
+    \ %
+
+    \uncover<+->{$\implies$ дальнейшие эксперименты были отложены в дальний ящик}
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{RVV 1.0! (лето 2024)}
+
+    \begin{itemize}[<+->]
+        \item BPI-F3 с SpacemiT X60 и RVV 1.0
+        \item Апрстримовые компиляторы!
+        \item И наконец-то ускорение!
+    \end{itemize}
+    % Первая плата с C908 имеет очень странную топологию CPU.
+
+    % Дождались BPI-F3.
+
+    % Версия вдохновленная SVE заработала отлично!
+
+    % (А ещё в GCC завезли поддержку XTheadVector, но кажется, там бага)
+
+    \ %
+
+    \uncover<+->{$\implies$ потребовалось почти 3 года с момента принятия RVV 1.0, чтобы суметь провести оптимизации для него}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Бенчмарки}
+
+    \begin{center}
+        \begin{tabularx}{\textwidth}{YZZZ}
+            \toprule
+                                   & Скалярная версия, Мб/с & Векторная версия, Мб/с & Ускорение, раз \\
+            \midrule
+            Урезанный RVV~0.7.1    & 169.3                  & 116.0                  & 0.69           \\
+            \midrule
+            Полноценный RVV~ 0.7.1 & 645.3                  & 472.6                  & 0.73           \\
+            \midrule
+            RVV 1.0                & 516.3                  & 2036.0                 & 3.94           \\
+            \bottomrule
+        \end{tabularx}
+    \end{center}
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{???}
+
+    Выводы на тему развития экосистемы???
+
+\end{frame}
+
+% \appendix
+
+% \begin{frame}
+%     \frametitle{Немного про векторные расширения}
+
+%     SIMD и векторные расширения~--- наборы команд, которые позволяют обрабатывать данные "пачками" одновременно. (потом исправлю)
+
+%     Тут надо описать разницу между SIMD и векторами
+
+% \end{frame}
+
+% \begin{frame}
+%     \frametitle{Как использовать SIMD/вектора I/III}
+
+%     Рукописный код на ASM
+
+% \end{frame}
+
+% \begin{frame}
+%     \frametitle{Как использовать SIMD/вектора II/III}
+
+%     Intrinsics
+
+% \end{frame}
+
+% \begin{frame}
+%     \frametitle{Как использовать SIMD/вектора III/III}
+
+%     Автовекторизация
+
+% \end{frame}
+
+
+\end{document}
