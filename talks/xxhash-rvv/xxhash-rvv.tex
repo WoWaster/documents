@@ -32,6 +32,9 @@
 % range = {\Coloneq}
 % ]
 % \setmathfont{GFS Neohellenic Math}
+\usepackage{emoji}
+\setemojifont{Noto Color Emoji}
+
 \usepackage{csquotes}
 
 \usepackage{booktabs}
@@ -80,7 +83,6 @@
 % \SetupFloatingEnvironment{listing}{name=Листинг}
 
 \title[Оптимизация xxHash для RISC-V]{Оптимизация xxHash для RISC-V с использованием различных реализаций RVV}
-\subtitle{Длинная дорога к ускорению маленькой библиотеки для RISC-V}
 \author{Николай Пономарев}
 \institute[Матмех СПбГУ]{Математико-механический факультет СПбГУ}
 \date{20 сентября 2024 г.}
@@ -92,129 +94,111 @@
     \maketitle
 \end{frame}
 
-% \begin{frame}
-%     \frametitle{Обо мне}
-
-%     Надо???
-
-% \end{frame}
 
 \begin{frame}
-    \frametitle{С чего всё начиналось (весна 2023)}
+    \frametitle{xxHash}
 
-    \begin{itemize}[<+->]
-        \item Большой интерес лаборатории к векторному расширению RISC-V
-        \item И наивное ожидание SBC с поддержкой RVV 1.0
-        \item В качестве подопытного~--- библиотека xxHash
+    xxHash~--- современная библиотека для быстрого хеширования
+
+    Особенности:
+    \begin{itemize}
+        \item Поддерживает вычисление 32-, 64- и 128-битных хешей
+        \item Скорость работы может превышать пропускную способность RAM
+        \item Имеет поддержку SIMD и векторных расширений процессоров
               \begin{itemize}
-                  \item Алгоритм хеширования, поддерживающий векторизацию
-                  \item Готовые реализации для SSE2, AVX, NEON, SVE
-                  \item Использование intrinsic функций для оптимизации
+                  \item SSE2, AVX2, AVX512
+                  \item NEON, SVE
+                  \item Но нет поддержки RVV
               \end{itemize}
+        \item Использование intrinsic функций для оптимизации
     \end{itemize}
 
 \end{frame}
 
 
 \begin{frame}
-    \frametitle{Что умеет RISC-V}
+    \frametitle{Векторное расширение RISC-V}
 
     \begin{itemize}
         \item Векторное расширение RISC-V $\equiv$ RVV
-        \item В природе встречается две версии:
+        \item В природе встречается три версии:
               \begin{itemize}
-                  \item RVV 0.7.1~--- в ядрах Xuantie C906 (Sipeed Lichee RV, MangoPi MQ) и C910 (Beagle V, Sipeed Lichee Pi 4A)
+                  \item Урезанный RVV 0.7.1~--- реализован в ядрах Xuantie C906 (Sipeed Lichee~RV, MangoPi MQ), \textbf{НЕ} поддерживает 64-битные элементы
+                  \item Полноценный RVV 0.7.1~--- в ядрах Xuantie C910 (Sipeed Lichee Pi 4A)
                   \item RVV 1.0~--- в ядрах Xuantie C908 и C920, SpacemiT X60 (Banana Pi BPI-F3)
               \end{itemize}
-        \item<+-> Программные инструменты не готовы поддерживать RVV 0.7.1
+        \item Программные инструменты не готовы поддерживать RVV 0.7.1
+              \begin{itemize}
+                  \item Нужно использовать патченные производителем инструменты
+              \end{itemize}
     \end{itemize}
-
-    \ %
-
-    \uncover<+->{$\implies$ для работы с RVV 0.7.1 требуются инструменты напрямую от вендора}
 
 \end{frame}
 
 \begin{frame}
-    \frametitle{Первые эксперименты~--- QEMU (весна 2023)}
+    \frametitle{Урезанный RVV 0.7.1}
 
-    \begin{itemize}[<+->]
-        \item Зачем использовать плату, если есть эмулятор?
-        \item Поддержка только RVV 1.0
-        \item Векторные операции target архитектуры исполняются на скалярных регистрах host устройства
+    \begin{itemize}
+        \item Испытуемый: Sipeed Lichee RV с урезанным RVV 0.7.1 и VLEN\,=\,128 бит
+        \item \textcolor{solarizedRed}{Проблема}: Алгоритм работает над 64-битными числами
+              \begin{description}
+                  \item[\textcolor{solarizedGreen}{$\implies$}] будем использовать 32-битные элементы
+              \end{description}
+        \item \textcolor{solarizedRed}{Проблема}: Битовые операциям всё равно, но что со сложением?
+              \begin{description}
+                  \item[\textcolor{solarizedGreen}{$\implies$}] будем дополнительно обрабатывать перенос
+              \end{description}
     \end{itemize}
-
-    \ %
-
-    \uncover<+->{$\implies$ QEMU~--- инструмент тестирования \textbf{корректности}, не быстродействия}
-
-\end{frame}
-
-\begin{frame}
-    \frametitle{Первые эксперименты~--- Lichee RV (весна 2023)}
-
-    \begin{itemize}[<+->]
-        \item Sipeed Lichee RV с ядрами Xuantie C906
-        \item RVV 0.7.1 с поддержкой элементов размером 32 бита и меньше
-        \item \textcolor{solarizedRed}{Проблема 1:} чем компилировать?
-        \item \textcolor{solarizedGreen}{Решение 1:} будем использовать форк GCC 10 от Xuantie
-        \item \textcolor{solarizedRed}{Проблема 2:} xxHash использует элементы по 64 бита
-        \item \textcolor{solarizedGreen}{Решение 2:} используем 32-битные элементы
-        \item \textcolor{solarizedRed}{Проблема 3:} внутри алгоритма используется сложение, нужно помнить про перенос
-        \item \textcolor{solarizedGreen}{Решение 3:} будем таскать за собой перенос, но это потребует масок
-    \end{itemize}
-
-    \ %
-
-    \uncover<+->{$\implies$ получим слишком много лишних действий $\implies$ получить нормальную скорость \textbf{невозможно}}
-
 \end{frame}
 
 \begin{frame}
     \frametitle{Полноценный RVV 0.7.1 (осень 2023)}
 
-    \begin{itemize}[<+->]
-        \item Sipeed LicheePi 4A с Xuantie C910 и полноценным RVV 0.7.1
-        \item Код стал проще и более похож на уже существующий
-        \item К этому времени в апстриме компиляторов поменялись названия intrinsic функций
-        \item Пришлось использовать макросы для тестирования в QEMU
-        \item Однако ускорения не получилось
-        \item Возможная проблема~--- дороговизна инструкции перестановки элементов вектора
+    \begin{itemize}
+        \item Испытуемый: Sipeed LicheePi 4A с полноценным RVV 0.7.1 и VLEN\,=\,128 %бит
+        \item Здесь хочется объединить реализации для RVV 0.7.1 для RVV 1.0
+        \item Это возможно, \textcolor{solarizedRed}{но}
+              \begin{itemize}
+                  \item в апстриме компиляторов у intrinsic функций появился префикс \texttt{\_\_riscv}
+                        \begin{description}
+                            \item[$\implies$] придётся повозиться с макросами
+                        \end{description}
+                  \item можно попасться на несуществующую в одной версий инструкцию
+              \end{itemize}
+        \item А ещё в GCC 14 есть поддержка XTheadVector, но со сломанной кодогенерацией \emoji{confused}
     \end{itemize}
-
-    \ %
-
-    \uncover<+->{$\implies$ дальнейшие эксперименты были отложены в дальний ящик}
 
 \end{frame}
 
 \begin{frame}
-    \frametitle{RVV 1.0! (лето 2024)}
+    \frametitle{RVV 1.0!}
 
-    \begin{itemize}[<+->]
-        \item BPI-F3 с SpacemiT X60 и RVV 1.0
-        \item Апстримовые компиляторы!
-        \item И наконец-то ускорение!
+    \begin{itemize}
+        \item BPI-F3 с RVV 1.0 и VLEN\,=\,256 бит
+        \item Кажется, что счастье!
+              \begin{itemize}
+                  \item Полная поддержка в апстриме компиляторов
+                  \item Автовекторизация
+              \end{itemize}
     \end{itemize}
 
-    \ %
-
-    \uncover<+->{$\implies$ потребовалось почти 3 года с момента принятия RVV 1.0, чтобы суметь провести оптимизации для него}
 \end{frame}
 
 \begin{frame}
     \frametitle{Бенчмарки}
 
     \begin{center}
-        \begin{tabularx}{\textwidth}{YZZZ}
+        \begin{tabularx}{\textwidth}{YZZZZ}
             \toprule
-                                  & Скалярная версия, Мб/с & Векторная версия, Мб/с & Ускорение, раз \\
+                                  & Размер регистра, бит & Скалярная версия, Мб/с & Векторная версия, Мб/с & Ускорение, раз \\
             \midrule
-            Урезанный RVV~0.7.1   & 169.3                  & 116.0                  & 0.69           \\
+            Урезанный RVV~0.7.1   & 128                  & 169.3                  & 116.0                  & 0.69           \\
             \midrule
-            Полноценный RVV~0.7.1 & 645.3                  & 472.6                  & 0.73           \\
+            Полноценный RVV~0.7.1 & 128                  & 645.3                  & 472.6                  & 0.73           \\
             \midrule
-            RVV 1.0               & 516.3                  & 2036.0                 & 3.94           \\
+            RVV 1.0               & 256                  & 516.3                  & 2036.0                 & 3.94           \\
+            \midrule
+            AVX2                  & 256                  & 21374.8                & 46864.3                & 2.19           \\
             \bottomrule
         \end{tabularx}
     \end{center}
@@ -224,48 +208,18 @@
 \begin{frame}
     \frametitle{Выводы}
 
-    \begin{itemize}[<+->]
-        \item Появление бета версий расширений в доступном \enquote{железе} ведёт к усложнению поддержки кода
-        \item Между возможностью скомпилировать код и измерить ускорение может пройти достаточно большое количество времени
-        \item Нельзя утверждать, что на другом ядре получится добиться ускорения
+    \begin{itemize}
+        \item Оформлен Pull Request в библиотеку
+              \begin{itemize}
+                  \item ссылка
+              \end{itemize}
     \end{itemize}
 
     \ %
 
-    \uncover<+->{\centering \Huge  Спасибо!}
+    \begin{center}
+        \Huge  Спасибо!
+    \end{center}
 \end{frame}
-
-% \appendix
-
-% \begin{frame}
-%     \frametitle{Немного про векторные расширения}
-
-%     SIMD и векторные расширения~--- наборы команд, которые позволяют обрабатывать данные "пачками" одновременно. (потом исправлю)
-
-%     Тут надо описать разницу между SIMD и векторами
-
-% \end{frame}
-
-% \begin{frame}
-%     \frametitle{Как использовать SIMD/вектора I/III}
-
-%     Рукописный код на ASM
-
-% \end{frame}
-
-% \begin{frame}
-%     \frametitle{Как использовать SIMD/вектора II/III}
-
-%     Intrinsics
-
-% \end{frame}
-
-% \begin{frame}
-%     \frametitle{Как использовать SIMD/вектора III/III}
-
-%     Автовекторизация
-
-% \end{frame}
-
 
 \end{document}
