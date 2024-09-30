@@ -104,11 +104,11 @@
     \begin{itemize}
         \item Поддерживает вычисление 32-, 64- и 128-битных хешей
         \item Скорость работы может превышать пропускную способность RAM
-        \item Имеет поддержку SIMD и векторных расширений процессоров
+        \item Алгоритм поддерживает SIMD и векторные расширения процессоров
               \begin{itemize}
                   \item SSE2, AVX2, AVX512
                   \item NEON, SVE
-                  \item Но нет поддержки RVV
+                  \item Но нет поддержки векторного расширения RISC-V
               \end{itemize}
         \item Использование intrinsic функций для оптимизации
     \end{itemize}
@@ -121,7 +121,7 @@
 
     \begin{itemize}
         \item Векторное расширение RISC-V $\equiv$ RVV
-        \item В природе встречается три версии:
+        \item В продаже встречаются три версии:
               \begin{itemize}
                   \item Урезанный RVV 0.7.1~--- реализован в ядрах Xuantie C906 (Sipeed Lichee~RV, MangoPi MQ), \textbf{НЕ} поддерживает 64-битные элементы
                   \item Полноценный RVV 0.7.1~--- в ядрах Xuantie C910 (Sipeed Lichee Pi 4A)
@@ -144,7 +144,7 @@
               \begin{description}
                   \item[\textcolor{solarizedGreen}{$\implies$}] будем использовать 32-битные элементы
               \end{description}
-        \item \textcolor{solarizedRed}{Проблема}: Битовые операциям всё равно, но что со сложением?
+        \item \textcolor{solarizedRed}{Проблема}: Битовым операциям всё равно, но что со сложением?
               \begin{description}
                   \item[\textcolor{solarizedGreen}{$\implies$}] будем дополнительно обрабатывать перенос
               \end{description}
@@ -152,18 +152,18 @@
 \end{frame}
 
 \begin{frame}
-    \frametitle{Полноценный RVV 0.7.1 (осень 2023)}
+    \frametitle{Полноценный RVV 0.7.1}
 
     \begin{itemize}
         \item Испытуемый: Sipeed LicheePi 4A с полноценным RVV 0.7.1 и VLEN\,=\,128 %бит
-        \item Здесь хочется объединить реализации для RVV 0.7.1 для RVV 1.0
+        \item Здесь хочется объединить реализации для RVV 0.7.1 и для RVV 1.0
         \item Это возможно, \textcolor{solarizedRed}{но}
               \begin{itemize}
                   \item в апстриме компиляторов у intrinsic функций появился префикс \texttt{\_\_riscv}
                         \begin{description}
                             \item[$\implies$] придётся повозиться с макросами
                         \end{description}
-                  \item можно попасться на несуществующую в одной версий инструкцию
+                  \item можно попасться на несуществующую в одной из версий инструкцию
               \end{itemize}
         \item А ещё в GCC 14 есть поддержка XTheadVector, но со сломанной кодогенерацией \emoji{confused}
     \end{itemize}
@@ -178,7 +178,7 @@
         \item Кажется, что счастье!
               \begin{itemize}
                   \item Полная поддержка в апстриме компиляторов
-                  \item Автовекторизация
+                  \item Автовекторизация (иногда некорректная)
               \end{itemize}
     \end{itemize}
 
@@ -209,9 +209,17 @@
     \frametitle{Выводы}
 
     \begin{itemize}
-        \item Оформлен Pull Request в библиотеку
+        \item Урезанный RVV 0.7.1 применим далеко не для всех алгоритмов
+              % \begin{itemize}
+              %     \item
+              % \end{itemize}
+        \item Полноценный RVV 0.7.1 и RVV 1.0 позволяют портировать любые алгоритмы
               \begin{itemize}
-                  \item ссылка
+                  \item И даже получать настоящее ускорение
+              \end{itemize}
+        \item Pull Request в xxHash
+              \begin{itemize}
+                  \item \url{https://github.com/Cyan4973/xxHash/pull/898}
               \end{itemize}
     \end{itemize}
 
