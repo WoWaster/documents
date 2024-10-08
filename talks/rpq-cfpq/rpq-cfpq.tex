@@ -1,0 +1,500 @@
+% !BIB program = bibtex
+\documentclass[
+    aspectratio=169,
+    % handout
+]{beamer}
+% \documentclass[a4paper]{article}
+% \usepackage{beamerarticle}
+
+% Setup fonts.
+\usepackage{fontspec}
+\setmainfont{Iosevka Etoile}
+\setsansfont{Iosevka Aile}
+\setmonofont{Iosevka}
+
+
+%%% Fonts and language setup.
+\usepackage{polyglossia}
+
+%% Math
+\usepackage{amsmath, amsfonts, amsthm, mathtools} % Advanced math tools.
+\usepackage{amssymb}
+
+\usepackage{unicode-math} % Allow TTF and OTF fonts in math and allow direct typing unicode math characters.
+\unimathsetup{
+    warnings-off={
+        mathtools-colon,
+        mathtools-overbracket
+        }
+    }
+% \setmathfont{Fira Math}
+% \setmathfont{Noto Sans Math}[range = {\Coloneq, cal}]
+% \setmathfont{Asana Math}
+% [
+%         Scale = MatchUppercase,
+%         range = {\Coloneq, cal}
+% ]
+% \setmathfont{STIX Two Math}[range = {\Coloneq, cal}]
+% \usepackage{euler-math}
+\setmathfont{Lete Sans Math}[CharacterVariant={3,6},StylisticSet={4}]
+
+% \usepackage{emoji}
+% \setemojifont{Noto Color Emoji}
+
+
+
+\usepackage{booktabs}
+\usepackage{colortbl}
+\usepackage{tabularx}
+\arrayrulecolor{solarizedAccent}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcolumntype{Z}{>{\raggedleft\arraybackslash}X}
+
+%%% Beamer
+% \usetheme{Madrid}
+\usetheme{Boadilla}
+% \usetheme{Berlin}
+\usecolortheme{solarized}
+% \usecolortheme[style=light]{Nord}
+% \usefonttheme{Nord}
+\setbeamertemplate{navigation symbols}{} %remove navigation symbols
+\setbeamertemplate{headline}{%
+    \begin{beamercolorbox}[ht=2.25ex,dp=3.75ex]{section in head/foot}
+        \insertnavigation{\paperwidth}
+    \end{beamercolorbox}%
+}
+\useinnertheme{circles}
+\usefonttheme[stillsansserifsmall,stillsansseriftext]{serif}
+% \usepackage{appendixnumberbeamer}
+\setbeamertemplate{page number in head/foot}[appendixframenumber]
+\setbeamercolor{author in head/foot}{fg=solarizedRebase03}
+\setbeamercolor{title in head/foot}{fg=solarizedRebase03}
+\setbeamercolor{date in head/foot}{fg=solarizedRebase03}
+\setbeamercolor{page number in head/foot}{fg=solarizedRebase03}
+
+%%% Misc
+
+\setdefaultlanguage{russian}
+\setotherlanguage{english}
+
+\uselanguage{russian}
+\languagepath{russian}
+\newtranslation[to = russian]{Definition}{Определение}
+\newtranslation[to = russian]{definition}{определение}
+
+%% Tikz
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta}
+\usetikzlibrary{external}
+\usetikzlibrary{positioning}
+\usetikzlibrary{shapes.geometric}
+\usetikzlibrary{automata}
+\usetikzlibrary{decorations.pathmorphing}
+\usetikzlibrary{calc}
+\tikzsetexternalprefix{figures/}
+\tikzexternalize
+
+%%% Code
+\usepackage[kpsewhich,newfloat]{minted}
+\usemintedstyle{solarized-light}
+% \SetupFloatingEnvironment{listing}{name=Листинг}
+
+\usepackage[backend=biber, style=alphabetic]{biblatex}
+\renewcommand*{\bibfont}{\scriptsize}
+\addbibresource{rpq-cfpq.bib}
+
+\usepackage{csquotes}
+
+\title[Запросы в терминах формальных языков]{Запросы к графовым базам данных в терминах формальных языков}
+\subtitle{В основном про RPQ и немного больше}
+\author{Николай Пономарев}
+\institute[Матмех СПбГУ]{Математико-механический факультет СПбГУ}
+\date{8 октября 2024 г.}
+
+\usepackage{hyperref}
+
+\begin{document}
+\begin{frame}[plain,noframenumbering]
+    \maketitle
+\end{frame}
+
+\section{(Не)много  математики}
+
+\begin{frame}
+    \frametitle{Иерархия Хомского}
+
+    Небольшое напоминание:
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \begin{itemize}
+                \item Рекурсивно перечислимые языки.
+                      Продукции вида: $\gamma \to \alpha$
+                \item Контекстно-зависимые языки.
+                      Продукции вида: $\alpha A \beta \to \alpha \gamma \beta$
+                \item Контекстно-свободные языки.
+                      Продукции вида: $A \to \alpha \gamma \beta$
+                \item Регулярные языки.
+                      Продукции вида: $A \to a$, $A \to aB$
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            % Taken from https://tex.stackexchange.com/a/484557
+            \begin{tikzpicture}[font=\sffamily\small,breathe dist/.initial=0.3ex]
+                \foreach \X [count=\Y,remember=\Y as \LastY] in
+                    {regular,context free,context sensitive,recursively enumerable}
+                    {\ifnum\Y=1
+                            \node[ellipse,draw,outer sep=0pt] (F-\Y) {\X};
+                        \else
+                            \node[anchor=south] (T-\Y) at (F-\LastY.north) {\X};
+                            \path let \p1=($([yshift=\pgfkeysvalueof{/tikz/breathe dist}]T-\Y.north)-(F-\LastY.south)$),
+                            \p2=($(F-1.east)-(F-1.west)$),\p3=($(F-1.north)-(F-1.south)$)
+                            in ($([yshift=\pgfkeysvalueof{/tikz/breathe dist}]T-\Y.north)!0.5!(F-\LastY.south)$)
+                            node[minimum height=\y1,minimum width={\y1*\x2/\y3},
+                                    draw,ellipse,inner sep=0pt] (F-\Y){};
+                        \fi}
+            \end{tikzpicture}
+        \end{column}
+    \end{columns}
+    \vspace{1em}
+    Обозначения: $a$~--- терминал, $A, B$~--- нетерминалы, $\alpha, \beta, \gamma$~--- цепочки терминалов и/или нетерминалов
+\end{frame}
+
+\begin{frame}
+    \frametitle{Наш главный объект изучения~--- граф}
+
+    \begin{definition}[из \cite{shemetova_one_2021}]
+        Реберно-меченный ориентированный мультиграф~--- это $\mathcal{G} = (V, E, \Sigma)$, где
+        \begin{itemize}
+            \item $V$~--- конечное множество вершин, обычно от 0 до $|V| - 1$
+            \item $E \subseteq V \times \Sigma \times V $~--- конечное множество ребер
+            \item $\Sigma$~--- конечный алфавит меток
+        \end{itemize}
+    \end{definition}
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{Знакомьтесь, реберно-меченный мультиорграф}
+
+    \begin{center}
+        \begin{tikzpicture}[
+                shorten >=1pt,
+                auto]
+            \node[state] (q0) {$0$};
+            \node[state] (q1) [right = of q0] {$1$};
+            \node[state] (q2) [right = of q1] {$2$};
+
+            \path[->] (q0) edge node {$a$} (q1)
+            (q1) edge node {$c$} (q2)
+            (q1) edge[out=120, in=60, looseness=10] node {$b$} (q1)
+            (q1) edge[bend right] node[below] {$d$} (q2);
+        \end{tikzpicture}
+    \end{center}
+
+    \[\mathcal{G} = (V = \{0, 1, 2\}, E = \{(0, a, 1), (1, b, 1), (1, c, 2), (1, d, 2)\},\Sigma = \{a, b, c, d\})\]
+\end{frame}
+
+\begin{frame}
+    \frametitle{Ещё немного определений про графы}
+
+    \begin{definition}
+        Путём $\pi$ в графе $\mathcal{G} = (V, E, \Sigma)$ называется последовательность $e_0, e_1, \dots, e_{n-1}$, где $e_i = (v_i, \sigma_i, u_i) \in E$, и для всех $e_i, e_{i+1}$ выполнено $u_i = v_{i+1}$.
+        Будем обозначать путь из $v$ в $u$ как $v \pi u$.
+    \end{definition}
+
+    \begin{definition}
+        Словом, образованным путём $\pi = (v_0, \sigma_0, u_0), (v_1, \sigma_1, u_1), \dots, (v_{n-1}, \sigma_{n-1}, u_{n-1})$, будем называть конкатенацию всех меток этого пути:
+        \[\lambda(\pi) = \sigma_0 \sigma_1 \dots \sigma_{n-1}\]
+    \end{definition}
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{А теперь про формальные языки}
+
+    \begin{definition}[из \cite{mendelzon_finding_1995}] % ИЗ FINDING REGULAR SIMPLE PATHS IN GRAPH DATABASES
+        Пусть $\Sigma$~--- конечный алфавит, не содержащий $\{\epsilon, \varnothing, (, )\}$.
+        Регулярное выражение $R$ над $\Sigma$ определено следующим образом:
+        \begin{itemize}
+            \item Пустая строка $\epsilon$, пустое множество $\varnothing$, и все $a \in \Sigma$ являются регулярными выражениями
+            \item Если $A$ и $B$~--- регулярные выражения, то $(A + B)$ (альтернатива), $AB$ (конкатенация), $A^*$ (звезда Клини) тоже регулярные выражения
+            \item Ничего другого регулярным выражением не является
+        \end{itemize}
+    \end{definition}
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{И ещё про формальные языки}
+
+    \begin{definition}
+        Язык $\mathcal{L}(R)$, описываемый $R$, определяется следующим образом:
+        \begin{enumerate}
+            \item $\mathcal{L}(\epsilon) = \{\epsilon\}$
+            \item $\mathcal{L}(\varnothing) = \varnothing$
+            \item $\mathcal{L}(a) = \{a\}$ $\forall a \in \Sigma$
+            \item $\mathcal{L}(A + B) = \mathcal{L}(A) \cup \mathcal{L}(B) = \{ w : w \in \mathcal{L}(A) \lor w \in \mathcal{L}(B)\}$
+            \item $\mathcal{L}(AB) = \mathcal{L}(A) \mathcal{L}(B) = \{ w_1 w_2 : w_1 \in \mathcal{L}(A) \land w_2 \in \mathcal{L}(B)\}$
+            \item $\mathcal{L}(A^*) = \bigcup_{k=0}^\infty \mathcal{L}(A)^k$, где $\mathcal{L}(A)^0 = \{\epsilon\}$ и $\mathcal{L}(A)^k = \mathcal{L}(A)^{k-1} \mathcal{L}(A)$
+        \end{enumerate}
+    \end{definition}
+
+\end{frame}
+
+\section{RPQ}
+
+\begin{frame}
+    \frametitle{Постановка задачи RPQ}
+
+    \begin{definition}
+        Пусть $\mathcal{G} = (V, E, \Sigma)$~--- реберно-меченный мультиорграф, $R$~--- регулярное выражение над $\Sigma$.
+        Тогда решением \textit{задачи достижимости с ограничениями в терминах регулярных языков} для $\mathcal{G}$ и $R$ является множество
+        \[ \Bigl\{(u, v) \in V \times V : \exists \text{ путь } \pi \text{ в } \mathcal{G} \text{ из } u \text{ в } v: \lambda(\pi) \in \mathcal{L}(R)\Bigr\} \]
+    \end{definition}
+    \begin{itemize}
+        \item На английском, Regular Path Query (RPQ)
+        \item Часто назначают стартовые и конечные вершины
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Пример RPQ (из \cite{nole_regular_2016})} % ИЗ Regular Path Queries on Massive Graphs
+
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \begin{center}
+                \begin{tikzpicture}[
+                        shorten >=1pt,
+                        auto]
+                    \node[state] (q0) {$0$};
+                    \node[state] (q1) [below left = of q0] {$1$};
+                    \node[state] (q2) [below right = of q0] {$2$};
+                    \node[state] (q3) [below right = of q1] {$3$};
+                    \node[state] (q4) [below right = of q2] {$4$};
+                    \node[state] (q5) [below left = of q3] {$5$};
+                    \node[state] (q6) [below right = of q3] {$6$};
+
+                    \node (lab) [left = of q0] {$\mathcal{G}$:};
+
+                    \path[->] (q0) edge node[above left] {$a$} (q1)
+                    (q2) edge node[above right] {$a$} (q0)
+                    (q1) edge node[below left] {$a$} (q3)
+                    (q3) edge node[below right] {$a$} (q2)
+                    (q3) edge node[above left] {$b$} (q5)
+                    (q3) edge node[above right] {$c$} (q6)
+                    (q2) edge node[above right] {$d$} (q4);
+                \end{tikzpicture}
+            \end{center}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \begin{gather*}
+                R_1 = (a + aa)(b + d) \\
+                \mathcal{L}\left(R_1\right) = \{ab, aab, ad, aad\} \\
+                \mathrm{RPQ}\left(\mathcal{G}, R_1\right) = \bigl\{(0, 5), (1, 5), (1, 4), (3, 4)\bigr\}
+            \end{gather*}
+
+            \begin{gather*}
+                R_2 = (aaaa)^* (b + c + d) \\
+                \begin{aligned}
+                    \mathcal{L}(R_2) = \Biggl\{ w_1 w_2 & : w_1 \in \bigcup_{k=0}^\infty (aaaa)^k \\
+                                                        & \land  w_2 \in \{ b, c ,d \} \Biggr\}
+                \end{aligned} \\
+                \mathrm{RPQ}\left(\mathcal{G}, R_2\right) = \bigl\{(3, 5), (3, 6), (2, 4)\bigr\}
+            \end{gather*}
+        \end{column}
+    \end{columns}
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{Как это вычислять?}
+
+    \begin{enumerate}
+        \item Пересечение конечных автоматов
+              \begin{itemize}
+                  \item Обычно решает задачу для всех вершин
+                  \item Реализация почти очевидна из названия, немного есть в \cite{shemetova_one_2021}
+              \end{itemize}
+        \item Синхронный обход в ширину конечного автомата и графа
+              \begin{itemize}
+                  \item Часто решает задачу для конкретных стартовых, конечных вершин
+                  \item Способ умнее, почитать можно в \cite{elekes_graphblas_2020}
+              \end{itemize}
+    \end{enumerate}
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{Кто это поддерживает? I}
+
+    Графовые базы данных
+    \begin{itemize}
+        \item Начало развития теории~--- конец 80-х (см. \cite[35]{bonifati_querying_2018})
+        \item Ответственный за популярность~--- Neo4j (2007)
+        \item Сейчас главное~--- язык запросов
+              \begin{itemize}
+                  \item openCypher \cite{neo4j_opencypher_nodate}: Neo4j, Amazon Neptune, ArcadeDB, Redis Graph, VK Tarantool
+                  \item SPARQL \cite{w3c_sparql_nodate}: Amazon Neptune, Eclipse RDF4J, Apache Jena
+                        \begin{itemize}
+                            \item Стандарт W3C
+                        \end{itemize}
+                  \item Apache TinkerPop's Gremlin \cite{apache_tinkerpop_apache_nodate}: Neo4j, JanusGraph, Amazon Neptune, ArcadeDB
+                  \item GQL \cite{isoiec_39075_information_nodate}: на данный момент $\varnothing$
+                        \begin{itemize}
+                            \item Стандарт ISO 2024 года!
+                            \item Унификация всего, что выше и не только
+                        \end{itemize}
+              \end{itemize}
+    \end{itemize}
+
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{Кто это поддерживает? II}
+    Реляционные базы данных
+    \begin{itemize}
+        \item Стандарт SQL/PGQ (property graph queries)
+        \item Разработан Oracle, принят в ISO SQL:2023 \parencite{melton_information_2023}
+        \item Посмотреть как это выглядит можно в \cite{deutsch_graph_2021}
+    \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{Области применения RPQ (по \cite{garcia_path_2024,bonifati_querying_2018})}
+
+    \begin{itemize}
+        \item Графы топологии сетей
+        \item Социальные сети
+        \item Биология
+    \end{itemize}
+
+\end{frame}
+
+\section{CFPQ и Datalog}
+
+\begin{frame}
+    \frametitle{А можно круче?}
+
+    Если хочется ещё более мощной системы, то есть
+    \begin{enumerate}
+        \item CFPQ
+        \item Datalog
+    \end{enumerate}
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{CFPQ}
+
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \begin{itemize}
+                \item Используем вместо регулярных языков КС-языки
+                \item Внезапно, оно довольно быстро работает (\cite{_optimisation_2024})
+                \item Но нет спроса у пользователей
+                \item Известное применение~--- статический анализ (\cite{yamaguchi_modeling_2014})
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+
+            \begin{center}
+                \resizebox{0.95\textwidth}{!}{%
+                    \begin{tikzpicture}[shorten >=1pt,
+                            auto]
+                        \node[] (1) {$\&O$};
+                        \node[] (2) [right = of 1] {$v4$};
+                        \node[] (3) [right = of 2] {$*v2$};
+                        \node[] (4) [below = of 3] {$v2$};
+                        \node[] (5) [below = of 4] {$\&v2$};
+                        \node[] (6) [right = of 5] {$v1$};
+                        \node[] (7) [below = of 6] {$\&v1$};
+                        \node[] (8) [right = of 7] {$v3$};
+                        \node[] (9) [above = of 8] {$*v3$};
+                        \node[] (10) [right = of 9] {$v5$};
+                        \node[] (11) [above = of 10] {$*v5$};
+                        \node[] (12) [left = of 11] {$v6$};
+                        \node[] (13) [above = of 12] {$*v6$};
+                        \draw[->] (1) -- node[midway, above, sloped] {a} (2);
+                        \draw[->] (2) -- node[midway, above, sloped] {a} (3);
+                        \draw[dashed,->] (4) -- node[midway, left] {d} (3);
+                        \draw[dashed,->] (5) -- node[midway, left] {d} (4);
+                        \draw[->] (5) -- node[midway, above] {a} (6);
+                        \draw[dashed,->] (7) -- node[midway, left] {d} (6);
+                        \draw[->] (7) -- node[midway, above] {a} (8);
+                        \draw[dashed,->] (8) -- node[midway, right] {d} (9);
+                        \draw[->] (9) -- node[midway, above] {a} (10);
+                        \draw[dashed,->] (10) -- node[midway, right] {d} (11);
+                        \draw[->] (11) -- node[midway, above] {a} (12);
+                        \draw[dashed,->] (12) -- node[midway, left] {d} (13);
+
+                        \draw[dotted,<->] (1) to [out=45, in=135, looseness=1] node[midway, above] {VA} (2);
+                        \draw[dotted,<->] (2) to [out=45, in=135, looseness=1] node[midway, above] {VA} (3);
+                        \draw[dotted,<->] (1) to [out=-45, in=-135, looseness=1] node[midway, below] {VA} (3);
+                        \draw[dotted,<->,red] (3) to [out=45, in=135, looseness=1] node[midway, above,red] {MA} (13);
+                        \draw[dotted,<->] (4) to [out=45, in=135, looseness=1] node[midway, above] {VA} (12);
+                        \draw[dotted,<->,red] (4) to [out=-30, in=-150, looseness=0.3] node[midway, above,red] {MA} (11);
+                        \draw[dotted,<->] (5) to [out=30, in=150, looseness=0.6] node[midway, above] {VA} (10);
+                        \draw[dotted,<->] (5) to [out=-30, in=-150, looseness=0.5] node[midway, below] {VA} (6);
+                        \draw[dotted,<->,red] (6) to [out=30, in=150, looseness=0.7] node[midway, below,red] {MA} (9);
+                        \draw[dotted,<->] (7) to [out=45, in=135, looseness=1] node[midway, above] {VA} (8);
+                        \draw[dotted,<->] (9) to [out=-30, in=-150, looseness=0.5] node[midway, below] {VA} (10);
+                        \draw[dotted,<->] (12) to [out=30, in=150, looseness=1] node[midway, above] {VA} (11);
+                    \end{tikzpicture}
+                }
+            \end{center}
+            \begin{flushright}
+                \scriptsize
+                Рисунок из \cite{_experimental_2023}
+            \end{flushright}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Datalog}
+
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \begin{itemize}
+                \item Формально, это уже про дедуктивные БД
+                \item Datalog~--- де факто стандарт
+                \item В нём выразим RPQ (\cite{green_datalog_2013})
+                \item И даже больше
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \begin{minted}[fontsize=\scriptsize]{prolog}
+r1 reachable(X,Y) :- link(X,Y).
+r2 reachable(X,Y) :- link(X,Z), reachable(Z,Y).
+query(X,Y) :- reachable(X,Y).
+            \end{minted}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\section{Вопросы к зачёту}
+\begin{frame}
+    \frametitle{Вопросы к зачёту}
+
+    \begin{enumerate}
+        \item Постановка задачи RPQ.
+              Пример решения задачи для некоторого графа и регулярного выражения.
+        \item Примеры языков запросов и ПО, использующего их.
+              Области использования RPQ.
+        \item CFPQ и Datalog, их отношение к RPQ.
+    \end{enumerate}
+
+\end{frame}
+
+\appendix
+\section{Список литературы}
+\setbeamertemplate{headline}{}
+\begin{frame}[allowframebreaks, plain]
+    \frametitle{Источники}
+    \printbibliography[heading=none]
+\end{frame}
+
+
+\end{document}
