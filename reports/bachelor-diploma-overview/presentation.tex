@@ -1,0 +1,97 @@
+\documentclass{vkr-slides-style}
+
+\filltitle{
+    % Ваше ФИО.
+    author = {Николай Алексеевич Пономарев},
+    % Нельзя оставлять пустые строки.
+    % Ваше сокращённое именование, будет показываться слева внизу слайда.
+    authorShort = {Николай Пономарев},
+    %
+    % Официальное название ВКР.
+    title = {Разработка транслятора модельного функционального языка в Interaction Nets},
+    %
+    % Короткое название ВКР, будет снизу по центру слайда.
+    titleShort = {Транслятор в Interaction Nets},
+    %
+    % Научный руководитель.
+    advisor = {к.ф.-м.н. С.В. Григорьев, доцент кафедры системного программирования},
+    %
+    % Консультант (если есть). Если нет, оставьте пустые фигурные скобки.
+    consultant = {},
+    %
+    % Дата доклада.
+    date = {23.11.2024}
+}
+
+\setbeamertemplate{itemize items}[circle]
+\setbeamertemplate{enumerate items}[circle]
+
+\usepackage{fontawesome}
+
+\begin{document}
+
+\makeslidestitle
+
+\begin{frame}
+    \frametitle{Суть работы}
+    \begin{itemize}
+        \item<+-> Interaction Nets~--- модель вычислений, открытая Yves Lafont в 1990 году, которой свойственен массовый параллелизм
+        \item<+-> Interaction Nets, как и любую модель вычислений, можно рассматривать как основу архитектуры процессоров
+        \item<+-> Разреженная линейная алгебра является базисом для многих задач
+              \begin{itemize}
+                  \item[\faFrownO] Плохо поддается распараллеливанию на традиционных архитектурах
+                  \item[\faLightbulbO] Ускоритель на Interaction Nets
+              \end{itemize}
+        \item<+-> Цель проекта~--- разработка параметризуемого многоядерного сопроцессора для разреженной линейной алгебры на архитектуре Interaction Nets
+        \item<+-> Экспериментальный проект на нестандартной архитектуре $\Rightarrow$ нужен свой транслятор
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Постановка задачи}
+    \textbf{Цель:} разработать транслятор модельного функционального языка в Interaction Nets
+
+    \vspace{5mm}
+    \textbf{Задачи:}
+    \begin{enumerate}
+        \item Реализовать интерпретатор модельного ML-подобного языка
+        \item Реализовать транслятор из обогащенного $\lambda$-исчисления в Interaction Nets
+        \item Реализовать интерпретатор Interaction Nets
+        \item Провести эксперименты с наборами инструкций
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}
+    \frametitle{План работы}
+
+    \textbf{Что уже сделано:}
+    \begin{enumerate}
+        \item Реализация интерпретатора модельного ML-подобного языка
+              \begin{enumerate}
+                  \item Конкретный синтаксис языка
+                  \item AST и парсер языка
+              \end{enumerate}
+    \end{enumerate}
+
+    \textbf{Планируется к зимней защите:}
+    \begin{enumerate}
+        \setcounter{enumi}{1}
+        \item[]
+              \begin{enumerate}
+                  \setcounter{enumii}{2}
+                  \item Алгоритм вывода типов
+                  \item Рассахаривание в обогащенное $\lambda$-исчисление
+                  \item Интерпретатор обогащенного $\lambda$-исчисления
+              \end{enumerate}
+    \end{enumerate}
+
+    \textbf{Планируется к защите ВКР:}
+    \begin{enumerate}
+        \setcounter{enumi}{1}
+        \item Транслятор из обогащенного $\lambda$-исчисления в Interaction Nets
+        \item Интерпретатор Interaction Nets
+        \item Эксперименты с наборами инструкций
+    \end{enumerate}
+\end{frame}
+
+\end{document}
