@@ -5,11 +5,21 @@
 
 \documentclass
   [ russian
-  , aspectratio=1610 % Для защит онлайн лучше использовать разрешение не 4х3
+  , aspectratio=169 % Для защит онлайн лучше использовать разрешение не 4х3
   ] {beamer}
 
 
 \input{preamble.tex}
+\setbeamertemplate{itemize items}[circle]
+\setbeamertemplate{enumerate items}[circle]
+
+\newcommand\blfootnote[1]{%
+	\begingroup
+	\renewcommand\thefootnote{}\footnote{#1}%
+	\addtocounter{footnote}{-1}%
+	\endgroup
+}
+
 \makeatletter
 
 \input{pretitle.tex}
@@ -18,11 +28,11 @@
 \newcommand{\academicGroup}{\my@title@group@ru}
 \newcommand{\advisorChair}{\my@title@chair@ru}
 % То, что в квадратных скобках, отображается внизу по центру каждого слайда.
-\title[Короткое название]{\my@title@title@ru}
+\title[Транслятор в Interaction Nets]{\my@title@title@ru}
 % То, что в квадратных скобках, отображается в левом нижнем углу.
 \author[\my@title@author@ru]{\my@title@author@ru, группа \academicGroup}
 \institute[СПбГУ]{}
-\date[9 сентября 2024 г.]{}
+\date[13 марта 2025 г.]{}
 \newcommand{\supervisor}{\my@title@supervisor@ru}
 \newcommand{\supervisorPosition}{\my@title@supervisorPosition@ru}
 \newcommand{\consultant}{\my@title@consultant@ru}
@@ -54,9 +64,9 @@
         % У научного руководителя должна быть указана научная степень
         \textbf{Научный руководитель:}  \supervisorPosition~\supervisor \\
         % Консультанта может и не быть. Должна быть указана должность или ученая степень
-        \textbf{Консультант:}  \consultantPosition~\consultant \\
+        % \textbf{Консультант:}  \consultantPosition~\consultant \\
         % Для учебной практики не обязателен. Должна быть указана должность или ученая степень
-        \textbf{Рецензент:} \reviewerPosition~\reviewer \\
+        % \textbf{Рецензент:} \reviewerPosition~\reviewer \\
         % TODO: добавить условие на включение рецензента в зависимости от вида отчета
     }
     \makeatother
@@ -69,188 +79,124 @@
 
 \begin{frame}{Введение}
     \begin{itemize}
-        \item Краткий обзор тематики работы (как вариант~--- устно, пока показывается титульный слайд)
-        \item Не нужно определять общеизвестные понятия
-        \item Применимость/полезность данной работы, обоснование выбора именно этой темы
-        \item Если тема похожа на темы других работ (в том числе прошлых лет), надо явно описать разницу
-    \end{itemize}
-\end{frame}
-
-\begin{frame}
-    \frametitle{Существующие решения (инструменты, подходы, алгоритмы)}
-    \begin{itemize}
-        \item Перечислить инструменты/подходы, применяемые в области
-        \item Указать их преимущества и недостатки (критика существующих решений/подходов)
+        \item Задачи искусственного интеллекта и анализа графов естественным образом выражаются в терминах разреженной линейной алгебры
+        \item Разреженная линейная алгебра влечёт за собой нерегулярный параллелизм $\implies$~требуются специализированные ускорители
+        \item \INs{}~--- модель вычислений, допускающая параметризацию и в которой легко достигается параллелизм\footnote[frame]{Тут пока всё ещё большая дыра на тему параметризации в требованиях и экспериментах, которую я не понимаю, как легко объяснить}
+        \item Существуют программные реализации \INs{}, однако попыток реализовать ускоритель на её основе пока не предпринималось
     \end{itemize}
 
 \end{frame}
 
-\begin{frame}
-    \frametitle{Существующие решения}
-    Возможно, предметная область сложна и потребуется больше одного слайда, но затягивать введение не стоит. Постарайтесь уложиться в 1--2 слайда
+\begin{frame}{\Lamagraph{}}
+    Проект \Lamagraph{} исследует возможности по разработке
     \begin{itemize}
-        \item Выводы
-              \begin{itemize}
-                  \item Подвести итог
-                  \item Указать недостатки существующих подходов, на борьбу с которыми
-                        направленна данная работа
-                  \item Чётко сформулировать существующую проблему, которая будет решаться в данной работе
-              \end{itemize}
+        \item параметризуемого многоядерного сопроцессора для разреженной линейной алгебры на архитектуре \INs{}
+        \item ML-подобного функционального языка программирования для программирования сопроцессора
     \end{itemize}
+\end{frame}
+
+\begin{frame}{Требования к проекту}
+    К проекту выдвинуты следующие требования
+    \begin{itemize}
+        \item Параметризация всех компонентов типами агентов сети и правилами их редукции
+        \item Возможность сбора статистики
+        \item Возможность постановки сравнительных экспериментов
+        \item Использование единого стека технологий~--- гомогенность
+        \item Получение полнофункционального прототипа, содержащего все компоненты,важнее, чем детальная проработка какого-то отдельного компонента
+        \item Расширяемость и модифицируемость
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Общая структура проекта}
+    \begin{center}
+        \includegraphics[width=\linewidth]{figures/lamagraph-big-horiz.pdf}
+    \end{center}
 \end{frame}
 
 % Обязательный слайд: четкая формулировка цели данной работы и постановка задачи
 % Описание выносимых на защиту результатов, процесса или особенностей их достижения и т.д.
 \begin{frame}
     \frametitle{Постановка задачи}
-    \textbf{Целью} работы является решение какой-то проблемы %озвученной выше
+    \textbf{Целью} работы является разработка транслятора модельного функционального языка в \INs{}
     \vspace{1em}
 
     \textbf{Задачи}:
-    \begin{itemize}
-        \item Выбрать алгоритм, подход, метод %основываясь на проведённом анализе проблемы, области, существующих решений
-        \item Разработать алгоритм, делающий то-то с тем-то
-        \item Доказать корректность алгоритма
-        \item Реализовать предложенный алгоритм
-        \item Провести экспериментальное исследование предложенной реализации
-    \end{itemize}
+    \begin{enumerate}
+        \item Реализовать интерпретатор модельного ML-подобного языка
+              \begin{enumerate}
+                  \item Конкретный синтаксис языка
+                  \item AST и синтаксический анализатор
+                  \item Алгоритм вывода типов
+                  \item Рассахаривание в обогащенное $\lambda$-исчисление
+                        \setbeamercolor{local structure}{fg=gray}
+                  \item Интерпретатор обогащенного $\lambda$-исчисления
+              \end{enumerate}
+              \setbeamercolor{local structure}{fg=gray}
+        \item Реализовать транслятор из обогащенного $\lambda$-исчисления в \INs{}
+              %   \begin{enumerate}
+              %       \item Представление набора агентов и правил редукции
+              %       \item Сопоставление $\lambda$-термам соответствующих агентов
+              %       \item Готовые наборы агентов и правил редукции
+              %   \end{enumerate}
+        \item Реализовать интерпретатор \INs{}
+              %   \begin{enumerate}
+              %       \item Последовательные редукции
+              %       \item Последовательное исполнение параллельных редукций
+              %       \item Сбор статистики с учётом способа редукции
+              %   \end{enumerate}
+        \item Провести эксперименты с наборами инструкций
+    \end{enumerate}
+    % \setbeamercolor{local structure}{fg=beamer@blendedblue}
 \end{frame}
 
-%Идеально, если есть по одному слайду на каждую поставленную задачу
-
-\begin{frame}
-    \frametitle{Алгоритм ABC\footnote{Результаты и обоснования выбора пути достижения цели}}
-    За основу решения взят алгоритм ABC
-    \begin{itemize}
-        \item Почему именно он, а не другие
-        \item Ключевые особенности выбранного алгоритма, важные для решения поставленных задач
-    \end{itemize}
-\end{frame}
-
-% TODO(Kakadu): lstlisting will be better
-\defverbatim[colored]{\CodeExample}{
-    \begin{Verbatim}[commandchars=\\\{\}]
-        \textcolor{blue}{string} res = \textcolor{orange}{""};
-        \textcolor{blue}{for}(i = 0; i < l; i++) \{
-        res = \textcolor{orange}{"()"} + res;
-        \}
-    \end{Verbatim}
-}
-
-\begin{frame}%[fragile]
-    \frametitle{Новый алгоритм}
-    \framesubtitle{Иллюстративные возможности: таблицы, картинки, код}
-    % Задается ширина столбцов
-    \begin{columns}[T]
-        \begin{column}[t]{.4\textwidth}
-            \begin{minipage}{2in} \CodeExample         \end{minipage}
-            Аппроксимация:\\
-            \includegraphics[width=2.5cm]{figures/in3.pdf}
-
-            Грамматика:
-            {\begin{align*}
-                start& & &\Coloneq & &s \\
-                s & & &\Coloneq & &\mbox{\texttt{LBR }} s \mbox{\texttt{ RBR }} s \\
-                s & & &\Coloneq & &\varepsilon
-            \end{align*}}
+\begin{frame}{Архитектура транслятора}
+    \begin{columns}
+        \begin{column}{0.6\textwidth}
+            \begin{itemize}
+                \item Транслятор реализован на \Haskell{}
+                \item Синтаксис основан на \OCaml{}; для представления AST используется Trees That Grow
+                \item Парсер реализован с помощью связки \textsc{Alex} и \textsc{Happy} с применением property-based тестов
+                \item Используется система типов Хиндли-Милнера
+                \item Для упрощения дальнейших преобразований используется промежуточное представление~--- обогащенное $\lambda$-исчисление %в виде $\lambda$-исчисления обогащенного примитивными операциями, let-связываниями и сопоставлением с образом
+            \end{itemize}
         \end{column}
-        %\hspace{1cm}
-        \begin{column}[T]{.6\textwidth}
-            \vspace{-2em}
-            \includegraphics[width=1\textwidth]{figures/out3.pdf}
+        \begin{column}{0.35\textwidth}
+            \begin{center}
+                \includegraphics[width=\linewidth]{figures/components.pdf}
+            \end{center}
         \end{column}
     \end{columns}
 \end{frame}
 
-\begin{frame}
-    \frametitle{Доказательство корректности алгоритма}
-    {\small Формулировки утверждений. Идеи доказательств проговариваются устно.}
-    \begin{rutheorem}[Пифагора: геометрическая формулировка]
-        В прямоугольном треугольнике площадь квадрата, построенного на гипотенузе, равна сумме площадей квадратов, построенных на катетах.
-    \end{rutheorem}
-
-    \begin{rutheorem}[Пифагора: алгебраическая формулировка]
-        В прямоугольном треугольнике квадрат длины гипотенузы равен сумме квадратов длин катетов.
-
-        То есть, если обозначить длину гипотенузы треугольника через $c$, а длины катетов
-        через $a$ и $b$, получим верное равенство: $a^2 + b^2 = c^2$.
-    \end{rutheorem}
-
-    \begin{rutheorem}[Обратная теорема Пифагора]
-        Для всякой тройки положительных чисел $a$, $b$ и $c$, такой, что $a^2 + b^2 = c^2$, существует прямоугольный треугольник с катетами $a$ и $b$ и гипотенузой $c$.
-    \end{rutheorem}
-\end{frame}
-
-\begin{frame}
-    \frametitle{Архитектура решения}
+\begin{frame}{План экспериментов}
     \begin{itemize}
-        \item В реализации интересны архитектура, библиотеки, инструменты
-        \item Не надо добавлять на слайд примеры кода
-        \item Текст в квадратиках должен быть читаемым (крупным, а не как тут)
-    \end{itemize}
-    \begin{center}
-        \includegraphics[width=0.7\textwidth]{figures/Activ_SEL_Processing.pdf}
-    \end{center}
-\end{frame}
-
-\begin{frame}[t]
-    \frametitle{Экспериментальное исследование}
-    Постановка эксперимента
-    \begin{itemize}
-        \item На каком наборе данных проводилось экспериментальное исследование, почему были выбраны именно эти данные
-        \item На каком оборудовании проводилось исследование
-        \item Какие решения были выбраны для сравнения и почему
-    \end{itemize}
-\end{frame}
-
-\begin{frame}[t]
-    \frametitle{Результаты экспериментального исследования}
-    \begin{itemize}
-        \item Какие результаты показало экспериментальное исследование
-        \item Желательно привести графики, иллюстрирующие полученные результаты
+        \item Существует не один способ трансляции $\lambda$-исчисления в \INs{}
+        \item Планируется измерять для разных наборов агентов и правил редукции следующие метрики:
               \begin{itemize}
-                  \item У иллюстраций должны быть подписи, у графиков~--- легенда, подписи к осям, например:
+                  \item размер программы в терминах количества агентов
+                  \item количество редукций
               \end{itemize}
+        \item Поскольку \INs{} допускает параллельность также важны метрики:
+              \begin{itemize}
+                  \item максимальное количество одновременных (параллельных) редукций
+                  \item количество шагов до достижения нормальной формы при неограниченном количестве параллельных редукций
+              \end{itemize}
+        \item Эксперименты планируется на операциях линейной алгебры, например умножении разреженных матриц в формате дерева квадрантов.
     \end{itemize}
-    \includegraphics[width=13cm]{figures/dist.png}
 \end{frame}
 
 \begin{frame}
     \frametitle{Результаты}
-    \begin{itemize}
-        \item Практически то же, что и на слайде с постановкой задачи, но в совершенной форме~--- что делал лично автор
-        \item Четкое отделение результатов своей работы (особенно для коллективных работ)
-        \item Формулировать глаголами совершенного вида в прошедшем времени (\enquote{сделано}, \enquote{получено})
-        \item Обсуждение (ограничения, валидность, альтернативы)
-        \item Не нужно слайдов типа \enquote{Все}, \enquote{Вопросы?}, \enquote{Спасибо за внимание}
-    \end{itemize}
-
-    \begin{itemize}
-        \item Если результаты были представлены на конференции и опубликованы, это желательно указать
-    \end{itemize}
-\end{frame}
-
-%\addtocounter{framenumber}{1}
-\appendix
-
-\begin{frame}
-    \frametitle{Дополнительный слайд}
-    Например, с огромной страшной формулой всего, которая нужна для пояснения деталей при ответе на частый вопрос
-
-    \begin{align*}
-        \MoveEqLeft \lim_{\bigtriangleup t \to 0^+}\int_{\bigtriangleup t}^{T} \! \int_{\Omega} \! D(t_1,x) \frac{\varphi(t_1-\bigtriangleup t,x)-\varphi(t_1,x)}{(-\bigtriangleup t)} \, \mathrm{d}x \, \mathrm{d}t_1 \\
-        &= \lim_{\bigtriangleup t \to 0^+} \int_{0}^{T} \! \int_{\Omega} \! D(t_1,x) \frac{\varphi(t_1-\bigtriangleup t,x)-\varphi(t_1,x)}{(-\bigtriangleup t)} \chi_{(\bigtriangleup t,T)}(t_1) \, \mathrm{d}x \, \mathrm{d}t_1 \\
-        &=\int_{0}^{T} \! \int_{\Omega} \! D(t_1,x) \frac{\partial \varphi}{\partial t_1} (t_1,x) \, \mathrm{d}x \, \mathrm{d}t_1
-    \end{align*}
-\end{frame}
-
-\begin{frame}
-    \frametitle{Второй дополнительный слайд}
-    \begin{itemize}
-        \item Много дополнительных слайдов не надо: 1--2~вполне достаточно в большинстве случаев
-        \item Кроме формул здесь могут быть схемы, рисунки, таблицы и другие вспомогательные материалы
-    \end{itemize}
-
+    В рамках данной производственной практики были достигнуты следующие результаты\footnote[frame]{Исходный код находится в репозитории: \url{https://github.com/Lamagraph/interaction-nets-in-fpga} \\ Имя пользователя: \texttt{WoWaster}}
+    \begin{enumerate}
+        \item Реализована часть интерпретатора модельного ML-подобного языка
+              \begin{enumerate}
+                  \item Конкретный синтаксис языка
+                  \item AST и синтаксический анализатор
+                  \item Алгоритм вывода типов
+                  \item Рассахаривание в обогащенное $\lambda$-исчисление
+              \end{enumerate}
+    \end{enumerate}
 \end{frame}
 
 \end{document}
