@@ -1,0 +1,26 @@
+@startuml components
+!pragma layout smetana
+
+top to bottom direction
+
+package LamagraphML {
+    component Syntax
+    component Parser
+    component Typechecker
+    component Core
+    component SyntaxToCore
+    component CoreInterpreter
+}
+
+CoreInterpreter --> SyntaxToCore
+SyntaxToCore --> Typechecker
+SyntaxToCore --> Core
+Typechecker --> Parser
+Typechecker --> Syntax
+Parser --> Syntax
+
+component LamagraphIN
+
+LamagraphIN --> Core
+
+@enduml
