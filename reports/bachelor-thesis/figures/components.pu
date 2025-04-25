@@ -1,26 +1,35 @@
 @startuml components
 !pragma layout smetana
 
-top to bottom direction
-
-package LamagraphML {
+package Lamagraph.Compiler {
     component Syntax
     component Parser
     component Typechecker
     component Core
-    component SyntaxToCore
-    component CoreInterpreter
+    component LmlToCore
+    component Eval
 }
 
-CoreInterpreter --> SyntaxToCore
-SyntaxToCore --> Typechecker
-SyntaxToCore --> Core
+Eval --> Core
+LmlToCore --> Typechecker
+LmlToCore --> Core
 Typechecker --> Parser
 Typechecker --> Syntax
-Parser --> Syntax
+Parser -> Syntax
 
-component LamagraphIN
+package Lamagraph.Nets {
+    component CoreToNet
+    component NetToConfiguration
+    component ConfigurationToNet
+    component AbstractMachine
+}
 
-LamagraphIN --> Core
+NetToConfiguration --> CoreToNet
+AbstractMachine --> NetToConfiguration
+AbstractMachine --> ConfigurationToNet
+
+Lamagraph.Nets -[norank,hidden]> Lamagraph.Compiler
+Lamagraph.Compiler -[hidden]> Lamagraph.Nets
+CoreToNet -[norank]> Core
 
 @enduml

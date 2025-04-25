@@ -1,0 +1,24 @@
+@startuml using
+
+hide footbox
+
+actor Пользователь as user
+participant Парсер as parser
+participant "Вывод типов" as typechecker
+participant Рассахаривание as desugaring
+participant "Интерпретатор LML" as eval
+
+participant "Транслятор в\nInteraction Nets" as toINs
+participant "Абстрактная\nмашина INs" as abstract_machine
+
+user -> parser ++ : Входная\nпрограмма
+parser -> typechecker --++ : Дерево\nабстрактного\nсинтаксиса
+typechecker -> desugaring --++ : Типизированное\nдерево\nабстрактного\nсинтаксиса
+desugaring -> eval ++ : Обогащенное\nλ-исчисление
+eval --> user --: Вывод и статистика
+
+desugaring -> toINs --++ : Обогащенное\nλ-исчисление
+toINs -> abstract_machine --++ : Сеть в текстовом\nпредставлении
+abstract_machine --> user : Итоговая сеть и статистика
+
+@enduml
