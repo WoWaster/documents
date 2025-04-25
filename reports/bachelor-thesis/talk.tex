@@ -8,7 +8,6 @@
   , aspectratio=169 % Для защит онлайн лучше использовать разрешение не 4х3
   ] {beamer}
 
-
 \input{preamble.tex}
 \setbeamertemplate{itemize items}[circle]
 \setbeamertemplate{enumerate items}[circle]
@@ -32,7 +31,7 @@
 % То, что в квадратных скобках, отображается в левом нижнем углу.
 \author[\my@title@author@ru]{\my@title@author@ru, группа \academicGroup}
 \institute[СПбГУ]{}
-\date[13 марта 2025 г.]{}
+\date[25 апреля 2025 г.]{}
 \newcommand{\supervisor}{\my@title@supervisor@ru}
 \newcommand{\supervisorPosition}{\my@title@supervisorPosition@ru}
 \newcommand{\consultant}{\my@title@consultant@ru}
@@ -66,7 +65,7 @@
         % Консультанта может и не быть. Должна быть указана должность или ученая степень
         % \textbf{Консультант:}  \consultantPosition~\consultant \\
         % Для учебной практики не обязателен. Должна быть указана должность или ученая степень
-        % \textbf{Рецензент:} \reviewerPosition~\reviewer \\
+        \textbf{Рецензент:} \reviewerPosition~\reviewer \\
         % TODO: добавить условие на включение рецензента в зависимости от вида отчета
     }
     \makeatother
@@ -78,6 +77,7 @@
 }
 
 \begin{frame}{Введение}
+
     \begin{itemize}
         \item Задачи искусственного интеллекта и анализа графов естественным образом выражаются в терминах разреженной линейной алгебры
         \item Разреженная линейная алгебра влечёт за собой нерегулярный параллелизм $\implies$~требуются специализированные ускорители
@@ -88,12 +88,15 @@
 \end{frame}
 
 \begin{frame}{Interaction Nets}
+
     \begin{center}
-        \includegraphics[width=0.65\textwidth]{figures/in_talk.pdf}
+        \includegraphics[width=\textwidth]{figures/in_talk.pdf}
     \end{center}
+
 \end{frame}
 
 \begin{frame}{\Lamagraph{}}
+
     Проект \Lamagraph{} исследует возможности по разработке
     \begin{itemize}
         \item параметризуемого многоядерного сопроцессора для разреженной линейной алгебры на основе \INs{}
@@ -102,9 +105,11 @@
     \begin{center}
         \includegraphics[width=\linewidth]{figures/lamagraph-big-horiz.pdf}
     \end{center}
+
 \end{frame}
 
 \begin{frame}{Требования к проекту}
+
     К проекту выдвинуты следующие требования
     \begin{itemize}
         \item Параметризация всех компонентов типами агентов сети и правилами их редукции
@@ -114,16 +119,12 @@
         \item Получение полнофункционального прототипа, содержащего все компоненты, важнее, чем детальная проработка какого-то отдельного компонента
         \item Расширяемость и модифицируемость
     \end{itemize}
+
 \end{frame}
 
-% \begin{frame}{Общая структура проекта}
-
-% \end{frame}
-
-% Обязательный слайд: четкая формулировка цели данной работы и постановка задачи
-% Описание выносимых на защиту результатов, процесса или особенностей их достижения и т.д.
 \begin{frame}
     \frametitle{Постановка задачи}
+
     \textbf{Целью} работы является разработка транслятора модельного функционального языка в \INs{}
     \vspace{1em}
 
@@ -135,76 +136,137 @@
                   \item AST и синтаксический анализатор
                   \item Алгоритм вывода типов
                   \item Рассахаривание в обогащенное $\lambda$-исчисление
-                        \setbeamercolor{local structure}{fg=gray}
                   \item Интерпретатор обогащенного $\lambda$-исчисления
               \end{enumerate}
-              \setbeamercolor{local structure}{fg=gray}
-        \item Реализовать транслятор из обогащенного $\lambda$-исчисления в \INs{}
-              %   \begin{enumerate}
-              %       \item Представление набора агентов и правил редукции
-              %       \item Сопоставление $\lambda$-термам соответствующих агентов
-              %       \item Готовые наборы агентов и правил редукции
-              %   \end{enumerate}
         \item Реализовать интерпретатор \INs{}
-              %   \begin{enumerate}
-              %       \item Последовательные редукции
-              %       \item Последовательное исполнение параллельных редукций
-              %       \item Сбор статистики с учётом способа редукции
-              %   \end{enumerate}
-        \item Провести эксперименты с наборами инструкций
+        \item Реализовать транслятор из обогащенного $\lambda$-исчисления в \INs{}
     \end{enumerate}
-    % \setbeamercolor{local structure}{fg=beamer@blendedblue}
+
 \end{frame}
 
-\begin{frame}{Архитектура транслятора}
-    \begin{columns}
-        \begin{column}{0.6\textwidth}
-            \begin{itemize}
-                \item Транслятор реализован на \Haskell{}
-                \item Синтаксис основан на \OCaml{}; для представления AST используется Trees That Grow
-                \item Парсер реализован с помощью связки \textsc{Alex} и \textsc{Happy} с применением property-based тестов
-                \item Используется система типов Хиндли-Милнера
-                \item Для упрощения дальнейших преобразований используется промежуточное представление~--- обогащенное $\lambda$-исчисление %в виде $\lambda$-исчисления обогащенного примитивными операциями, let-связываниями и сопоставлением с образом
-                \item Для всех компонент применяются golden тесты
-            \end{itemize}
-        \end{column}
-        \begin{column}{0.35\textwidth}
-            \begin{center}
-                \includegraphics[width=\linewidth]{figures/components.pdf}
-            \end{center}
-        \end{column}
-    \end{columns}
+\begin{frame}
+    \frametitle{Архитектура проекта}
+
+    \begin{center}
+        \includegraphics[width=\linewidth]{figures/components.pdf}
+    \end{center}
+
 \end{frame}
 
-\begin{frame}{План экспериментов}
+\begin{frame}{Интерпретатор LamagraphML}
+
+    % \begin{columns}
+    % \begin{column}{0.6\textwidth}
     \begin{itemize}
-        \item Существует не один способ трансляции $\lambda$-исчисления в \INs{}
-        \item Планируется измерять для разных наборов агентов и правил редукции следующие метрики:
-              \begin{itemize}
-                  \item размер программы в терминах количества агентов
-                  \item количество редукций
-              \end{itemize}
-        \item Поскольку \INs{} допускает параллельность также важны метрики:
-              \begin{itemize}
-                  \item максимальное количество одновременных (параллельных) редукций
-                  \item количество шагов до достижения нормальной формы при неограниченном количестве параллельных редукций
-              \end{itemize}
-        \item Эксперименты планируется на операциях линейной алгебры, например умножении разреженных матриц в формате дерева квадрантов
+        \item Интерпретатор реализован на \Haskell{}
+        \item Используется ML-подобный синтаксис, для представления AST используется паттерн Trees That Grow
+        \item Парсер реализован с помощью связки \textsc{Alex} и \textsc{Happy} с применением property-based тестов
+        \item Используется система типов Хиндли-Милнера
+        \item Для упрощения дальнейших преобразований используется промежуточное представление~--- обогащенное $\lambda$-исчисление
+              % \item Для всех компонент применяются golden тесты
     \end{itemize}
+    %     \end{column}
+    %     \begin{column}{0.35\textwidth}
+    %         \begin{center}
+    %             \includegraphics[width=\linewidth]{figures/components_compiler.pdf}
+    %         \end{center}
+    %     \end{column}
+    % \end{columns}
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{Интерпретатор \INs{}}
+
+    \begin{center}
+        \begin{tabular}{lccc}
+            \toprule
+            \multicolumn{1}{c}{Вид представления}
+             & \multicolumn{1}{p{2.5cm}}{\raggedright Удобно для\newline теоретических исследований}
+             & \multicolumn{1}{p{2.5cm}}{\raggedright \enquote{Удобно} для реализации на \Haskell{}}
+             & \multicolumn{1}{p{2.1cm}}{\raggedright Существует абстрактная машина}                                              \\
+            \midrule
+            Графовое представление
+             & $+$
+             & $-$
+             & $-$                                                                                                                \\
+            Текстовое представление\footnote[frame]{Fernández, Maribel, and Ian Mackie. "A calculus for interaction nets.", 1999}
+             & $-$
+             & $+$
+             & $+$\footnote[frame]{Pinto, Jorge Sousa. "Sequential and concurrent abstract machines for interaction nets.", 2000} \\
+            \bottomrule
+        \end{tabular}
+    \end{center}
+
+    \vspace{1em}
+
+    Таким образом была реализована абстрактная машина Pinto
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{Транслятор обогащенного $\lambda$-исчисления в \INs{}}
+
+    \begin{itemize}
+        \item \INs{} всё ещё сильно теоретическая область $\implies$ схемы трансляции оперируют чистым $\lambda$-исчислением
+        \item Поэтому на данном этапе реализована поддержка только чистого $\lambda$-исчисления
+        \item Расширения схемы трансляции для поддержки более широкого класса выражений входного языка~--- предмет дальнейшей работы
+    \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{Текущие возможности}
+
+    \begin{center}
+        \begin{tabular}{ll}
+            \toprule
+            Компонент                 & Степень реализации                                \\
+            \midrule
+            Парсер                    & Реализован полностью                              \\
+            Вывод типов               & Нет поддержки алгебраических типов данных         \\
+            Рассахаривание            & Поддерживаются только простые паттерны            \\
+            Интерпретатор LamagraphML & Нет поддержки взаимной рекурсии                   \\
+            Транслятор в \INs{}       & Поддерживается только чистое $\lambda$-исчисление \\
+            Абстрактная машина        & Реализована полностью                             \\
+            \bottomrule
+        \end{tabular}
+    \end{center}
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{Использование}
+
+    \begin{center}
+        \includegraphics[width=0.8\linewidth]{figures/using.pdf}
+    \end{center}
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{Пример использования}
+
+    Здесь что-то типа: Мы начали от программы на LML, потом получили из него Core и результат интерпретации (+ счётчики?); из Core перегнали в INs, интерпретировали сеть, получили какой-то терм и счётчики
+
+    Хорошо бы, чтобы счётчики по сетям бились с процессором
+
 \end{frame}
 
 \begin{frame}
     \frametitle{Результаты}
-    В рамках производственной практики были достигнуты следующие результаты\footnote[frame]{Исходный код находится в репозитории: \url{https://github.com/Lamagraph/interaction-nets-in-fpga} \\ Имя коммитера: \texttt{WoWaster}}
+    В рамках производственной практики были достигнуты следующие результаты
     \begin{enumerate}
-        \item Реализована часть интерпретатора модельного ML-подобного языка
-              \begin{enumerate}
-                  \item Конкретный синтаксис языка
-                  \item AST и синтаксический анализатор
-                  \item Алгоритм вывода типов
-                  \item Рассахаривание в обогащенное $\lambda$-исчисление
-              \end{enumerate}
+        \item Реализован интерпретатор модельного ML-подобного языка
+        \item Реализован интерпретатор \INs{}
+        \item Реализован транслятор из обогащенного $\lambda$-исчисления в \INs{}
     \end{enumerate}
+
+    \vspace{1em}
+
+    Исходный код находится в репозитории: \url{https://github.com/Lamagraph/interaction-nets-in-fpga}
+
+    Имя коммитера: \texttt{WoWaster}
 \end{frame}
 
 \end{document}
