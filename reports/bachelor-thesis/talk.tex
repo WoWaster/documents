@@ -147,8 +147,13 @@
 \begin{frame}
     \frametitle{Архитектура проекта}
 
+    \begin{itemize}
+        \item Интерпретатор реализован на \Haskell{}
+        \item Для всех компонент применяются golden тесты
+    \end{itemize}
+
     \begin{center}
-        \includegraphics[width=\linewidth]{figures/components.pdf}
+        \includegraphics[width=0.9\linewidth]{figures/components.pdf}
     \end{center}
 
 \end{frame}
@@ -158,12 +163,10 @@
     % \begin{columns}
     % \begin{column}{0.6\textwidth}
     \begin{itemize}
-        \item Интерпретатор реализован на \Haskell{}
         \item Используется ML-подобный синтаксис, для представления AST используется паттерн Trees That Grow
         \item Парсер реализован с помощью связки \textsc{Alex} и \textsc{Happy} с применением property-based тестов
         \item Используется система типов Хиндли-Милнера
         \item Для упрощения дальнейших преобразований используется промежуточное представление~--- обогащенное $\lambda$-исчисление
-              % \item Для всех компонент применяются golden тесты
     \end{itemize}
     %     \end{column}
     %     \begin{column}{0.35\textwidth}
