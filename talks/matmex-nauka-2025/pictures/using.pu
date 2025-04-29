@@ -18,7 +18,7 @@ participant "Абстрактная\nмашина INs" as abstract_machine
 end box
 
 box "Генератор вычислителя" #LightYellow
-participant "Транслятор в\nhardware\nпредставление" as toHW
+participant "Транслятор в\nhardware представление" as toHW
 participant "Генератор\nпрошивки" as genFW
 end box
 
@@ -40,7 +40,7 @@ abstract_machine --> user -- : Итоговая сеть и статистика
 
 toINs -> toHW --++ : Сеть в текстовом представлении
 user -> genFW ++ : Параметризация сети
-toHW -> genFW -- : Образ RAM\nдля ПЛИС
+toHW -> genFW -- : Образ RAM для ПЛИС
 genFW --> user --: Прошивка ПЛИС
 
 

@@ -138,7 +138,7 @@
     \frametitle{Lamagraph}
 
     \begin{figure}
-        \includegraphics[width=0.75\linewidth]{pictures/using.pdf}
+        \includegraphics[width=0.9\linewidth]{pictures/using.pdf}
     \end{figure}
 
 \end{frame}
@@ -147,40 +147,26 @@
     \frametitle{Интерпретатор LamagraphML}
 
     \begin{itemize}
-        \item Проекты, реализующие Interaction Nets, обычно ставят своей целью реализацию интерпретатора Interaction Nets
-        \item Поэтому для программирования используют собственные языки программирования, часто довольно сложные и синтаксически далёкие от массовых
-        \item Мы же хотим использовать Interaction Nets как ассемблер, выдав программисту высокоуровневый язык
-        \item Выбор именно функциональной парадигмы продиктован "близостью" Interaction Net к $\lambda$-исчислению, и бОльшими возможностями к параллелизму (чистота функций)
-        \item Синтаксис высокоуровневого языка основан на ML с системой типов Хиндли-Милнера
-        \item Фронтенд выдаёт обогащенное $\lambda$-исчисление, которое а) интерпретируется; б) перегоняется в Interaction Nets
+        \item Существующие языки для программирования на Interaction Nets~--- низкоуровневые и с непривычным синтаксисом
+        \item Пользователю должен быть доступен высокоуровневый и привычный язык
+        \item Синтаксис LamagraphML основан на ML с системой типов Хиндли-Милнера
+              \begin{itemize}
+                  \item Функциональный в силу близости Interaction Nets и $\lambda$-исчисления
+                  \item Чистые функции лучше для параллельности
+              \end{itemize}
+        \item[{\faLightbulb[regular]}] Для интерпретации и дальнейшей обработки используется обогащенное $\lambda$-исчисление
     \end{itemize}
-
 \end{frame}
 
 \begin{frame}
-    \frametitle{Интерпретаторы Interaction Nets}
+    \frametitle{Интерпретатор Interaction Nets}
 
     \begin{itemize}
-        \item Используется текстовое представление Interaction Nets
-        \item State-of-the-art наука умеет транслировать только чистое $\lambda$-исчисление
+        \item Стандартное представление Interaction Nets~--- графовое
+        \item С графами трудно работать в функциональных языках программирования $\implies$~используем текстовое представление Interaction Nets
+        \item Для текстового представления существует абстрактная машина
+        \item[{\faFrown[regular]}] State-of-the-art наука умеет транслировать только чистое $\lambda$-исчисление в Interaction Nets
     \end{itemize}
-
-    \vspace{1em}
-
-    \begin{columns}[t]
-        \begin{column}{0.5\linewidth}
-            Исходных терм: \[(\lambda x. x) (\lambda y. y)\]
-
-            Текстовое представление:
-            \[\big\langle z \mid a(z, \lambda(x, x)) = \lambda(y, y) \big\rangle\]
-        \end{column}
-        \begin{column}{0.5\linewidth}
-            Графическое представление:
-            \begin{figure}
-                \includegraphics[width=0.4\linewidth]{pictures/lamda-graph.pdf}
-            \end{figure}
-        \end{column}
-    \end{columns}
 
 \end{frame}
 
