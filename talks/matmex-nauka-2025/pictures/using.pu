@@ -1,0 +1,47 @@
+@startuml using
+
+hide footbox
+
+actor Пользователь as user
+
+box "Интерпретатор LamagraphML" #MistyRose
+' participant Парсер as parser
+' participant "Вывод типов" as typechecker
+' participant Рассахаривание as desugaring
+participant Фронтенд as frontend
+participant "Интерпретатор LML" as eval
+end box
+
+box "Интерпретатор Interaction Nets" #LightBlue
+participant "Транслятор в\nInteraction Nets" as toINs
+participant "Абстрактная\nмашина INs" as abstract_machine
+end box
+
+box "Генератор вычислителя" #LightYellow
+participant "Транслятор в\nhardware представление" as toHW
+participant "Генератор\nпрошивки" as genFW
+end box
+
+' user -> parser ++ : Входная\nпрограмма
+' parser -> typechecker --++ : AST
+'Дерево\nабстрактного\nсинтаксиса
+' typechecker -> desugaring --++ : Типизированное AST
+'\nдерево\nабстрактного\nсинтаксиса
+user -> frontend ++: Входная\nпрограмма
+' desugaring -> eval ++ : Обогащенное\nλ-исчисление
+frontend -> eval ++ : Обогащенное\nλ-исчисление
+eval --> user --: Вывод и статистика
+
+' desugaring -> toINs --++ : Обогащенное λ-исчисление
+frontend -> toINs --++ : Обогащенное λ-исчисление
+user -> abstract_machine ++ : Параметризация сети
+toINs -> abstract_machine : Сеть в текстовом\nпредставлении
+abstract_machine --> user -- : Итоговая сеть и статистика
+
+toINs -> toHW --++ : Сеть в текстовом представлении
+user -> genFW ++ : Параметризация сети
+toHW -> genFW -- : Образ RAM для ПЛИС
+genFW --> user --: Прошивка ПЛИС
+
+
+@enduml
