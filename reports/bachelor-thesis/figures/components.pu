@@ -18,18 +18,16 @@ Typechecker --> Syntax
 Parser -> Syntax
 
 package Lamagraph.Nets {
+    component Reduction
+    component Processing
+    component Types
     component CoreToNet
-    component NetToConfiguration
-    component ConfigurationToNet
-    component AbstractMachine
 }
 
-NetToConfiguration --> CoreToNet
-AbstractMachine --> NetToConfiguration
-AbstractMachine --> ConfigurationToNet
-
-Lamagraph.Nets -[norank,hidden]> Lamagraph.Compiler
-Lamagraph.Compiler -[hidden]> Lamagraph.Nets
-CoreToNet -[norank]> Core
+Reduction --> Types
+Processing --> Types
+CoreToNet -> Core
+CoreToNet -> Types
+Processing --[hidden]> Core
 
 @enduml
