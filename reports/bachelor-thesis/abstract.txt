@@ -1,0 +1,24 @@
+Ключевые слова: Interaction Nets, модели вычислений, параллельные вычисления, функциональное программирование, компиляторы
+
+Keywords: Interaction Nets, models of computation, parallel computing, functional programming, compilers
+
+Аннотация на русском:
+Современные алгоритмы обработки данных всё чаще встречаются с нерегулярным параллелизмом — явлением при котором обращения к памяти обычно нелокальны, а количество независимых подзадач постоянно меняется.
+К сожалению традиционные архитектуры плохо справляются с нерегулярным параллелизмом.
+Для решения данной проблемы сообществом создаются ускорители на альтернативных архитектурах.
+
+Проект Lamagraph изучает возможности по созданию ускорителя на основе модели вычислений Interaction Nets, которой свойственен нерегулярный параллелизм.
+Данная работа посвящена разработке транслятора модельного ML-подобного языка в Interaction Nets, для дальнейшего программирования ускорителя.
+Реализованы компоненты транслятора: интерпретатор языка, преобразование в обогащённое λ-исчисление, трансляция в Interaction Nets, интерпретатор Interaction Nets со сбором статистки.
+Проведено тестирование, сбор и анализ статистики исполнения, а также выявлены текущие проблемы и дан анализ способов их решения.
+
+Аннотация на английском:
+Modern data processing algorithms often encounter irregular parallelism—a phenomenon where memory accesses are typically non-local and the number of independent subtasks is constantly changing.
+Unfortunately, traditional architectures handle irregular parallelism poorly.
+To address this issue, the community is developing accelerators based on alternative architectures.
+
+The Lamagraph project explores the possibility of creating an accelerator based on the Interaction Nets model of computation, which inherently supports irregular parallelism.
+This work focuses on the development of a compiler from a model ML-like language into Interaction Nets, aimed at enabling programming for such an accelerator.
+The components of the compiler have been implemented: a language interpreter, transformation into enriched lambda calculus, translation into Interaction Nets, and an Interaction Nets interpreter with statistics collection.
+Testing has been conducted, along with execution statistics collection and analysis.
+Current issues have been identified, and potential solutions have been analyzed.
