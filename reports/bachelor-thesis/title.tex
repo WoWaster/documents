@@ -20,7 +20,7 @@
     %%   prediploma - отчёт по преддипломной практике;
     %%   master - ВКР магистра;
     %%   bachelor - ВКР бакалавра.
-    type               = {prediploma},
+    type               = {bachelor},
     %
     %% Здесь указывается вид работы. От вида работы зависят критерии оценивания.
     %%   solution - «Решение». Обучающемуся поручили найти способ решения проблемы в области разработки программного обеспечения или теоретической информатики с учётом набора ограничений.
@@ -47,7 +47,7 @@
     %%   ВМ.5666.2022 \enquote{Программная инженерия}
     %% Шифр и название программы можно посмотреть в учебном плане, по которому вы учитесь.
     %% СВ.* --- бакалавриат, ВМ.* --- магистратура. В конце --- год поступления (не обязательно ваш, если вы были в академе/вылетали).
-    programme          = {СВ.5162.2020 \enquote{Технологии программирования}},
+    programme          = {СВ.5162.2021 \enquote{Технологии программирования}},
     %
     %% Актуально всем.
     %% Должно умещаться в одну строчку, допускается использование сокращений, но без переусердствования,
@@ -62,14 +62,13 @@
     reviewer           = {Косарев~Д.~С.},
 }
 
-% TODO: Fill later
 % Английский титульник нужен только для ВКР, остальные виды работ могут его смело игнорировать.
 \filltitle{en}{
     chair              = {Advisor's chair},
     group              = {ХХ.BХХ-mm},
-    title              = {Template for SPbU qualification works},
+    title              = {An implementation of a translator from a model functional language to Interaction Nets},
     type               = {bachelor},
-    author             = {FirstName Surname},
+    author             = {Nikolai Ponomarev},
     %
     %% Possible choices:
     %%   02.03.03 \foreignquote{english}{Software and Administration of Information Systems}
@@ -84,19 +83,19 @@
     %%   СВ.5080.2020 \foreignquote{english}{Software Engineering}
     %%   ВМ.5665.2022 \foreignquote{english}{Software and Administration of Information Systems}
     %%   ВМ.5666.2022 \foreignquote{english}{Software Engineering}
-    programme          = {СВ.5162.2020 \foreignquote{english}{Programming Technologies}},
+    programme          = {СВ.5162.2021 \foreignquote{english}{Programming Technologies}},
     %
     %% Note that common title translations are:
     %%   кандидат наук --- C.Sc. (NOT Ph.D.)
     %%   доктор ... наук --- Sc.D.
     %%   доцент --- docent (NOT assistant/associate prof.)
     %%   профессор --- prof.
-    supervisorPosition = {Sc.D, prof.},
-    supervisor         = {S.S. Supervisor},
+    supervisorPosition = {C.Sc., docent},
+    supervisor         = {S.V. Grigorev},
     %
-    consultantPosition = {position at \foreignquote{english}{Company}, degree if present},
-    consultant         = {C.C. Consultant},
+    % consultantPosition = {position at \foreignquote{english}{Company}, degree if present},
+    % consultant         = {C.C. Consultant},
     %
-    reviewerPosition   = {position at \foreignquote{english}{Company}, degree if present},
-    reviewer           = {R.R. Reviewer},
+    reviewerPosition   = {research engineer at \foreignquote{english}{St. Petersburg State University}},
+    reviewer           = {D.S. Kosarev},
 }
