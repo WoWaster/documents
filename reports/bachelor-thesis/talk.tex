@@ -80,7 +80,7 @@
     \begin{itemize}
         \item Задачи искусственного интеллекта и анализа графов естественным образом выражаются в терминах разреженной линейной алгебры
         \item Разреженная линейная алгебра влечёт за собой нерегулярный параллелизм $\implies$~требуются специализированные ускорители
-        \item \INs{}~--- модель вычислений, допускающая параметризацию и в которой легко достигается параллелизм
+        \item \INs{}~--- модель вычислений, которой естествен нерегулярный параллелизм
         \item Существуют программные реализации \INs{}, однако попыток реализовать ускоритель на её основе пока не предпринималось
     \end{itemize}
 
@@ -101,14 +101,15 @@
 
 \begin{frame}{Требования к проекту}
 
-    К проекту выдвинуты следующие требования
+    Проект на первом этапе: разработка минимальной инфраструктуры для создания специализированных вычислителей на основе Interaction Nets
+
+    \vspace{1em}
+
+    На данном этапе выдвинуты следующие требования
     \begin{itemize}
-        \item Параметризация всех компонентов типами агентов сети и правилами их редукции
-        \item Возможность сбора статистики
-        \item Возможность постановки сравнительных экспериментов
-        \item Использование единого стека технологий~--- гомогенность
         \item Получение полнофункционального прототипа, содержащего все компоненты, важнее, чем детальная проработка какого-то отдельного компонента
-        \item Расширяемость и модифицируемость
+        \item Использование единого стека технологий
+        \item Возможность анализа результатов каждого этапа работы
     \end{itemize}
 
 \end{frame}
@@ -133,65 +134,52 @@
 \end{frame}
 
 \begin{frame}
-    \frametitle{Архитектура проекта}
-
-    \begin{itemize}
-        \item Интерпретатор реализован на \Haskell{}
-        \item Для всех компонент применяются golden тесты
-    \end{itemize}
+    \frametitle{Реализация}
 
     \begin{center}
-        \includegraphics[width=0.9\linewidth]{figures/components.pdf}
+        \includegraphics[width=0.8\linewidth]{figures/using.pdf}
     \end{center}
+
+    %     \begin{itemize}
+    %         \item Интерпретатор реализован на \Haskell{}
+    %         \item Для всех компонент применяются golden тесты
+    %     \end{itemize}
 
 \end{frame}
 
 \begin{frame}{Интерпретатор LamagraphML}
 
-    % \begin{columns}
-    % \begin{column}{0.6\textwidth}
     \begin{itemize}
         \item Используется ML-подобный синтаксис, для представления AST используется паттерн Trees That Grow
         \item Парсер реализован с помощью связки \textsc{Alex} и \textsc{Happy} с применением property-based тестов
         \item Используется система типов Хиндли-Милнера
         \item Для упрощения дальнейших преобразований используется промежуточное представление~--- обогащенное $\lambda$-исчисление
     \end{itemize}
-    %     \end{column}
-    %     \begin{column}{0.35\textwidth}
-    %         \begin{center}
-    %             \includegraphics[width=\linewidth]{figures/components_compiler.pdf}
-    %         \end{center}
-    %     \end{column}
-    % \end{columns}
 
 \end{frame}
 
 \begin{frame}
     \frametitle{Интерпретатор \INs{}}
 
-    \begin{center}
-        \begin{tabular}{lccc}
-            \toprule
-            \multicolumn{1}{c}{Вид представления}
-             & \multicolumn{1}{p{2.5cm}}{\raggedright Удобно для\newline теоретических исследований}
-             & \multicolumn{1}{p{2.5cm}}{\raggedright \enquote{Удобно} для реализации на \Haskell{}}
-             & \multicolumn{1}{p{2.1cm}}{\raggedright Существует абстрактная машина}                                              \\
-            \midrule
-            Графовое представление
-             & $+$
-             & $-$
-             & $-$                                                                                                                \\
-            Текстовое представление\footnote[frame]{Fernández, Maribel, and Ian Mackie. "A calculus for interaction nets.", 1999}
-             & $-$
-             & $+$
-             & $+$\footnote[frame]{Pinto, Jorge Sousa. "Sequential and concurrent abstract machines for interaction nets.", 2000} \\
-            \bottomrule
-        \end{tabular}
-    \end{center}
+    \begin{columns}
+        \begin{column}{0.6\linewidth}
+            \begin{itemize}
+                \item Стандартное представление \INs{}~--- графовое
+                \item Работать с графами в функциональных языках сложно $\implies$ используем альтернативное текстовое представление
+                \item Для него существует абстрактная машина, она и была реализована
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.35\linewidth}
+            Графовое представление:
 
-    \vspace{1em}
+            \begin{center}
+                \includegraphics[width=0.3\linewidth]{figures/ins_graph.pdf}
+            \end{center}
 
-    Таким образом была реализована абстрактная машина Pinto
+            Текстовое представление
+            \[\big\langle x \mid{} \Downarrow(x) \bowtie \lambda(y, y) \big\rangle\]
+        \end{column}
+    \end{columns}
 
 \end{frame}
 
@@ -199,48 +187,58 @@
     \frametitle{Транслятор обогащенного $\lambda$-исчисления в \INs{}}
 
     \begin{itemize}
-        \item \INs{} всё ещё сильно теоретическая область $\implies$ схемы трансляции оперируют чистым $\lambda$-исчислением
-        \item Поэтому на данном этапе реализована поддержка только чистого $\lambda$-исчисления
+        \item Существует не одна схема трансляции $\lambda$-исчисления в \INs{}
+        \item Для начала была выбрана схема, реализующая стратегию вычислений call-by-value
+        \item При реализации было выяснено, что схемы трансляции разрабатываются только для чистого $\lambda$-исчисления
+        \item Попытки расширить схему предпринимались, но не подходят в нашем случе
+        \item На данном этапе реализована поддержка только чистого $\lambda$-исчисления
         \item Расширения схемы трансляции для поддержки более широкого класса выражений входного языка~--- предмет дальнейшей работы
     \end{itemize}
 
 \end{frame}
 
+% \begin{frame}
+%     \frametitle{Текущие возможности}
+
+%     \begin{center}
+%         \begin{tabular}{ll}
+%             \toprule
+%             Компонент                 & Степень реализации                                \\
+%             \midrule
+%             Парсер                    & Реализован полностью                              \\
+%             Вывод типов               & Нет поддержки алгебраических типов данных         \\
+%             Рассахаривание            & Поддерживаются только простые паттерны            \\
+%             Интерпретатор LamagraphML & Нет поддержки взаимной рекурсии                   \\
+%             Транслятор в \INs{}       & Поддерживается только чистое $\lambda$-исчисление \\
+%             Абстрактная машина        & Реализована полностью                             \\
+%             \bottomrule
+%         \end{tabular}
+%     \end{center}
+
+% \end{frame}
+
+% \begin{frame}
+%     \frametitle{Использование}
+
+%     \begin{center}
+%         \includegraphics[width=0.8\linewidth]{figures/using.pdf}
+%     \end{center}
+
+% \end{frame}
+
+% \begin{frame}
+%     \frametitle{Пример использования}
+
+%     Здесь что-то типа: Мы начали от программы на LML, потом получили из него Core и результат интерпретации (+ счётчики?); из Core перегнали в INs, интерпретировали сеть, получили какой-то терм и счётчики
+
+%     Хорошо бы, чтобы счётчики по сетям бились с процессором
+
+% \end{frame}
+
 \begin{frame}
-    \frametitle{Текущие возможности}
+    \frametitle{Тестирование}
 
-    \begin{center}
-        \begin{tabular}{ll}
-            \toprule
-            Компонент                 & Степень реализации                                \\
-            \midrule
-            Парсер                    & Реализован полностью                              \\
-            Вывод типов               & Нет поддержки алгебраических типов данных         \\
-            Рассахаривание            & Поддерживаются только простые паттерны            \\
-            Интерпретатор LamagraphML & Нет поддержки взаимной рекурсии                   \\
-            Транслятор в \INs{}       & Поддерживается только чистое $\lambda$-исчисление \\
-            Абстрактная машина        & Реализована полностью                             \\
-            \bottomrule
-        \end{tabular}
-    \end{center}
 
-\end{frame}
-
-\begin{frame}
-    \frametitle{Использование}
-
-    \begin{center}
-        \includegraphics[width=0.8\linewidth]{figures/using.pdf}
-    \end{center}
-
-\end{frame}
-
-\begin{frame}
-    \frametitle{Пример использования}
-
-    Здесь что-то типа: Мы начали от программы на LML, потом получили из него Core и результат интерпретации (+ счётчики?); из Core перегнали в INs, интерпретировали сеть, получили какой-то терм и счётчики
-
-    Хорошо бы, чтобы счётчики по сетям бились с процессором
 
 \end{frame}
 
@@ -260,13 +258,5 @@
     Имя коммитера: \texttt{WoWaster}
 \end{frame}
 
-\appendix
-\begin{frame}{Interaction Nets}
-
-    \begin{center}
-        \includegraphics[width=\textwidth]{figures/in_talk.pdf}
-    \end{center}
-
-\end{frame}
 
 \end{document}
