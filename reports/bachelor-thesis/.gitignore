@@ -24,3 +24,5 @@ _minted-*
 # Tex Studio files
 *.txss2
 
+.ipynb_checkpoints
+talk_text.pdf
