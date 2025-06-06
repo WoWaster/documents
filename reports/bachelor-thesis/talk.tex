@@ -99,16 +99,16 @@
 
 \end{frame}
 
-\begin{frame}{Требования к проекту}
+\begin{frame}{Состояние проекта}
 
     Проект на первом этапе: разработка минимальной инфраструктуры для создания ускорителей на основе Interaction Nets
 
     \vspace{1em}
 
-    На данном этапе выдвинуты следующие требования
+    На данном этапе от проекта ожидается следующее
     \begin{itemize}
-        \item Получение полнофункционального прототипа, содержащего все компоненты, важнее, чем детальная проработка какого-то отдельного компонента
-        \item Использование единого стека технологий
+        \item Приоритизация получения полнофункционального прототипа, содержащего все компоненты
+        \item Использование единого стека технологий: Clash $\implies$ Haskell
         \item Возможность анализа результатов каждого этапа работы
     \end{itemize}
 
@@ -123,12 +123,12 @@
     \textbf{Задачи}:
     \begin{enumerate}
         \item Реализовать интерпретатор модельного ML-подобного языка
-              \begin{enumerate}
+              \begin{itemize}
                   \item Фронтенд транслятора
                   \item Интерпретатор обогащенного $\lambda$-исчисления
-              \end{enumerate}
-        \item Реализовать интерпретатор \INs{}, поддерживающий сбор статистики
-        \item Реализовать транслятор обогащенного $\lambda$-исчисления в \INs{}
+              \end{itemize}
+        \item Реализовать транслятор $\lambda$-исчисления в \INs{}
+        \item Реализовать интерпретатор \INs{}, поддерживающий сбор метрик исполнения
     \end{enumerate}
 
 \end{frame}
@@ -139,11 +139,6 @@
     \begin{center}
         \includegraphics[width=0.8\linewidth]{figures/using.pdf}
     \end{center}
-
-    %     \begin{itemize}
-    %         \item Интерпретатор реализован на \Haskell{}
-    %         \item Для всех компонент применяются golden тесты
-    %     \end{itemize}
 
 \end{frame}
 
@@ -201,15 +196,15 @@
 \end{frame}
 
 \begin{frame}
-    \frametitle{Статистика и её анализ}
+    \frametitle{Метрики исполнения}
 
     \begin{columns}
         \begin{column}{0.45\linewidth}
-            На основе статистики сейчас можем анализировать
+            Получаемые метрики позволяют отвечать на вопросы
             \begin{itemize}
-                \item Затраты на параллельное исполнение
-                \item Ускорение при параллельном исполнении
-                \item Максимальное количество независимых подзадач
+                \item Сколько операций потребовалось для вычислений?
+                \item Какое ускорение можно получить при параллельном исполнении программы?
+                \item Сколько \enquote{ядер} ускорителя может использовать программа?
             \end{itemize}
         \end{column}
         \begin{column}{0.5\linewidth}
@@ -226,11 +221,11 @@
 
 \begin{frame}
     \frametitle{Результаты}
-    В рамках выпускной квалификационной работы были достигнуты следующие результаты
+    В рамках выпускной квалификационной работы был создан программный стек, состоящий из
     \begin{enumerate}
-        \item Реализован интерпретатор модельного ML-подобного языка со стратегий call-by-need
-        \item Реализован интерпретатор \INs{} на основе абстрактной машины с возможностью сбора статистики
-        \item Реализован транслятор чистого $\lambda$-исчисления в \INs{} в стратегии call-by-value
+        \item интерпретатора модельного ML-подобного языка со стратегий call-by-need
+        \item транслятора чистого $\lambda$-исчисления в \INs{} в стратегии call-by-value
+        \item интерпретатора \INs{} на основе абстрактной машины с возможностью сбора метрик исполнения
     \end{enumerate}
 
     \vspace{1em}
@@ -238,15 +233,115 @@
     Исходный код находится в репозитории: \url{https://github.com/Lamagraph/interaction-nets-in-fpga}
 
     Имя коммитера: \texttt{WoWaster}
+
+    \vspace{1em}
+
+    Результаты работы были представлены на конференции \enquote{МАТ-МЕХ. НАУКА 2025}
 \end{frame}
 
 \appendix
-\begin{frame}{Interaction Nets}
+
+\begin{frame}
+    \frametitle{Формальное определение Interaction Nets I/II}
+
+    \begin{columns}[totalwidth=\textwidth]
+        \begin{column}{0.6\linewidth}
+            \begin{itemize}
+                \item $\Sigma$~--- множество символов
+                \item Помеченная символом из $\Sigma$ вершина~--- \textit{агент}
+                \item Связи между агентами~--- \textit{провода}
+                \item Места соединения агентов проводами~--- \textit{порты}
+                \item Каждый агент имеет арность $\ar$
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.4\linewidth}
+            \begin{center}
+                \includegraphics[width=0.3\linewidth]{figures/in_agent.pdf}
+            \end{center}
+        \end{column}
+    \end{columns}
+    \begin{itemize}
+        \item Если $\alpha \in \Sigma$ и $\ar(\alpha) = n \in \N$, то у $\alpha$ имеется $n+1$ портов: $n$ \textit{дополнительных} и один выделенный~--- \textit{главный}.
+    \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{Формальное определение Interaction Nets II/II}
+
+    \begin{itemize}
+        \item \textit{Сеть}~--- неориентированный граф с символами из $\Sigma$ в его вершинах
+        \item Ребра соединяют порты вершин, в каждый порт приходит не более одного ребра
+        \item Порт не соединенный ни с одним ребром~--- \textit{свободный}, множество таких портов~--- \textit{интерфейс}
+        \item Пара агентов $(\alpha, \beta) \in \Sigma \times \Sigma$, соединенных своими главными портами,~--- \textit{активная пара}
+        \item Правило $((\alpha, \beta) \Longrightarrow N)$ заменяет активную пару $(\alpha, \beta)$ на сеть $N$.
+        \item Для каждой пары агентов существует не более одного правила редукции, при этом в процессе редукции интерфейс сохраняется
+    \end{itemize}
+
+\end{frame}
+
+\begin{frame}{Пример Interaction Nets}
 
     \begin{center}
         \includegraphics[width=\textwidth]{figures/in_talk.pdf}
     \end{center}
 
+\end{frame}
+
+\begin{frame}
+    \frametitle{Схема трансляции\footnote[frame]{По материалам Sinot F.-R. Call-by-Name and Call-by-Value as Token-Passing Interaction Nets // Typed Lambda Calculi and Applications Lecture Notes in Computer Science. / под ред. P. Urzyczyn. Berlin, Heidelberg: Springer Berlin Heidelberg, 2005. С. 386–400.}}
+
+    Пусть $\mathcal{T}(\cdot)$~--- трансляция
+
+    \begin{description}
+        \item[Переменные] Переменные представляются проводами, поскольку рассматриваются только замкнутые термы
+
+    \end{description}
+    \begin{onlyenv}<1>
+        \begin{columns}[totalwidth=\textwidth]
+            \begin{column}{0.6\linewidth}
+                \begin{description}
+                    \item[Применение] Для применения $\mathcal{T}(t\ u)$ генерируется агент $a$, а к его портам подключаются результаты $\mathcal{T}(t)$ и $\mathcal{T}(u)$.
+                          Если множество свободных переменных $t$ и $u$ не пусто, то для общих переменных генерируются агенты-дупликаторы $c$
+                \end{description}
+            \end{column}
+            \begin{column}{0.4\linewidth}
+                \begin{center}
+                    \includegraphics[width=0.5\linewidth]{figures/sinot_app.pdf}
+                \end{center}
+            \end{column}
+        \end{columns}
+    \end{onlyenv}
+
+    \begin{onlyenv}<2>
+        \begin{columns}[totalwidth=\textwidth]
+            \begin{column}{0.6\linewidth}
+                \begin{description}
+                    \item[Абстракция] Для абстракции $\mathcal{T}(\lambda x.t)$ генерируется агент $\lambda$, правый порт которого связывается с $\mathcal{T}(t)$, а левый с проводом, соответствующим $x$
+                \end{description}
+            \end{column}
+            \begin{column}{0.4\linewidth}
+                \begin{center}
+                    \includegraphics[width=0.4\linewidth]{figures/sinot_abs_1.pdf}
+                \end{center}
+            \end{column}
+        \end{columns}
+    \end{onlyenv}
+
+    \begin{onlyenv}<3>
+        \begin{columns}[totalwidth=\textwidth]
+            \begin{column}{0.6\linewidth}
+                \begin{description}
+                    \item[Абстракция] Для абстракции $\mathcal{T}(\lambda x.t)$ генерируется агент $\lambda$, правый порт которого связывается с $\mathcal{T}(t)$, если $x$ не содержится в $t$, то генерируется агент-уничтожитель $\varepsilon$
+                \end{description}
+            \end{column}
+            \begin{column}{0.4\linewidth}
+                \begin{center}
+                    \includegraphics[width=0.5\linewidth]{figures/sinot_abs_2.pdf}
+                \end{center}
+            \end{column}
+        \end{columns}
+    \end{onlyenv}
 \end{frame}
 
 \end{document}
