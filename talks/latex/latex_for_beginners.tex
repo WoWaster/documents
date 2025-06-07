@@ -1,0 +1,87 @@
+\documentclass[aspectratio=169]{beamer}
+\usepackage{fontspec}
+\setmainfont{Sofia Sans}
+\setsansfont{Noto Sans}
+\setmonofont{Fira Code}
+%%% Fonts and language setup.
+\usepackage{polyglossia}
+\usepackage[autostyle]{csquotes}
+%% Math
+\usepackage{amsmath, amsfonts, amssymb, amsthm, mathtools} % Advanced math tools.
+\usepackage{unicode-math} % Allow TTF and OTF fonts in math and allow direct typing unicode math characters.
+\unimathsetup{
+    warnings-off={
+            mathtools-colon,
+            mathtools-overbracket
+        }
+}
+% \setmathfont{STIX Two Math}
+% \newfontfamily{\cyrillicfont}{Fira Math}
+
+\usepackage{metalogox}
+\usetheme{Rochester}
+\usecolortheme[style=light]{Nord}
+\usefonttheme{Nord}
+
+\usepackage{minted}
+\usemintedstyle{catppuccin-latte}
+
+\title{\LaTeX}
+\subtitle{для самых маленьких}
+\author{Николай Пономарев}
+\institute{мат-мех СПбГУ}
+\date{}
+
+\setbeamertemplate{navigation symbols}{%
+    \usebeamerfont{footline}%
+    \usebeamercolor[fg]{footline}%
+    \hspace{1em}%
+    \insertframenumber/\inserttotalframenumber
+}
+
+%%% Polyglossia setup after (nearly) everything as described in documentation.
+\setdefaultlanguage{russian}
+\setotherlanguage{english}
+
+\begin{document}
+
+\begin{frame}
+    \titlepage
+\end{frame}
+
+\begin{frame}
+    \frametitle{Что это за зверь?}
+    \TeX~--- система компьютерной верстки, созданная Дональдом Кнутом.
+
+    \LaTeX~--- набор макросов для \TeX, созданный Лесли Лэмпортом для облегчения набора сложных документов в \TeX.
+
+    Основные особенности:
+    \begin{itemize}
+        \item Использование языка разметки текстового файла, не WYSIWYG~(What You See Is What You Get) система;
+        \item Разделение содержания и оформления;
+        \item Мощная система перекрёстных ссылок;
+        \item \enquote{Нативная} поддержка математических формул;
+        \item Переносимость и воспроизводимость.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[allowframebreaks]
+    \frametitle{Экскурс в историю}
+    \begin{description}[3500 лет до Н.~Э.]
+        \item[3500 лет до Н.~Э.] Письменность шумеров (потыкать КК)
+        \item[...] На самом деле очень много чего ещё
+        \item[XI век] АА
+    \end{description}
+    % \framebreak
+    % Основные особенности:
+    % \begin{itemize}
+    %     \item Использование языка разметки текстового файла, не WYSIWYG~(What You See Is What You Get) система;
+    %     \item Разделение содержания и оформления;
+    %     \item Мощная система перекрёстных ссылок;
+    %     \item \enquote{Нативная} поддержка математических формул;
+    %     \item Переносимость и воспроизводимость.
+    % \end{itemize}
+\end{frame}
+
+
+\end{document}
