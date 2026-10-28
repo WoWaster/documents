@@ -1,0 +1,97 @@
+% !TeX spellcheck = ru_RU
+% !TEX root = vkr.tex
+
+\section{Описание решения}
+
+\subsection{Используемые инструменты}
+
+Традиционно для создания eDSL используются гомоиконичные языки (см.~\cite{HomoiconicLanguages}), например Lisp (и его производные) или TCL.
+В данном случае их использование было затруднено, в силу необходимости работы с документами Office Open XML.
+
+Кроме гомоиконичных языков для создания eDSL также часто используют функциональные языки программирования.
+Поэтому в силу наличия уже существующего инструментария для обработки учебных планов\footnote{Инструменты для упрощения бумажной работы Юрия Викторовича Литвинова: \url{https://github.com/yurii-litvinov/TeachingScripts} (дата обращения: 11.02.2026).}, а также \enquote{простоты} работы с Office Open XML, был выбран \fsharp{}.
+Реализация eDSL на \fsharp{} активно полагается на инструмент языка называемый Computation Expressions (далее~--- CE).
+
+Также для экспорта учебного плана в Office Open XML Workbook используется дружественная к пользователю библиотека-обёртка над Open XML SDK\footnote{Репозиторий: \url{https://github.com/dotnet/Open-XML-SDK} (дата обращения: 11.02.2026).}~--- ClosedXML\footnote{Репозиторий: \url{https://github.com/ClosedXML/ClosedXML} (дата обращения: 11.02.2026).}.
+
+\subsection{Подробности реализации}
+
+В рамках работы сначала была реализована модель данных в соответствии с описанием из раздела~\ref{sec:relatedworks}.
+
+\begin{listing}
+      \begin{minted}[breaklines]{fsharp}
+simpleBlock {
+    workload 2
+    competencies [ "ОПК-1"; "ПКА-1" ]
+
+    disciplines
+        [ discipline {
+                number 002188
+                name "Теория вероятностей и математическая статистика"
+                englishName "Probability Theory and Mathematical Statistics"
+                realization "осн курс"
+                trajectory "тр 3 г"
+                assessmentForms [ Credit ]
+
+                classroomWork (
+                    // Коллизия имён!
+                    ClassroomWorkBuilder() {
+                        lectures 30
+                        practicalClasses 12
+                        controlWorks 2
+                        intermediateAssessment 2
+                    }
+                )
+
+                independentWork (
+                    // Коллизия имён!
+                    IndependentWorkBuilder() {
+                        usingMaterials 18
+                        intermediateAssessment 8
+                    }
+                )
+
+                interactiveHours 12
+            } ]
+}
+      \end{minted}
+      \caption{Описание обязательного предмета в первой версии eDSL}
+      \label{lst:eDSL1}
+\end{listing}
+
+Затем в несколько итераций был разработан сам eDSL (на примере~\cite{CreatingDSLsUsing2022}).
+В первой своей версии (см. листинг~\ref{lst:eDSL1}) язык почти дословно повторял описание модель данных, однако, во-первых, оказался сильно многословен, во-вторых, случились коллизии имен CE.
+Во второй версии (см. листинг~\ref{lst:eDSL2}) была исправлена коллизия имен CE, а также созданы дополнительные CE, упрощающие жизнь пользователя (например, \texttt{simpleDiscipline} для описания обязательных предметов).
+
+\begin{listing}
+      \begin{minted}[breaklines]{fsharp}
+simpleDiscipline {
+    workload 2
+    competencies [ "ОПК-1"; "ПКА-1" ]
+    number 002188
+    name "Теория вероятностей и математическая статистика"
+    englishName "Probability Theory and Mathematical Statistics"
+    realization "осн курс"
+    trajectory "тр 3 г"
+    assessmentForms [ credit ]
+
+    classroomWork {
+        lectures 30
+        practicalClasses 12
+        controlWorks 2
+        intermediateAssessment 2
+    }
+
+    independentWork {
+        usingMaterials 18
+        intermediateAssessment 8
+    }
+
+    interactiveHours 12
+}
+      \end{minted}
+      \caption{Описание обязательного предмета во второй версии eDSL}
+      \label{lst:eDSL2}
+\end{listing}
+
+И в конце был описан экспорт в Office Open XML Workbook.
