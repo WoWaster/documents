@@ -5,13 +5,7 @@
             "tools": [
                 "lualatexmk"
             ]
-        },
-        {
-            "name": "latexmk (xelatex)",
-            "tools": [
-                "xelatexmk"
-            ]
-        },
+        }
     ],
     "editor.formatOnSave": true,
     "files.insertFinalNewline": true,

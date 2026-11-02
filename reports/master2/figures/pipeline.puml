@@ -1,38 +1,21 @@
-@startuml pipeline
-title Поток данных инфраструктуры бенчмаркинга
+@startuml
+skinparam shadowing false
+skinparam defaultFontSize 13
+skinparam ArrowColor #666666
+skinparam nodesep 24
+skinparam ranksep 36
+left to right direction
+skinparam rectangle {
+  BackgroundColor #F5F7FA
+  BorderColor #AAB4C0
+}
 
-actor Пользователь
-participant "main.py" as main
-participant "src/download.py" as download
-participant "src/prepare_matrices.py" as prepare
-participant "src/benchmark/<tool>.py" as bench
-participant "src/common.py" as common
-database "matrices.yaml" as cfg
-database "matrices/" as mtx
-database "tools/ dependencies/" as ext
-database "results/raw/" as res
-database "logs/" as log
+rectangle "**1. Получение матриц**\n\nmain.py download\n\nматрицы скачиваются\nпо ссылкам из настроек\nи распаковываются" as s1
+rectangle "**2. Предобработка**\n\nmain.py prepare-matrices\n\nнеотрицательные целые,\nпереупорядоченные\nверсии" as s2
+rectangle "**3. Измерения**\n\nmain.py benchmark <tool>\n\nповторные запуски\nпри разном числе\nпотоков" as s3
+rectangle "**4. Результаты**\n\nresults/raw/\n\nобщий формат,\nпригодный для\nпостроения графиков" as s4
 
-Пользователь -> main : uv run main.py download
-main -> download
-download -> cfg : чтение enabled матриц\n(уникальные по имени)
-download -> mtx : скачать .tar.gz,\nраспаковать .mtx
-download --> log
-
-Пользователь -> main : uv run main.py prepare-matrices
-main -> prepare
-prepare -> cfg : чтение матриц
-prepare -> mtx : приведение к неотрицательным\nцелым
-prepare -> mtx : для reorder=true\nпостроить *_reordered.mtx (RCM)
-prepare --> log
-
-Пользователь -> main : uv run main.py benchmark <tool>
-main -> bench
-bench -> cfg : get_enabled_matrices_for_tool
-bench -> ext : подготовка (сборка make,\nuv sync, конвертация .mtx→.in,\nсимлинки)
-bench -> common : run_benchmarks\n(run_tool_many_times)
-common -> bench : run_tool (subprocess)\nпо потокам/запускам
-bench -> common : собрать результаты\n(Results)
-common -> res : write_results\n<timestamp>_<tool>.json
-bench --> log
+s1 --> s2
+s2 --> s3
+s3 --> s4
 @enduml

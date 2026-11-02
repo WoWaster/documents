@@ -1,71 +1,46 @@
-@startuml arch
-title Архитектура инфраструктуры бенчмаркинга
-
-skinparam componentStyle rectangle
-
-package "CLI" {
-  [main.py\n(typer)] as main
+@startuml
+skinparam shadowing false
+skinparam defaultFontSize 15
+skinparam ArrowColor #666666
+skinparam nodesep 24
+skinparam ranksep 38
+skinparam packageStyle rectangle
+skinparam rectangle {
+  BackgroundColor #F5F7FA
+  BorderColor #AAB4C0
+}
+skinparam package {
+  BackgroundColor #FAFBFC
+  BorderColor #C4CCD6
 }
 
-package "Конфигурация и общие утилиты" {
-  [src/common.py\n(Tool, Algorithm, Matrix, Results,\nrun_benchmarks, run_tool_many_times,\nwrite_results)] as common
-  [src/type_aliases.py] as types
-  [matrices.yaml] as config
+rectangle "**main.py**\nединая программа запуска" as main
+
+package "команды" {
+  rectangle "**download**\nполучение матриц" as dl
+  rectangle "**prepare-matrices**\nпредобработка" as prep
+  rectangle "**benchmark <tool>**\nизмерения" as bench
 }
 
-package "Подготовка данных" {
-  [src/download.py\n(download)] as download
-  [src/prepare_matrices.py\n(prepare-matrices)] as prepare
-  [matrices/\n*.mtx, *_reordered.mtx] as matrices
+rectangle "**matrices.yaml**\nсостав эксперимента" as cfg
+rectangle "**src/common.py**\nвыбор матриц, повторение\nзапусков, сохранение" as common
+
+package "данные" {
+  rectangle "matrices/" as mtx
+  rectangle "tools/\ndependencies/" as tools
+  rectangle "results/raw/\nlogs/" as res
 }
 
-package "Интеграция инструментов" {
-  [src/benchmark/__init__.py\nрегистрация подкоманд] as bench_init
-  [src/benchmark/lagraph.py\nStyle A] as lagraph
-  [src/benchmark/inpla.py\nStyle A] as inpla
-  [src/benchmark/networkx.py\nStyle B] as networkx
-  [src/benchmark/fsharp.py\nStyle B] as fsharp
-}
+main --> dl
+main --> prep
+main --> bench
 
-package "Внешние компоненты" {
-  [tools/\n(QTreeInpla, nx-benchmarks,\nQTreeFSharp, ...)] as tools
-  [dependencies/\n(inpla, ...)] as deps
-  [results/raw/\n<timestamp>_<tool>.json] as results
-  [logs/] as logs
-}
+dl --> cfg
+prep --> cfg
+bench --> cfg
 
-main --> bench_init
-bench_init --> lagraph
-bench_init --> inpla
-bench_init --> networkx
-bench_init --> fsharp
-
-main --> download
-main --> prepare
-
-download --> config
-download --> matrices : скачивает .tar.gz,\nраспаковывает .mtx
-prepare --> config
-prepare --> matrices : приведение к неотрицательным\nцелым; RCM-переупорядочение\n(*_reordered.mtx)
-
-lagraph --> common
-inpla --> common
-networkx --> common
-fsharp --> common
-download --> common
-prepare --> common
-main --> common
-
-lagraph --> tools : subprocess
-inpla --> tools
-inpla --> deps
-networkx --> tools
-fsharp --> tools
-
-lagraph --> results : write_results
-inpla --> results : write_results
-networkx --> results : копирование/запись\nв results/raw
-fsharp --> results : копирование/запись\nв results/raw
-
-main --> logs : RichHandler + FileHandler
+cfg --> common
+common --> mtx
+common --> tools
+common --> res
 @enduml
