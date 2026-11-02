@@ -22,7 +22,7 @@ package "команды" {
   rectangle "**benchmark <tool>**\nизмерения" as bench
 }
 
-rectangle "**matrices.yaml**\nсостав эксперимента" as cfg
+rectangle "**matrices.yaml**\nсостав измерений" as cfg
 rectangle "**src/common.py**\nвыбор матриц, повторение\nзапусков, сохранение" as common
 
 package "данные" {
