@@ -1,0 +1,46 @@
+@startuml
+skinparam shadowing false
+skinparam defaultFontSize 15
+skinparam ArrowColor #666666
+skinparam nodesep 24
+skinparam ranksep 38
+skinparam packageStyle rectangle
+skinparam rectangle {
+  BackgroundColor #F5F7FA
+  BorderColor #AAB4C0
+}
+skinparam package {
+  BackgroundColor #FAFBFC
+  BorderColor #C4CCD6
+}
+
+rectangle "**main.py**\nединая программа запуска" as main
+
+package "команды" {
+  rectangle "**download**\nполучение матриц" as dl
+  rectangle "**prepare-matrices**\nпредобработка" as prep
+  rectangle "**benchmark <tool>**\nизмерения" as bench
+}
+
+rectangle "**matrices.yaml**\nсостав измерений" as cfg
+rectangle "**src/common.py**\nвыбор матриц, повторение\nзапусков, сохранение" as common
+
+package "данные" {
+  rectangle "matrices/" as mtx
+  rectangle "tools/\ndependencies/" as tools
+  rectangle "results/raw/\nlogs/" as res
+}
+
+main --> dl
+main --> prep
+main --> bench
+
+dl --> cfg
+prep --> cfg
+bench --> cfg
+
+cfg --> common
+common --> mtx
+common --> tools
+common --> res
+@enduml
